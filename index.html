@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Congresso Nacional do Brasil — BRRPG</title>
+
+<style>
+/* ================= RESET & BASE ================= */
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+body{background:#f4f6f5;color:#1a1a1a}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;border-radius:6px}
+
+/* ================= CORES POR PERFIL ================= */
+:root{
+  --verde:#0a7a3c;
+  --amarelo:#f2c300;
+  --azul:#003f7f;
+  --branco:#ffffff;
+  --cinza:#e5e7eb;
+}
+
+/* ================= LAYOUT GERAL ================= */
+#app{display:flex;min-height:100vh}
+#sidebar{
+  width:260px;
+  background:linear-gradient(180deg,var(--verde),#064f27);
+  color:#fff;
+  padding:15px;
+}
+#sidebar h1{
+  font-size:18px;
+  text-align:center;
+  margin-bottom:15px;
+}
+#sidebar img{width:80px;display:block;margin:0 auto 10px}
+#menu a{
+  display:block;
+  padding:10px;
+  border-radius:6px;
+  margin-bottom:5px;
+}
+#menu a:hover{background:rgba(255,255,255,.15)}
+
+#main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+#topbar{
+  background:#fff;
+  padding:10px 20px;
+  border-bottom:1px solid var(--cinza);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+#content{
+  padding:20px;
+  overflow:auto;
+}
+
+/* ================= LOGIN ================= */
+#loginBox{
+  max-width:420px;
+  margin:80px auto;
+  background:#fff;
+  padding:25px;
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+#loginBox h2{text-align:center;margin-bottom:20px}
+#loginBox input{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+}
+#loginBox button{
+  width:100%;
+  background:var(--verde);
+  color:#fff;
+  padding:12px;
+}
+
+/* ================= CARDS ================= */
+.card{
+  background:#fff;
+  border-radius:10px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,.05);
+}
+.card.urgente{border-left:6px solid #b91c1c}
+.card.normal{border-left:6px solid var(--verde)}
+
+/* ================= PERFIL ================= */
+.profile{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.profile img{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.profile .selo{
+  width:50px;
+  height:auto;
+}
+
+/* ================= CHAT / FÓRUM ================= */
+.forum{
+  display:flex;
+  height:70vh;
+}
+.forum-channels{
+  width:240px;
+  border-right:1px solid var(--cinza);
+}
+.forum-channels div{
+  padding:10px;
+  cursor:pointer;
+}
+.forum-channels div:hover{background:#f1f1f1}
+.forum-messages{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.messages{
+  flex:1;
+  padding:10px;
+  overflow:auto;
+}
+.message{
+  margin-bottom:8px;
+  max-width:70%;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#e5e7eb;
+}
+.message.me{margin-left:auto;background:#d1fae5}
+.forum-input{
+  display:flex;
+  border-top:1px solid var(--cinza);
+}
+.forum-input input{
+  flex:1;
+  padding:10px;
+  border:none;
+}
+.forum-input button{
+  background:var(--verde);
+  color:#fff;
+  padding:10px 15px;
+}
+
+/* ================= RESPONSIVO ================= */
+@media(max-width:800px){
+  #sidebar{display:none}
+}
+</style>
+</head>
+
+<body>
+<div id="loginBox">
+  <h2>Congresso Nacional — BRRPG</h2>
+  <input id="user" placeholder="Usuário">
+  <input id="pass" type="password" placeholder="Senha">
+  <button onclick="login()">Entrar</button>
+</div>
+
+<div id="app" style="display:none">
+  <div id="sidebar">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Brasao_Republica_Federativa_do_Brasil.svg">
+    <h1>Congresso Nacional</h1>
+    <div id="menu">
+      <a onclick="view('inicio')">Página Inicial</a>
+      <a onclick="view('camara')">Câmara dos Deputados</a>
+      <a onclick="view('senado')">Senado Federal</a>
+      <a onclick="view('projetos')">Projetos & Proposições</a>
+      <a onclick="view('sessoes')">Plenário Virtual</a>
+      <a onclick="view('forum')">Gabinetes</a>
+      <a onclick="logout()">Sair</a>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="topbar">
+      <div id="userInfo"></div>
+      <div id="notif">🔔 <span id="notifCount">0</span></div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+/* ================= STORAGE ================= */
+if(!localStorage.users){
+  localStorage.users = JSON.stringify([
+    {user:"CongressoNacional.org",pass:"777.cn",role:"admin",name:"Administrador"}
+  ]);
+}
+if(!localStorage.projects){localStorage.projects="[]";}
+if(!localStorage.messages){localStorage.messages="[]";}
+if(!localStorage.notifications){localStorage.notifications="[]";}
+
+/* ================= AUTH ================= */
+let currentUser=null;
+
+function login(){
+  const u=document.getElementById("user").value;
+  const p=document.getElementById("pass").value;
+  const users=JSON.parse(localStorage.users);
+  const found=users.find(x=>x.user===u && x.pass===p);
+  if(!found){alert("Login inválido");return;}
+  currentUser=found;
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("app").style.display="flex";
+  document.getElementById("userInfo").innerText=found.name+" ("+found.role+")";
+  view("inicio");
+}
+
+function logout(){
+  location.reload();
+}
+
+/* ================= VIEWS ================= */
+function view(v){
+  if(v==="inicio"){
+    content.innerHTML=`
+      <div class="card">
+        <h2>Convocações & Avisos</h2>
+        <p>Nenhuma sessão em andamento.</p>
+      </div>
+    `;
+  }
+  if(v==="camara"){
+    content.innerHTML=`
+      <div class="card"><h2>Câmara dos Deputados</h2>
+      <p>13 Deputados cadastráveis — Layout verde e branco</p></div>`;
+  }
+  if(v==="senado"){
+    content.innerHTML=`
+      <div class="card"><h2>Senado Federal</h2>
+      <p>11 Senadores — Layout azul e branco</p></div>`;
+  }
+  if(v==="projetos"){
+    renderProjetos();
+  }
+  if(v==="sessoes"){
+    content.innerHTML=`
+      <div class="card">
+        <h2>Plenário Virtual</h2>
+        <p>Sessões, presença, votação e atas por Casa Legislativa.</p>
+      </div>
+    `;
+  }
+  if(v==="forum"){
+    renderForum();
+  }
+}
+
+/* ================= PROJETOS ================= */
+function renderProjetos(){
+  const projs=JSON.parse(localStorage.projects);
+  let html=`<div class="card"><h2>Projetos & Proposições</h2>`;
+  if(currentUser.role==="admin"){
+    html+=`
+      <input id="pTitulo" placeholder="Título do Projeto"><br><br>
+      <select id="pUrg">
+        <option value="normal">Não urgente</option>
+        <option value="urgente">Urgente</option>
+      </select>
+      <button onclick="addProjeto()">Protocolar</button><hr>
+    `;
+  }
+  projs.forEach(p=>{
+    html+=`
+      <div class="card ${p.urg}">
+        <h3>${p.titulo}</h3>
+        <p>Autor: ${p.autor}</p>
+      </div>
+    `;
+  });
+  html+=`</div>`;
+  content.innerHTML=html;
+}
+function addProjeto(){
+  const t=document.getElementById("pTitulo").value;
+  const u=document.getElementById("pUrg").value;
+  const arr=JSON.parse(localStorage.projects);
+  arr.push({titulo:t,urg:u,autor:currentUser.name});
+  localStorage.projects=JSON.stringify(arr);
+  renderProjetos();
+}
+
+/* ================= FÓRUM / GABINETES ================= */
+let currentChannel="Geral";
+function renderForum(){
+  const msgs=JSON.parse(localStorage.messages);
+  content.innerHTML=`
+    <div class="forum">
+      <div class="forum-channels">
+        <div onclick="setChannel('Geral')">Gabinete Geral</div>
+        <div onclick="setChannel('Mesa')">Mesa Diretora</div>
+      </div>
+      <div class="forum-messages">
+        <div class="messages" id="msgs"></div>
+        <div class="forum-input">
+          <input id="msgTxt" placeholder="Mensagem">
+          <button onclick="sendMsg()">Enviar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  drawMsgs();
+}
+function setChannel(c){currentChannel=c;drawMsgs();}
+function drawMsgs(){
+  const box=document.getElementById("msgs");
+  const msgs=JSON.parse(localStorage.messages);
+  box.innerHTML="";
+  msgs.filter(m=>m.channel===currentChannel)
+      .forEach(m=>{
+        box.innerHTML+=`
+          <div class="message ${m.user===currentUser.user?'me':''}">
+            <strong>${m.name}</strong><br>${m.text}
+          </div>
+        `;
+      });
+}
+function sendMsg(){
+  const t=document.getElementById("msgTxt").value;
+  const arr=JSON.parse(localStorage.messages);
+  arr.push({
+    user:currentUser.user,
+    name:currentUser.name,
+    text:t,
+    channel:currentChannel
+  });
+  localStorage.messages=JSON.stringify(arr);
+  document.getElementById("msgTxt").value="";
+  drawMsgs();
+}
+</script>
+</body>
+</html>
+
+<!-- ===================== MÓDULO 1 — SISTEMA COMPLETO DE SESSÕES LEGISLATIVAS ===================== -->
+<script>
+/* ================= SESSÕES ================= */
+if(!localStorage.sessoes){
+  localStorage.sessoes = JSON.stringify([]);
+}
+
+/*
+sessao = {
+  id,
+  casa: "camara" | "senado",
+  status: "aberta" | "encerrada",
+  inicio,
+  fim,
+  pauta: [],
+  presencas: { usuario: "Presente|Ausente|Atrasado" },
+  votos: { projetoId: { usuario: "Favorável|Contrário|Abstenção", texto:"" } },
+  ataInicial,
+  ataFinal
+}
+*/
+
+function abrirSessao(casa){
+  if(!isMesa()) return alert("Apenas Mesa Diretora pode convocar sessão.");
+  const sessoes = JSON.parse(localStorage.sessoes);
+  const id = Date.now();
+  sessoes.push({
+    id,
+    casa,
+    status:"aberta",
+    inicio:new Date().toLocaleString(),
+    fim:null,
+    pauta:[],
+    presencas:{},
+    votos:{},
+    ataInicial:`Ata inicial da sessão ${id}`,
+    ataFinal:""
+  });
+  localStorage.sessoes = JSON.stringify(sessoes);
+  alert("Sessão aberta com sucesso.");
+  view("sessoes");
+}
+
+function encerrarSessao(id){
+  if(!isMesa()) return;
+  const sessoes = JSON.parse(localStorage.sessoes);
+  const s = sessoes.find(x=>x.id===id);
+  s.status="encerrada";
+  s.fim=new Date().toLocaleString();
+  s.ataFinal=gerarAtaFinal(s);
+  localStorage.sessoes=JSON.stringify(sessoes);
+  alert("Sessão encerrada.");
+  view("sessoes");
+}
+
+function gerarAtaFinal(s){
+  let txt="ATA FINAL DA SESSÃO\n\n";
+  txt+="Casa: "+s.casa.toUpperCase()+"\n";
+  txt+="Início: "+s.inicio+"\n";
+  txt+="Encerramento: "+s.fim+"\n\n";
+  txt+="PRESENÇAS:\n";
+  for(let u in s.presencas){
+    txt+=u+" — "+s.presencas[u]+"\n";
+  }
+  txt+="\nVOTAÇÕES:\n";
+  for(let p in s.votos){
+    txt+="Projeto "+p+"\n";
+    for(let u in s.votos[p]){
+      txt+=u+": "+s.votos[p][u].voto+"\n";
+    }
+  }
+  return txt;
+}
+
+/* ================= PRESENÇA ================= */
+function registrarPresenca(sessaoId,status){
+  const sessoes=JSON.parse(localStorage.sessoes);
+  const s=sessoes.find(x=>x.id===sessaoId);
+  s.presencas[currentUser.name]=status;
+  localStorage.sessoes=JSON.stringify(sessoes);
+  alert("Presença registrada: "+status);
+}
+
+/* ================= PAUTA ================= */
+function adicionarPauta(sessaoId,projetoId){
+  if(!isMesa()) return;
+  const sessoes=JSON.parse(localStorage.sessoes);
+  const s=sessoes.find(x=>x.id===sessaoId);
+  if(!s.pauta.includes(projetoId)){
+    s.pauta.push(projetoId);
+  }
+  localStorage.sessoes=JSON.stringify(sessoes);
+  view("sessoes");
+}
+
+/* ================= VOTAÇÃO ================= */
+function votar(sessaoId,projetoId,voto){
+  const sessoes=JSON.parse(localStorage.sessoes);
+  const s=sessoes.find(x=>x.id===sessaoId);
+  if(!s.votos[projetoId]) s.votos[projetoId]={};
+  s.votos[projetoId][currentUser.name]={voto, texto:""};
+  localStorage.sessoes=JSON.stringify(sessoes);
+  alert("Voto registrado: "+voto);
+}
+
+function sustentarVoto(sessaoId,projetoId,texto){
+  const sessoes=JSON.parse(localStorage.sessoes);
+  const s=sessoes.find(x=>x.id===sessaoId);
+  if(s.votos[projetoId] && s.votos[projetoId][currentUser.name]){
+    s.votos[projetoId][currentUser.name].texto=texto;
+  }
+  localStorage.sessoes=JSON.stringify(sessoes);
+}
+
+/* ================= VIEW SESSÕES ================= */
+function renderSessoes(){
+  const sessoes=JSON.parse(localStorage.sessoes);
+  let html=`<div class="card"><h2>Plenário Virtual</h2>`;
+  if(isMesa()){
+    html+=`
+      <button onclick="abrirSessao('camara')">Convocar Sessão Câmara</button>
+      <button onclick="abrirSessao('senado')">Convocar Sessão Senado</button>
+      <hr>
+    `;
+  }
+  sessoes.forEach(s=>{
+    html+=`
+      <div class="card">
+        <h3>Sessão ${s.id} — ${s.casa.toUpperCase()}</h3>
+        <p>Status: ${s.status}</p>
+        <p>Início: ${s.inicio}</p>
+        ${s.status==="aberta" ? `
+          <button onclick="registrarPresenca(${s.id},'Presente')">Presente</button>
+          <button onclick="registrarPresenca(${s.id},'Ausente')">Ausente</button>
+          <button onclick="registrarPresenca(${s.id},'Atrasado')">Atrasado</button>
+        ` : ``}
+        ${isMesa() && s.status==="aberta" ? `
+          <br><br>
+          <button onclick="encerrarSessao(${s.id})">Encerrar Sessão</button>
+        ` : ``}
+        ${s.status==="encerrada" ? `
+          <pre>${s.ataFinal}</pre>
+        ` : ``}
+      </div>
+    `;
+  });
+  html+=`</div>`;
+  content.innerHTML=html;
+}
+
+/* ================= HELPERS ================= */
+function isMesa(){
+  return currentUser.role==="admin" || currentUser.role==="mesa";
+}
+
+/* ================= OVERRIDE VIEW ================= */
+const oldView=view;
+view=function(v){
+  if(v==="sessoes"){renderSessoes();return;}
+  oldView(v);
+};
+</script>
+<!-- ===================== MÓDULOS 2, 3 e 4 — PERFIS, ESTATÍSTICAS E PERMISSÕES ===================== -->
+<script>
+/* =====================================================================
+MÓDULO 2 — PERFIS COMPLETOS (PARLAMENTARES, AUTORIDADES E CIVIS)
+===================================================================== */
+if(!localStorage.perfis){
+  localStorage.perfis = JSON.stringify({});
+}
+
+/*
+perfil = {
+  nome,
+  tipo: "deputado" | "senador" | "governador" | "presidente" | "vice" | "civil",
+  casa: "camara" | "senado" | null,
+  estado,
+  fotoURL,
+  seloURL,
+  bio,
+  videos:[],
+  publicacoes:[],
+  curtidas:0,
+  mesaCargo:null
+}
+*/
+
+function getPerfil(){
+  const perfis=JSON.parse(localStorage.perfis);
+  return perfis[currentUser.user];
+}
+
+function salvarPerfil(data){
+  const perfis=JSON.parse(localStorage.perfis);
+  perfis[currentUser.user]=data;
+  localStorage.perfis=JSON.stringify(perfis);
+}
+
+function renderPerfil(){
+  let p=getPerfil();
+  if(!p){
+    p={
+      nome:currentUser.name,
+      tipo:"civil",
+      casa:null,
+      estado:"",
+      fotoURL:"",
+      seloURL:"",
+      bio:"",
+      videos:[],
+      publicacoes:[],
+      curtidas:0,
+      mesaCargo:null
+    };
+    salvarPerfil(p);
+  }
+
+  content.innerHTML=`
+    <div class="card">
+      <h2>Perfil</h2>
+      <div class="profile">
+        <img src="${p.fotoURL||'https://via.placeholder.com/80'}">
+        <div>
+          <strong>${p.nome}</strong><br>
+          <small>${p.tipo.toUpperCase()}</small>
+        </div>
+        ${p.seloURL?`<img class="selo" src="${p.seloURL}">`:""}
+      </div>
+      <br>
+      <input id="foto" placeholder="URL da foto" value="${p.fotoURL}"><br><br>
+      <input id="selo" placeholder="URL do selo" value="${p.seloURL}"><br><br>
+      <textarea id="bio" placeholder="Biografia">${p.bio}</textarea><br><br>
+      <button onclick="atualizarPerfil()">Salvar Perfil</button>
+    </div>
+  `;
+}
+
+function atualizarPerfil(){
+  let p=getPerfil();
+  p.fotoURL=document.getElementById("foto").value;
+  p.seloURL=document.getElementById("selo").value;
+  p.bio=document.getElementById("bio").value;
+  salvarPerfil(p);
+  alert("Perfil atualizado");
+  renderPerfil();
+}
+
+/* =====================================================================
+MÓDULO 3 — ESTATÍSTICAS AUTOMÁTICAS
+===================================================================== */
+function estatisticasUsuario(nome){
+  const sessoes=JSON.parse(localStorage.sessoes||"[]");
+  const projetos=JSON.parse(localStorage.projects||"[]");
+
+  let presencas=0, atrasos=0, ausencias=0;
+  let votosFavor=0, votosContra=0, abstencoes=0;
+
+  sessoes.forEach(s=>{
+    if(s.presencas[nome]){
+      if(s.presencas[nome]==="Presente") presencas++;
+      if(s.presencas[nome]==="Atrasado") atrasos++;
+      if(s.presencas[nome]==="Ausente") ausencias++;
+    }
+    for(let p in s.votos){
+      if(s.votos[p][nome]){
+        const v=s.votos[p][nome].voto;
+        if(v==="Favorável") votosFavor++;
+        if(v==="Contrário") votosContra++;
+        if(v==="Abstenção") abstencoes++;
+      }
+    }
+  });
+
+  const autoria=projetos.filter(p=>p.autor===nome).length;
+
+  return {
+    presencas,atrasos,ausencias,
+    votosFavor,votosContra,abstencoes,
+    autoria
+  };
+}
+
+function renderEstatisticas(){
+  const e=estatisticasUsuario(currentUser.name);
+  content.innerHTML=`
+    <div class="card">
+      <h2>Estatísticas Legislativas</h2>
+      <p>Projetos apresentados: <strong>${e.autoria}</strong></p>
+      <p>Presenças: ${e.presencas} | Atrasos: ${e.atrasos} | Ausências: ${e.ausencias}</p>
+      <p>Votos — Favoráveis: ${e.votosFavor} | Contrários: ${e.votosContra} | Abstenções: ${e.abstencoes}</p>
+    </div>
+  `;
+}
+
+/* =====================================================================
+MÓDULO 4 — PERMISSÕES, CARGOS E MESA DIRETORA
+===================================================================== */
+function definirCargoMesa(cargo){
+  let p=getPerfil();
+  p.mesaCargo=cargo;
+  salvarPerfil(p);
+  alert("Cargo definido: "+cargo);
+}
+
+function podeConvocar(){
+  const p=getPerfil();
+  return p && p.mesaCargo;
+}
+
+/* Override da função de mesa */
+isMesa=function(){
+  const p=getPerfil();
+  return currentUser.role==="admin" || (p && p.mesaCargo);
+};
+
+/* Eleição simples da Mesa Diretora */
+if(!localStorage.eleicoes){
+  localStorage.eleicoes=JSON.stringify({});
+}
+
+function iniciarEleicao(casa){
+  if(!isMesa()) return;
+  const eleicoes=JSON.parse(localStorage.eleicoes);
+  eleicoes[casa]={votos:{},ativa:true};
+  localStorage.eleicoes=JSON.stringify(eleicoes);
+  alert("Eleição da Mesa iniciada: "+casa);
+}
+
+function votarMesa(casa,candidato){
+  const eleicoes=JSON.parse(localStorage.eleicoes);
+  if(!eleicoes[casa]||!eleicoes[casa].ativa) return;
+  eleicoes[casa].votos[currentUser.name]=candidato;
+  localStorage.eleicoes=JSON.stringify(eleicoes);
+}
+
+function encerrarEleicao(casa){
+  const eleicoes=JSON.parse(localStorage.eleicoes);
+  const votos=Object.values(eleicoes[casa].votos);
+  const vencedor=votos.sort((a,b)=>
+    votos.filter(v=>v===a).length - votos.filter(v=>v===b).length
+  ).pop();
+
+  const perfis=JSON.parse(localStorage.perfis);
+  for(let u in perfis){
+    if(perfis[u].nome===vencedor){
+      perfis[u].mesaCargo="Presidente";
+    }
+  }
+  localStorage.perfis=JSON.stringify(perfis);
+  eleicoes[casa].ativa=false;
+  localStorage.eleicoes=JSON.stringify(eleicoes);
+  alert("Presidente eleito: "+vencedor);
+}
+
+/* =====================================================================
+MENU EXTRA
+===================================================================== */
+const oldMenu=document.getElementById("menu").innerHTML;
+document.getElementById("menu").innerHTML+=`
+  <a onclick="renderPerfil()">Meu Perfil</a>
+  <a onclick="renderEstatisticas()">Minhas Estatísticas</a>
+`;
+
+/* =====================================================================
+INTEGRAÇÃO COM VIEW
+===================================================================== */
+const viewOld=view;
+view=function(v){
+  if(v==="perfil"){renderPerfil();return;}
+  if(v==="estatisticas"){renderEstatisticas();return;}
+  viewOld(v);
+};
+</script>
+<!-- ===================== MÓDULOS 5, 6 e 7 — PRONUNCIAMENTOS, SECOM, NOTIFICAÇÕES E INTERAÇÕES ===================== -->
+<script>
+/* =====================================================================
+MÓDULO 5 — PRONUNCIAMENTOS, CURTIDAS, REPUBLICAÇÕES E MARCAÇÕES
+===================================================================== */
+if(!localStorage.posts){
+  localStorage.posts = JSON.stringify([]);
+}
+
+/*
+post = {
+  id,
+  autor,
+  texto,
+  videoURL,
+  curtidas:[],
+  republicadoDe:null,
+  data
+}
+*/
+
+function criarPost(){
+  const txt=document.getElementById("postTxt").value;
+  const vid=document.getElementById("postVid").value;
+  const posts=JSON.parse(localStorage.posts);
+  posts.unshift({
+    id:Date.now(),
+    autor:currentUser.name,
+    texto:txt,
+    videoURL:vid,
+    curtidas:[],
+    republicadoDe:null,
+    data:new Date().toLocaleString()
+  });
+  localStorage.posts=JSON.stringify(posts);
+  document.getElementById("postTxt").value="";
+  document.getElementById("postVid").value="";
+  renderPosts();
+}
+
+function curtirPost(id){
+  const posts=JSON.parse(localStorage.posts);
+  const p=posts.find(x=>x.id===id);
+  if(!p.curtidas.includes(currentUser.name)){
+    p.curtidas.push(currentUser.name);
+  }
+  localStorage.posts=JSON.stringify(posts);
+  renderPosts();
+}
+
+function republicar(id){
+  const posts=JSON.parse(localStorage.posts);
+  const origem=posts.find(x=>x.id===id);
+  posts.unshift({
+    id:Date.now(),
+    autor:currentUser.name,
+    texto:origem.texto,
+    videoURL:origem.videoURL,
+    curtidas:[],
+    republicadoDe:origem.autor,
+    data:new Date().toLocaleString()
+  });
+  localStorage.posts=JSON.stringify(posts);
+  renderPosts();
+}
+
+function renderPosts(){
+  const posts=JSON.parse(localStorage.posts);
+  let html=`
+    <div class="card">
+      <h2>Pronunciamentos</h2>
+      <textarea id="postTxt" placeholder="Escreva seu pronunciamento"></textarea><br><br>
+      <input id="postVid" placeholder="URL de vídeo (opcional)"><br><br>
+      <button onclick="criarPost()">Publicar</button>
+    </div>
+  `;
+  posts.forEach(p=>{
+    html+=`
+      <div class="card">
+        <strong>${p.autor}</strong> <small>${p.data}</small>
+        ${p.republicadoDe?`<em>(republicado de ${p.republicadoDe})</em>`:""}
+        <p>${linkarTexto(p.texto)}</p>
+        ${p.videoURL?`<a href="${p.videoURL}" target="_blank">▶ Vídeo</a>`:""}
+        <br><br>
+        <button onclick="curtirPost(${p.id})">👍 ${p.curtidas.length}</button>
+        <button onclick="republicar(${p.id})">🔁 Republicar</button>
+      </div>
+    `;
+  });
+  content.innerHTML=html;
+}
+
+function linkarTexto(txt){
+  return txt
+    .replace(/@(\w+)/g,'<strong>@$1</strong>')
+    .replace(/#(\w+)/g,'<em>#${"$1"}</em>');
+}
+
+/* =====================================================================
+MÓDULO 6 — SECOM DO PRESIDENTE
+===================================================================== */
+function isPresidente(){
+  const p=getPerfil();
+  return p && p.tipo==="presidente";
+}
+
+function renderSECOM(){
+  if(!isPresidente()){
+    alert("Acesso restrito à Presidência da República.");
+    return;
+  }
+  content.innerHTML=`
+    <div class="card">
+      <h2>SECOM — Presidência da República</h2>
+      <textarea id="postTxt" placeholder="Comunicado oficial da Presidência"></textarea><br><br>
+      <input id="postVid" placeholder="URL de vídeo oficial"><br><br>
+      <button onclick="criarPost()">Publicar Comunicado</button>
+    </div>
+  `;
+}
+
+/* =====================================================================
+MÓDULO 7 — NOTIFICAÇÕES INTELIGENTES
+===================================================================== */
+function notificarCasa(casa,msg){
+  const notifs=JSON.parse(localStorage.notifications);
+  notifs.push({
+    id:Date.now(),
+    casa,
+    msg,
+    data:new Date().toLocaleString()
+  });
+  localStorage.notifications=JSON.stringify(notifs);
+  atualizarNotif();
+}
+
+function atualizarNotif(){
+  const notifs=JSON.parse(localStorage.notifications);
+  document.getElementById("notifCount").innerText=notifs.length;
+}
+
+const oldAbrirSessao=abrirSessao;
+abrirSessao=function(casa){
+  oldAbrirSessao(casa);
+  notificarCasa(casa,"Nova sessão convocada para "+casa.toUpperCase());
+};
+
+/* =====================================================================
+MENU EXTRA FINAL
+===================================================================== */
+document.getElementById("menu").innerHTML+=`
+  <a onclick="renderPosts()">Pronunciamentos</a>
+  <a onclick="renderSECOM()">SECOM</a>
+`;
+
+/* Inicialização */
+atualizarNotif();
+</script>
+<!-- ===================== MÓDULOS 8, 9 e 10 — FINAL (PLACAR, GOVERNADORES, ANEXOS, LAYOUTS, ADMIN) ===================== -->
+<script>
+/* =====================================================================
+MÓDULO 8 — PLACAR ELETRÔNICO DE VOTAÇÃO (CÂMARA / SENADO)
+===================================================================== */
+function renderPlacar(sessaoId){
+  const sessoes=JSON.parse(localStorage.sessoes);
+  const s=sessoes.find(x=>x.id===sessaoId);
+  let fav=0, con=0, abs=0;
+
+  for(let p in s.votos){
+    for(let u in s.votos[p]){
+      const v=s.votos[p][u].voto;
+      if(v==="Favorável") fav++;
+      if(v==="Contrário") con++;
+      if(v==="Abstenção") abs++;
+    }
+  }
+
+  return `
+    <div class="card" style="text-align:center">
+      <h3>Placar Eletrônico — ${s.casa.toUpperCase()}</h3>
+      <div style="display:flex;justify-content:space-around;font-size:22px">
+        <div style="color:green">✔ ${fav}</div>
+        <div style="color:red">✖ ${con}</div>
+        <div style="color:#555">◼ ${abs}</div>
+      </div>
+    </div>
+  `;
+}
+
+/* Integração no render de sessões */
+const renderSessoesOld=renderSessoes;
+renderSessoes=function(){
+  const sessoes=JSON.parse(localStorage.sessoes);
+  let html=`<div class="card"><h2>Plenário Virtual</h2>`;
+  if(isMesa()){
+    html+=`
+      <button onclick="abrirSessao('camara')">Convocar Sessão Câmara</button>
+      <button onclick="abrirSessao('senado')">Convocar Sessão Senado</button>
+      <hr>
+    `;
+  }
+  sessoes.forEach(s=>{
+    html+=`
+      <div class="card">
+        <h3>Sessão ${s.id} — ${s.casa.toUpperCase()}</h3>
+        <p>Status: ${s.status}</p>
+        ${s.status==="aberta"?`
+          <button onclick="registrarPresenca(${s.id},'Presente')">Presente</button>
+          <button onclick="registrarPresenca(${s.id},'Ausente')">Ausente</button>
+          <button onclick="registrarPresenca(${s.id},'Atrasado')">Atrasado</button>
+        `:""}
+        ${s.status==="encerrada"?renderPlacar(s.id):""}
+        ${isMesa() && s.status==="aberta"?`
+          <br><br><button onclick="encerrarSessao(${s.id})">Encerrar Sessão</button>
+        `:""}
+        ${s.status==="encerrada"?`<pre>${s.ataFinal}</pre>`:""}
+      </div>
+    `;
+  });
+  html+=`</div>`;
+  content.innerHTML=html;
+};
+
+/* =====================================================================
+MÓDULO 9 — GOVERNADORES, ESTADOS E ANEXOS
+===================================================================== */
+if(!localStorage.estados){
+  localStorage.estados=JSON.stringify([
+    {nome:"Pernambuco",flag:"https://upload.wikimedia.org/wikipedia/commons/5/59/Bandeira_de_Pernambuco.svg"},
+    {nome:"Espírito Santo",flag:"https://upload.wikimedia.org/wikipedia/commons/4/43/Bandeira_do_Esp%C3%ADrito_Santo.svg"},
+    {nome:"São Paulo",flag:"https://upload.wikimedia.org/wikipedia/commons/2/2b/Bandeira_do_estado_de_S%C3%A3o_Paulo.svg"},
+    {nome:"Minas Gerais",flag:"https://upload.wikimedia.org/wikipedia/commons/f/f4/Bandeira_de_Minas_Gerais.svg"},
+    {nome:"Mato Grosso do Sul",flag:"https://upload.wikimedia.org/wikipedia/commons/6/64/Bandeira_de_Mato_Grosso_do_Sul.svg"},
+    {nome:"Paraná",flag:"https://upload.wikimedia.org/wikipedia/commons/9/93/Bandeira_do_Paran%C3%A1.svg"}
+  ]);
+}
+
+function podePropor(){
+  const p=getPerfil();
+  return ["deputado","senador","governador","presidente","vice"].includes(p.tipo);
+}
+
+/* Override projetos para anexos */
+const addProjetoOld=addProjeto;
+addProjeto=function(){
+  if(!podePropor()) return alert("Você não pode propor projetos.");
+  const t=document.getElementById("pTitulo").value;
+  const u=document.getElementById("pUrg").value;
+  const an=prompt("URL do anexo (PDF/WORD/etc)");
+  const arr=JSON.parse(localStorage.projects);
+  arr.push({
+    id:Date.now(),
+    titulo:t,
+    urg:u,
+    autor:currentUser.name,
+    anexos:an?[an]:[],
+    data:new Date().toLocaleString()
+  });
+  localStorage.projects=JSON.stringify(arr);
+  renderProjetos();
+};
+
+/* Render projetos com anexos */
+const renderProjetosOld=renderProjetos;
+renderProjetos=function(){
+  const projs=JSON.parse(localStorage.projects);
+  let html=`<div class="card"><h2>Projetos & Proposições</h2>`;
+  if(podePropor()){
+    html+=`
+      <input id="pTitulo" placeholder="Título do Projeto"><br><br>
+      <select id="pUrg">
+        <option value="normal">Não urgente</option>
+        <option value="urgente">Urgente</option>
+      </select>
+      <button onclick="addProjeto()">Protocolar</button><hr>
+    `;
+  }
+  projs.forEach(p=>{
+    html+=`
+      <div class="card ${p.urg}">
+        <h3>${p.titulo}</h3>
+        <p>Autor: ${p.autor}</p>
+        <p>Data: ${p.data}</p>
+        ${p.anexos? p.anexos.map(a=>`<a href="${a}" target="_blank">📎 Anexo</a>`).join("<br>"):""}
+      </div>
+    `;
+  });
+  html+=`</div>`;
+  content.innerHTML=html;
+};
+
+/* =====================================================================
+MÓDULO 10 — LAYOUT DINÂMICO + PAINEL ADMINISTRATIVO
+===================================================================== */
+function aplicarLayout(){
+  const p=getPerfil();
+  if(!p) return;
+  if(p.tipo==="senador"){
+    document.documentElement.style.setProperty("--verde","#003f7f");
+  }
+  if(p.tipo==="civil"){
+    document.documentElement.style.setProperty("--verde","#0a7a3c");
+  }
+}
+aplicarLayout();
+
+/* Painel Admin */
+function renderAdmin(){
+  if(currentUser.role!=="admin") return;
+  const users=JSON.parse(localStorage.users);
+  content.innerHTML=`
+    <div class="card">
+      <h2>Painel Administrativo</h2>
+      ${users.map(u=>`
+        <div>
+          ${u.name} (${u.user})
+          <button onclick="deletarConta('${u.user}')">Excluir</button>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+function deletarConta(user){
+  let users=JSON.parse(localStorage.users);
+  users=users.filter(u=>u.user!==user);
+  localStorage.users=JSON.stringify(users);
+  alert("Conta removida");
+  renderAdmin();
+}
+
+/* Menu admin */
+document.getElementById("menu").innerHTML+=`
+  <a onclick="renderAdmin()">Administração</a>
+`;
+</script>
+<!-- ===================== CONFIGURAÇÃO FINAL — CADASTRE-SE + LOGIN ADMIN (TELA INICIAL) ===================== -->
+
+<!-- ===== TELA INICIAL ===== -->
+<div id="authScreen">
+  <div class="auth-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Brasao_Republica_Federativa_do_Brasil.svg">
+    <h1>Congresso Nacional</h1>
+    <p>Sistema Legislativo Educacional — BRRPG</p>
+
+    <div class="auth-tabs">
+      <button onclick="showLogin()">Entrar</button>
+      <button onclick="showRegister()">Cadastre-se</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginPanel">
+      <input id="loginUser" placeholder="Usuário">
+      <input id="loginPass" type="password" placeholder="Senha">
+      <button onclick="login()">Entrar</button>
+
+      <div class="admin-box">
+        <h3>Login de Administrador</h3>
+        <small>Acesso total ao sistema</small><br><br>
+        <button onclick="adminLogin()">Entrar como Administrador</button>
+      </div>
+    </div>
+
+    <!-- CADASTRO -->
+    <div id="registerPanel" style="display:none">
+      <input id="regName" placeholder="Nome completo">
+      <input id="regUser" placeholder="Usuário">
+      <input id="regPass" type="password" placeholder="Senha">
+      <select id="regTipo">
+        <option value="civil">Civil / Visitante</option>
+        <option value="deputado">Deputado</option>
+        <option value="senador">Senador</option>
+        <option value="governador">Governador</option>
+        <option value="presidente">Presidente da República</option>
+        <option value="vice">Vice-Presidente</option>
+      </select>
+      <button onclick="registrar()">Criar Conta</button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ================= AUTH UI ================= */
+#authScreen{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0a7a3c,#f2c300);
+}
+.auth-card{
+  background:#fff;
+  padding:30px;
+  width:360px;
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+.auth-card img{width:90px;margin-bottom:10px}
+.auth-card h1{font-size:20px}
+.auth-tabs{
+  display:flex;
+  margin:15px 0;
+}
+.auth-tabs button{
+  flex:1;
+  padding:10px;
+  background:#e5e7eb;
+}
+.auth-card input,select{
+  width:100%;
+  padding:10px;
+  margin-bottom:8px;
+}
+.auth-card button{
+  width:100%;
+  padding:10px;
+  background:#0a7a3c;
+  color:#fff;
+}
+.admin-box{
+  margin-top:15px;
+  padding:10px;
+  border:1px dashed #999;
+}
+</style>
+
+<script>
+/* ================= INICIALIZAÇÃO ================= */
+document.getElementById("app").style.display="none";
+
+/* ================= AUTH SWITCH ================= */
+function showLogin(){
+  document.getElementById("loginPanel").style.display="block";
+  document.getElementById("registerPanel").style.display="none";
+}
+function showRegister(){
+  document.getElementById("loginPanel").style.display="none";
+  document.getElementById("registerPanel").style.display="block";
+}
+
+/* ================= LOGIN PADRÃO ================= */
+function login(){
+  const u=document.getElementById("loginUser").value;
+  const p=document.getElementById("loginPass").value;
+  const users=JSON.parse(localStorage.users);
+  const found=users.find(x=>x.user===u && x.pass===p);
+  if(!found){alert("Credenciais inválidas");return;}
+  currentUser=found;
+  iniciarSistema();
+}
+
+/* ================= LOGIN ADMIN FIXO ================= */
+function adminLogin(){
+  const users=JSON.parse(localStorage.users);
+  const admin=users.find(u=>u.user==="CongressoNacional.org");
+  currentUser=admin;
+  iniciarSistema();
+}
+
+/* ================= CADASTRO ================= */
+function registrar(){
+  const name=document.getElementById("regName").value;
+  const user=document.getElementById("regUser").value;
+  const pass=document.getElementById("regPass").value;
+  const tipo=document.getElementById("regTipo").value;
+
+  if(!name||!user||!pass) return alert("Preencha todos os campos");
+
+  let users=JSON.parse(localStorage.users);
+  if(users.find(u=>u.user===user)) return alert("Usuário já existe");
+
+  users.push({user,pass,role:"user",name});
+  localStorage.users=JSON.stringify(users);
+
+  const perfis=JSON.parse(localStorage.perfis||"{}");
+  perfis[user]={
+    nome:name,
+    tipo,
+    casa:(tipo==="deputado"?"camara":tipo==="senador"?"senado":null),
+    estado:"",
+    fotoURL:"",
+    seloURL:"",
+    bio:"",
+    videos:[],
+    publicacoes:[],
+    curtidas:0,
+    mesaCargo:null
+  };
+  localStorage.perfis=JSON.stringify(perfis);
+
+  alert("Conta criada com sucesso");
+  showLogin();
+}
+
+/* ================= ENTRADA NO SISTEMA ================= */
+function iniciarSistema(){
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("app").style.display="flex";
+  document.getElementById("userInfo").innerText=currentUser.name;
+  aplicarLayout();
+  view("inicio");
+}
+</script>
+<!-- ===================== EXTENSÃO FINAL — PRIMEIRO-MINISTRO + HIERARQUIA DE CARGOS ===================== -->
+<script>
+/* =====================================================================
+HIERARQUIA DE CARGOS (ORDEM DE PODER)
+0 = civil
+1 = deputado / senador
+2 = governador
+3 = primeiro-ministro (chefe de governo)
+4 = presidente (chefe de Estado)
+5 = administrador do sistema
+===================================================================== */
+const HIERARQUIA = {
+  civil:0,
+  deputado:1,
+  senador:1,
+  governador:2,
+  primeiro_ministro:3,
+  presidente:4,
+  vice:4,
+  admin:5
+};
+
+/* =====================================================================
+ATUALIZA PERFIL: PRIMEIRO-MINISTRO
+===================================================================== */
+function promoverPrimeiroMinistro(usuario){
+  if(currentUser.role!=="admin") return alert("Apenas o administrador pode nomear.");
+  const perfis = JSON.parse(localStorage.perfis||"{}");
+  if(!perfis[usuario]) return alert("Perfil não encontrado.");
+
+  perfis[usuario].tipo = "primeiro_ministro";
+  perfis[usuario].seloURL = "https://upload.wikimedia.org/wikipedia/commons/0/05/Brasao_Republica_Federativa_do_Brasil.svg";
+  perfis[usuario].mesaCargo = "Primeiro-Ministro do Conselho de Ministros";
+  localStorage.perfis = JSON.stringify(perfis);
+  alert("Primeiro-Ministro nomeado com sucesso.");
+}
+
+/* =====================================================================
+ATRIBUIÇÕES DO PRIMEIRO-MINISTRO (CHEFE DE GOVERNO)
+- Convocar e coordenar sessões conjuntas
+- Definir pauta prioritária (urgência automática)
+- Emitir comunicados oficiais do Governo
+- Solicitar votação em regime de urgência
+===================================================================== */
+function isPrimeiroMinistro(){
+  const p = getPerfil();
+  return p && p.tipo==="primeiro_ministro";
+}
+
+/* Pode convocar sessões conjuntas */
+const abrirSessaoOld2 = abrirSessao;
+abrirSessao = function(casa){
+  if(isPrimeiroMinistro() && casa==="conjunta"){
+    const sessoes = JSON.parse(localStorage.sessoes);
+    sessoes.push({
+      id:Date.now(),
+      casa:"conjunta",
+      status:"aberta",
+      inicio:new Date().toLocaleString(),
+      fim:null,
+      pauta:[],
+      presencas:{},
+      votos:{},
+      ataInicial:"Sessão Conjunta convocada pelo Primeiro-Ministro.",
+      ataFinal:""
+    });
+    localStorage.sessoes = JSON.stringify(sessoes);
+    notificarCasa("camara","Sessão conjunta convocada pelo Primeiro-Ministro");
+    notificarCasa("senado","Sessão conjunta convocada pelo Primeiro-Ministro");
+    view("sessoes");
+    return;
+  }
+  abrirSessaoOld2(casa);
+};
+
+/* Prioridade automática de projetos */
+function marcarUrgenciaPM(projetoId){
+  if(!isPrimeiroMinistro()) return alert("Apenas o Primeiro-Ministro pode definir urgência.");
+  const projs = JSON.parse(localStorage.projects);
+  const p = projs.find(x=>x.id===projetoId);
+  if(p){
+    p.urg="urgente";
+    localStorage.projects=JSON.stringify(projs);
+    alert("Projeto colocado em regime de urgência.");
+    renderProjetos();
+  }
+}
+
+/* =====================================================================
+CONTROLE DE PERMISSÃO POR HIERARQUIA
+===================================================================== */
+function temPoder(min){
+  const p = getPerfil();
+  if(currentUser.role==="admin") return true;
+  return p && HIERARQUIA[p.tipo] >= min;
+}
+
+/* Exemplo: só chefe de governo ou acima pode excluir projetos */
+const renderProjetosSecure = renderProjetos;
+renderProjetos = function(){
+  renderProjetosSecure();
+  if(temPoder(3)){
+    const cards = document.querySelectorAll(".card");
+    cards.forEach(c=>{
+      if(c.querySelector("h3")){
+        const idTxt = c.querySelector("h3").innerText;
+        const btn = document.createElement("button");
+        btn.innerText="⚡ Urgência (PM)";
+        btn.onclick=()=> {
+          const projs = JSON.parse(localStorage.projects);
+          const pr = projs.find(x=>idTxt.includes(x.titulo));
+          if(pr) marcarUrgenciaPM(pr.id);
+        };
+        c.appendChild(btn);
+      }
+    });
+  }
+};
+
+/* =====================================================================
+MENU ESPECÍFICO DO PRIMEIRO-MINISTRO
+===================================================================== */
+function menuPM(){
+  if(!isPrimeiroMinistro()) return "";
+  return `
+    <a onclick="abrirSessao('conjunta')">Sessão Conjunta</a>
+    <a onclick="renderSECOM()">Comunicados do Governo</a>
+  `;
+}
+
+/* Injeta no menu */
+document.getElementById("menu").innerHTML += menuPM();
+
+/* =====================================================================
+EXIBIÇÃO DO CARGO NO PERFIL
+===================================================================== */
+const renderPerfilOld = renderPerfil;
+renderPerfil = function(){
+  renderPerfilOld();
+  const p = getPerfil();
+  if(p && p.tipo==="primeiro_ministro"){
+    const box = document.createElement("div");
+    box.className="card";
+    box.innerHTML=`
+      <h3>Chefia de Governo</h3>
+      <p>Primeiro-Ministro do Conselho de Ministros do Brasil</p>
+      <p>Atribuições: coordenação do governo, prioridade legislativa e sessões conjuntas.</p>
+    `;
+    content.appendChild(box);
+  }
+};
+</script>
+<!-- ===================== ATUALIZAÇÃO FORMULÁRIO CADASTRO — ADICIONAR PRIMEIRO-MINISTRO ===================== -->
+<script>
+/* ================= FORMULÁRIO CADASTRO ================= */
+// No <select id="regTipo"> do cadastro, adicionar opção Primeiro-Ministro
+const regTipoSelect = document.getElementById("regTipo");
+const optPM = document.createElement("option");
+optPM.value = "primeiro_ministro";
+optPM.text = "Primeiro-Ministro do Conselho de Ministros";
+regTipoSelect.add(optPM);
+
+/* ================= AJUSTE DE PERFIL ================= */
+function registrar(){
+  const name=document.getElementById("regName").value;
+  const user=document.getElementById("regUser").value;
+  const pass=document.getElementById("regPass").value;
+  const tipo=document.getElementById("regTipo").value;
+
+  if(!name||!user||!pass) return alert("Preencha todos os campos");
+
+  let users=JSON.parse(localStorage.users);
+  if(users.find(u=>u.user===user)) return alert("Usuário já existe");
+
+  // define role geral
+  let role="user";
+  if(tipo==="primeiro_ministro") role="primeiro_ministro";
+
+  users.push({user,pass,role,name});
+  localStorage.users=JSON.stringify(users);
+
+  const perfis=JSON.parse(localStorage.perfis||"{}");
+  perfis[user]={
+    nome:name,
+    tipo:tipo,
+    casa:(tipo==="deputado"?"camara":tipo==="senador"?"senado":null),
+    estado:"",
+    fotoURL:"",
+    seloURL:(tipo==="primeiro_ministro"?"https://upload.wikimedia.org/wikipedia/commons/0/05/Brasao_Republica_Federativa_do_Brasil.svg":""),
+    bio:"",
+    videos:[],
+    publicacoes:[],
+    curtidas:0,
+    mesaCargo:(tipo==="primeiro_ministro"?"Primeiro-Ministro do Conselho de Ministros":null)
+  };
+  localStorage.perfis=JSON.stringify(perfis);
+
+  alert("Conta criada com sucesso");
+  showLogin();
+}
+</script>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Congresso Nacional BRRPG</title>
+<style>
+  /* ===== GERAL ===== */
+  :root{--verde:#0a7a3c;--amarelo:#f2c300;--branco:#fff}
+  body{margin:0;font-family:sans-serif;background:#f0f0f0;color:#333}
+  #app{display:none;flex-direction:column;min-height:100vh}
+  #menu{display:flex;background:var(--verde);color:#fff;padding:10px;gap:10px;flex-wrap:wrap}
+  #menu a{color:#fff;text-decoration:none;cursor:pointer;padding:5px 10px;background:rgba(255,255,255,0.1);border-radius:6px}
+  #content{flex:1;padding:15px}
+  .card{background:#fff;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+  input,select,textarea,button{padding:8px;width:100%;margin:5px 0;border-radius:5px;border:1px solid #ccc}
+  button{background:var(--verde);color:#fff;border:none;cursor:pointer}
+  .auth-card{background:#fff;padding:30px;width:360px;border-radius:14px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  .auth-card input,select,textarea,button{margin-bottom:8px}
+  .auth-tabs{display:flex;margin:15px 0}
+  .auth-tabs button{flex:1;padding:10px;background:#e5e7eb;border:none;cursor:pointer;border-radius:6px}
+  .admin-box{margin-top:15px;padding:10px;border:1px dashed #999;border-radius:6px}
+</style>
+</head>
+<body>
+
+<!-- ===== TELA INICIAL (LOGIN / CADASTRO) ===== -->
+<div id="authScreen">
+  <div class="auth-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Brasao_Republica_Federativa_do_Brasil.svg" width="90" alt="Brasão do Brasil">
+    <h1>Congresso Nacional BRRPG</h1>
+    <div class="auth-tabs">
+      <button onclick="showLogin()">Entrar</button>
+      <button onclick="showRegister()">Cadastre-se</button>
+    </div>
+    <div id="loginPanel">
+      <input id="loginUser" placeholder="Usuário">
+      <input id="loginPass" type="password" placeholder="Senha">
+      <button onclick="login()">Entrar</button>
+      <div class="admin-box">
+        <h3>Login de Administrador</h3>
+        <button onclick="adminLogin()">Entrar como Administrador</button>
+      </div>
+    </div>
+    <div id="registerPanel" style="display:none">
+      <input id="regName" placeholder="Nome completo">
+      <input id="regUser" placeholder="Usuário">
+      <input id="regPass" type="password" placeholder="Senha">
+      <select id="regTipo">
+        <option value="civil">Civil / Visitante</option>
+        <option value="deputado">Deputado</option>
+        <option value="senador">Senador</option>
+        <option value="governador">Governador</option>
+        <option value="presidente">Presidente da República</option>
+        <option value="vice">Vice-Presidente</option>
+        <option value="primeiro_ministro">Primeiro-Ministro do Conselho de Ministros</option>
+      </select>
+      <button onclick="registrar()">Criar Conta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP PRINCIPAL ===== -->
+<div id="app">
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+/* ================= CONFIGURAÇÃO INICIAL ================= */
+if(!localStorage.users) localStorage.users=JSON.stringify([{user:"CongressoNacional.org",pass:"777.cn",role:"admin",name:"Administrador"}]);
+if(!localStorage.perfis) localStorage.perfis=JSON.stringify({});
+if(!localStorage.sessoes) localStorage.sessoes=JSON.stringify([]);
+if(!localStorage.projects) localStorage.projects=JSON.stringify([]);
+if(!localStorage.notifications) localStorage.notifications=JSON.stringify([]);
+let currentUser={};
+
+/* ================= LOGIN / CADASTRO ================= */
+function showLogin(){document.getElementById("loginPanel").style.display="block";document.getElementById("registerPanel").style.display="none";}
+function showRegister(){document.getElementById("loginPanel").style.display="none";document.getElementById("registerPanel").style.display="block";}
+function login(){
+  const u=document.getElementById("loginUser").value;
+  const p=document.getElementById("loginPass").value;
+  const users=JSON.parse(localStorage.users);
+  const found=users.find(x=>x.user===u && x.pass===p);
+  if(!found){alert("Credenciais inválidas");return;}
+  currentUser=found;
+  iniciarSistema();
+}
+function adminLogin(){
+  const users=JSON.parse(localStorage.users);
+  const admin=users.find(u=>u.user==="CongressoNacional.org");
+  currentUser=admin;
+  iniciarSistema();
+}
+function registrar(){
+  const name=document.getElementById("regName").value;
+  const user=document.getElementById("regUser").value;
+  const pass=document.getElementById("regPass").value;
+  const tipo=document.getElementById("regTipo").value;
+  if(!name||!user||!pass) return alert("Preencha todos os campos");
+  let users=JSON.parse(localStorage.users);
+  if(users.find(u=>u.user===user)) return alert("Usuário já existe");
+  let role="user"; if(tipo==="primeiro_ministro") role="primeiro_ministro";
+  users.push({user,pass,role,name});
+  localStorage.users=JSON.stringify(users);
+  const perfis=JSON.parse(localStorage.perfis||"{}");
+  perfis[user]={nome:name,tipo:tipo,casa:(tipo==="deputado"?"camara":tipo==="senador"?"senado":null),estado:"",fotoURL:"",seloURL:(tipo==="primeiro_ministro"?"https://upload.wikimedia.org/wikipedia/commons/0/05/Brasao_Republica_Federativa_do_Brasil.svg":""),bio:"",videos:[],publicacoes:[],curtidas:0,mesaCargo:(tipo==="primeiro_ministro"?"Primeiro-Ministro do Conselho de Ministros":null)};
+  localStorage.perfis=JSON.stringify(perfis);
+  alert("Conta criada com sucesso"); showLogin();
+}
+
+/* ================= INÍCIO DO SISTEMA ================= */
+function iniciarSistema(){
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("app").style.display="flex";
+  document.getElementById("menu").innerHTML='<a onclick="view(\'inicio\')">Página Inicial</a>';
+  view("inicio");
+}
+
+/* ================= FUNÇÃO PLACEHOLDER DE VIEW ================= */
+function view(v){document.getElementById("content").innerHTML='<div class="card"><h2>'+v+'</h2><p>Conteúdo inicial.</p></div>';}
+</script>
