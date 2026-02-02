@@ -1,0 +1,2844 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Congresso Nacional Virtual</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body { box-sizing: border-box; }
+    * { font-family: 'Inter', sans-serif; }
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #10b981;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --sidebar: #1e293b;
+      --sidebar-hover: #334155;
+    }
+    
+    body { background: var(--bg); color: #0f172a; }
+    
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .btn-secondary { background: var(--secondary); color: white; }
+    .btn-secondary:hover { background: #059669; }
+    
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    
+    .card {
+      background: var(--surface);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    
+    .badge {
+      display: inline-flex;
+      padding: 0.25rem 0.625rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+    .badge-orange { background: #fed7aa; color: #9a3412; }
+    
+    .input {
+      width: 100%;
+      padding: 0.625rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .tab-btn {
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      background: transparent;
+      color: #64748b;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .modal-content {
+      background: var(--surface);
+      border-radius: 1rem;
+      max-width: 56rem;
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      width: 1rem;
+      height: 1rem;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .toast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 60;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-success { background: #10b981; }
+    .toast-error { background: #dc2626; }
+
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      color: white;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 0.5rem;
+      margin: 0.25rem 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .sidebar-item:hover {
+      background: var(--sidebar-hover);
+    }
+    
+    .sidebar-item.active {
+      background: var(--primary);
+    }
+    
+    .channel-item {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      font-size: 0.875rem;
+    }
+    
+    .channel-item:hover {
+      background: rgba(255,255,255,0.05);
+      border-left-color: var(--primary);
+    }
+    
+    .channel-item.active {
+      background: rgba(37, 99, 235, 0.2);
+      border-left-color: var(--primary);
+    }
+    
+    .message-bubble {
+      max-width: 70%;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      margin-bottom: 0.5rem;
+      word-wrap: break-word;
+    }
+    
+    .message-sent {
+      background: var(--primary);
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 0.25rem;
+    }
+    
+    .message-received {
+      background: #f1f5f9;
+      color: #0f172a;
+      margin-right: auto;
+      border-bottom-left-radius: 0.25rem;
+    }
+    
+    .message-reply {
+      background: rgba(255,255,255,0.2);
+      border-left: 3px solid rgba(255,255,255,0.5);
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+    
+    .reaction-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(0,0,0,0.05);
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 0.25rem;
+    }
+    
+    .reaction-btn:hover {
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .reaction-btn.active {
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid var(--primary);
+    }
+    
+    .forum-thread {
+      border-left: 3px solid var(--border);
+      padding-left: 1rem;
+      margin-left: 1rem;
+    }
+    
+    .forum-thread.active {
+      border-left-color: var(--primary);
+      background: rgba(37, 99, 235, 0.02);
+    }
+    
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    
+    .profile-photo {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #e5e7eb;
+    }
+    
+    .profile-seal {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    
+    .group-photo {
+      width: 48px;
+      height: 48px;
+      border-radius: 0.5rem;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #e5e7eb;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 180px);
+    }
+    
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column-reverse;
+      min-height: 0;
+    }
+    
+    .input-area {
+      border-top: 1px solid var(--border);
+      padding: 1rem;
+      background: white;
+      flex-shrink: 0;
+    }
+    
+    .message-input-field {
+      min-height: 60px;
+      max-height: 150px;
+      resize: vertical;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full flex flex-col">
+   <div id="loading" class="fixed inset-0 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center z-50">
+    <div class="text-center text-white">
+     <div class="spinner mx-auto mb-4" style="width:3rem;height:3rem;border-width:4px"></div>
+     <h2 class="text-2xl font-bold">Congresso Nacional Virtual</h2>
+     <p class="text-blue-100 mt-2">Carregando sistema...</p>
+    </div>
+   </div>
+   <header id="header" class="hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+     <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+       <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center text-2xl">
+        🏙
+       </div>
+       <div>
+        <h1 id="site-title" class="text-xl font-bold">Congresso Nacional Virtual</h1>
+        <p class="text-xs text-blue-100">Sistema Legislativo Completo</p>
+       </div>
+      </div>
+      <div class="flex items-center gap-2"><button id="messages-btn" onclick="showMessagesMenu()" class="hidden hover:bg-white/20 rounded-lg px-3 py-2 transition relative"> <span class="text-2xl">💬</span> <span id="unread-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span> </button> <button id="user-btn" onclick="handleUserClick()" class="flex items-center gap-2 hover:bg-white/20 rounded-lg px-3 py-2 transition"> <img id="user-avatar" class="w-8 h-8 rounded-full bg-white/30" style="display:none">
+        <div id="user-avatar-placeholder" class="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center"><span id="user-initial">?</span>
+        </div><span id="user-name" class="hidden md:block text-sm font-medium">Visitante</span> </button>
+      </div>
+     </div>
+     <nav class="mt-4 -mb-1 overflow-x-auto">
+      <div class="flex gap-2 pb-1"><button data-tab="home" class="tab-btn active">Inicio</button> <button data-tab="camara" class="tab-btn">Camara</button> <button data-tab="senado" class="tab-btn">Senado</button> <button data-tab="projetos" class="tab-btn">Projetos</button> <button data-tab="sessoes" class="tab-btn">Sessoes</button> <button data-tab="representantes" class="tab-btn">Representantes</button> <button data-tab="dou" class="tab-btn">DOU</button> <button data-tab="secom-pres" class="tab-btn hidden" id="tab-secom-pres">SECOM Presidencia</button> <button data-tab="secom-cong" class="tab-btn hidden" id="tab-secom-cong">SECOM Congresso</button> <button data-tab="gabinetes" class="tab-btn hidden" id="tab-gabinetes">Gabinetes</button> <button data-tab="grupos" class="tab-btn hidden" id="tab-grupos">Grupos</button> <button data-tab="admin" class="tab-btn hidden" id="tab-admin">Admin</button>
+      </div>
+     </nav>
+    </div>
+   </header>
+   <main id="main" class="hidden flex-1 overflow-hidden flex">
+    <div id="content-home" class="flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+       <h2 class="text-2xl font-bold mb-2">Bem-vindo ao Congresso Virtual</h2>
+       <p class="mb-4 text-blue-50">Sistema completo de gestao legislativa com comunicacao integrada.</p>
+       <div class="flex gap-3"><button onclick="showLogin()" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50">Entrar</button> <button onclick="showRegister()" class="bg-white/20 text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/30">Cadastrar</button>
+       </div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+       <div class="card text-center">
+        <div class="text-3xl font-bold text-green-600" id="stat-deputados">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Deputados
+        </div>
+       </div>
+       <div class="card text-center">
+        <div class="text-3xl font-bold text-blue-600" id="stat-senadores">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Senadores
+        </div>
+       </div>
+       <div class="card text-center">
+        <div class="text-3xl font-bold text-orange-600" id="stat-projetos">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Projetos
+        </div>
+       </div>
+      </div>
+      <div class="card">
+       <h3 class="text-lg font-bold mb-4">Ultimos Projetos</h3>
+       <div id="latest-projects" class="space-y-3"></div>
+      </div>
+     </div>
+    </div>
+    <div id="content-camara" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-green-600 to-green-700 text-white">
+       <h2 class="text-2xl font-bold mb-1">Camara dos Deputados</h2>
+       <p class="text-green-100">Casa iniciadora - ate 30 Deputados Federais</p>
+      </div>
+      <div class="card">
+       <h3 class="font-bold mb-4">Mesa Diretora</h3>
+       <div id="mesa-camara" class="grid md:grid-cols-3 gap-3"></div>
+      </div>
+      <div class="card">
+       <h3 class="font-bold mb-4">Deputados (<span id="count-deputados">0</span>/30)</h3>
+       <div id="list-deputados" class="grid md:grid-cols-2 gap-3"></div>
+      </div>
+      <div id="convoke-camara" class="hidden"><button onclick="showConvoke('camara')" class="btn btn-primary">Convocar Sessao da Camara</button>
+      </div>
+     </div>
+    </div>
+    <div id="content-senado" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+       <h2 class="text-2xl font-bold mb-1">Senado Federal</h2>
+       <p class="text-blue-100">Casa revisora - ate 30 Senadores</p>
+      </div>
+      <div class="card">
+       <h3 class="font-bold mb-4">Mesa Diretora</h3>
+       <div id="mesa-senado" class="grid md:grid-cols-3 gap-3"></div>
+      </div>
+      <div class="card">
+       <h3 class="font-bold mb-4">Senadores (<span id="count-senadores">0</span>/30)</h3>
+       <div id="list-senadores" class="grid md:grid-cols-2 gap-3"></div>
+      </div>
+      <div id="convoke-senado" class="hidden"><button onclick="showConvoke('senado')" class="btn btn-secondary">Convocar Sessao do Senado</button>
+      </div>
+     </div>
+    </div>
+    <div id="content-projetos" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+       <h2 class="text-2xl font-bold">Projetos e Proposicoes</h2><button id="btn-new-project" onclick="showNewProject()" class="btn btn-primary hidden">+ Novo Projeto</button>
+      </div>
+      <div class="card">
+       <div class="grid md:grid-cols-4 gap-3"><select id="filter-type" onchange="filterProjects()" class="input"> <option value="">Todos os Tipos</option> <option value="PL">PL</option> <option value="PEC">PEC</option> <option value="PLC">PLC</option> <option value="MP">MP</option> <option value="RES">Resolucao</option> <option value="REQ">Requerimento</option> </select> <select id="filter-status" onchange="filterProjects()" class="input"> <option value="">Todos os Status</option> <option value="tramitando">Tramitando</option> <option value="aprovado">Aprovado</option> <option value="rejeitado">Rejeitado</option> <option value="aguardando_pauta">Aguardando Pauta</option> <option value="em_votacao">Em Votacao</option> </select> <select id="filter-urgency" onchange="filterProjects()" class="input"> <option value="">Todas Urgencias</option> <option value="urgente">Urgente</option> <option value="normal">Normal</option> </select> <select id="filter-house" onchange="filterProjects()" class="input"> <option value="">Todas as Casas</option> <option value="camara">Camara</option> <option value="senado">Senado</option> <option value="executivo">Executivo</option> </select>
+       </div>
+      </div>
+      <div id="list-projects" class="space-y-4"></div>
+     </div>
+    </div>
+    <div id="content-sessoes" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <h2 class="text-2xl font-bold">Sessoes Legislativas</h2>
+      <div id="list-sessions" class="space-y-4"></div>
+     </div>
+    </div>
+    <div id="content-representantes" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <h2 class="text-2xl font-bold">Representantes</h2>
+      <div id="list-reps" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+     </div>
+    </div>
+    <div id="content-dou" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+       <h2 class="text-2xl font-bold mb-1">Diario Oficial da Uniao</h2>
+       <p class="text-orange-100">Publicacoes Oficiais do Executivo Federal</p>
+      </div>
+      <div id="form-dou" class="card hidden">
+       <h3 class="font-bold mb-4">Nova Publicacao</h3>
+       <form id="dou-form" class="space-y-4" onsubmit="handleDou(event)"><select id="dou-type" class="input" required> <option value="decreto">Decreto</option> <option value="mp">Medida Provisoria</option> <option value="nominata">Nominata</option> </select> <input type="text" id="dou-number" class="input" placeholder="Numero"> <input type="text" id="dou-title" class="input" placeholder="Titulo" required> <textarea id="dou-content" class="input" rows="5" placeholder="Conteudo" required></textarea> <button type="submit" class="btn btn-primary w-full">Publicar no DOU</button>
+       </form>
+      </div>
+      <div id="list-dou" class="space-y-4"></div>
+     </div>
+    </div>
+    <div id="content-secom-pres" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-purple-600 to-purple-700 text-white">
+       <h2 class="text-2xl font-bold mb-1">SECOM - Presidencia</h2>
+       <p class="text-purple-100">Secretaria de Comunicacao da Presidencia</p>
+      </div>
+      <div id="form-secom-pres" class="card hidden">
+       <h3 class="font-bold mb-4">Novo Pronunciamento</h3>
+       <form id="secom-pres-form" class="space-y-4" onsubmit="handleSecom(event, 'presidencia')"><textarea id="secom-pres-text" class="input" rows="4" placeholder="Texto do pronunciamento" required></textarea> <input type="url" id="secom-pres-video" class="input" placeholder="URL do video (opcional)"> <button type="submit" class="btn btn-primary w-full">Publicar</button>
+       </form>
+      </div>
+      <div id="list-secom-pres" class="space-y-4"></div>
+     </div>
+    </div>
+    <div id="content-secom-cong" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-cyan-600 to-cyan-700 text-white">
+       <h2 class="text-2xl font-bold mb-1">SECOM - Congresso</h2>
+       <p class="text-cyan-100">Secretaria de Comunicacao do Congresso</p>
+      </div>
+      <div id="form-secom-cong" class="card hidden">
+       <h3 class="font-bold mb-4">Nova Comunicacao</h3>
+       <form id="secom-cong-form" class="space-y-4" onsubmit="handleSecom(event, 'congresso')"><textarea id="secom-cong-text" class="input" rows="4" placeholder="Texto da comunicacao" required></textarea> <input type="url" id="secom-cong-video" class="input" placeholder="URL do video (opcional)"> <button type="submit" class="btn btn-secondary w-full">Publicar</button>
+       </form>
+      </div>
+      <div id="list-secom-cong" class="space-y-4"></div>
+     </div>
+    </div>
+    <div id="content-gabinetes" class="hidden flex" style="height: calc(100vh - 140px);">
+     <div class="sidebar">
+      <div class="p-4 border-b border-gray-700">
+       <h3 class="font-bold text-lg">Gabinetes Partidarios</h3>
+       <p class="text-xs text-gray-400 mt-1">Forum privado dos partidos</p>
+      </div>
+      <div class="p-2"><button onclick="showCreateParty()" class="btn btn-primary w-full text-sm mb-2">+ Criar Gabinete</button>
+      </div>
+      <div id="party-list-sidebar" class="overflow-y-auto"></div>
+      <div class="p-4 border-t border-gray-700">
+       <h4 class="font-bold text-sm mb-2 text-gray-300">Gabinetes Publicos</h4>
+       <div id="public-parties-list" class="space-y-2"></div>
+      </div>
+     </div>
+     <div class="flex-1 flex">
+      <div id="party-channels" class="w-64 bg-gray-50 border-r border-gray-200 overflow-y-auto hidden">
+       <div class="p-4 border-b border-gray-200">
+        <h4 id="party-name-header" class="font-bold"></h4><button id="party-settings-btn" onclick="showPartySettings()" class="text-xs text-blue-600 mt-1 hidden">Configuracoes</button>
+       </div>
+       <div id="channels-list" class="p-2"></div>
+      </div>
+      <div class="flex-1 flex flex-col bg-white">
+       <div id="gabinete-welcome" class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-4xl mx-auto">
+         <div class="text-center mb-8">
+          <div class="text-6xl mb-4">
+           📝
+          </div>
+          <h3 class="text-2xl font-bold text-gray-700 mb-2">Gabinetes Partidarios</h3>
+          <p class="text-gray-500">Explore os gabinetes publicos ou selecione seu gabinete</p>
+         </div>
+         <div id="public-parties-cards" class="grid md:grid-cols-2 gap-4"></div>
+        </div>
+       </div>
+       <div id="gabinete-content" class="hidden flex-1 flex flex-col">
+        <div class="border-b border-gray-200 p-4 bg-white">
+         <div class="flex items-center justify-between">
+          <div>
+           <h3 id="channel-name-header" class="font-bold text-lg"></h3>
+           <p id="channel-desc-header" class="text-sm text-gray-600"></p>
+          </div><button onclick="showNewThread()" class="btn btn-primary text-sm">+ Novo Topico</button>
+         </div>
+        </div>
+        <div id="forum-threads" class="flex-1 overflow-y-auto p-4"></div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div id="content-grupos" class="hidden flex" style="height: calc(100vh - 140px);">
+     <div class="sidebar">
+      <div class="p-4 border-b border-gray-700">
+       <h3 class="font-bold text-lg">Grupos do Congresso</h3>
+       <p class="text-xs text-gray-400 mt-1">Conversas em grupo</p>
+      </div>
+      <div class="p-2"><button onclick="showCreateGroup()" class="btn btn-primary w-full text-sm mb-2">+ Criar Grupo</button>
+      </div>
+      <div id="group-list-sidebar" class="overflow-y-auto"></div>
+      <div class="p-4 border-t border-gray-700">
+       <h4 class="font-bold text-sm mb-2 text-gray-300">Grupos Publicos</h4>
+       <div id="public-groups-list" class="space-y-2"></div>
+      </div>
+     </div>
+     <div class="flex-1 bg-white">
+      <div id="grupo-welcome" class="h-full overflow-y-auto p-6">
+       <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+         <div class="text-6xl mb-4">
+          💬
+         </div>
+         <h3 class="text-2xl font-bold text-gray-700 mb-2">Grupos do Congresso</h3>
+         <p class="text-gray-500">Explore os grupos publicos ou selecione seu grupo</p>
+        </div>
+        <div id="public-groups-cards" class="grid md:grid-cols-2 gap-4"></div>
+       </div>
+      </div>
+      <div id="grupo-chat" class="hidden chat-container">
+       <div class="border-b border-gray-200 p-4 bg-white">
+        <div class="flex items-center gap-3"><img id="group-chat-photo" class="group-photo hidden" loading="lazy" onerror="this.style.display='none'">
+         <div class="flex-1">
+          <h3 id="group-chat-name" class="font-bold"></h3>
+          <p id="group-chat-members" class="text-xs text-gray-600"></p>
+         </div><button id="group-settings-btn" onclick="showGroupSettings()" class="text-sm text-blue-600 hidden">Configuracoes</button>
+        </div>
+       </div>
+       <div id="group-messages" class="messages-area"></div>
+       <div class="input-area">
+        <form id="group-message-form" onsubmit="sendGroupMessage(event)" class="space-y-2">
+         <div id="reply-preview" class="hidden p-2 bg-blue-50 rounded border-l-3 border-blue-500 text-sm">
+          <div class="flex justify-between items-start">
+           <div><span class="font-bold text-blue-600">Respondendo:</span>
+            <p id="reply-preview-text" class="text-gray-700"></p>
+           </div><button type="button" onclick="cancelReply()" class="text-gray-500 hover:text-gray-700">×</button>
+          </div>
+         </div>
+         <div class="flex gap-2 items-end"><textarea id="group-msg-input" class="input flex-1 message-input-field" placeholder="Digite sua mensagem..." required rows="2"></textarea> <label class="btn bg-gray-200 text-gray-700 cursor-pointer"> 📷 <input type="file" id="group-media-input" class="hidden" accept="image/*,video/*,audio/*" onchange="handleMediaUpload(this)"> </label> <button type="submit" class="btn btn-primary">Enviar</button>
+         </div><input type="url" id="group-media-url" class="input text-sm hidden" placeholder="Cole a URL da imagem/video/audio">
+        </form>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div id="content-admin" class="hidden flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto space-y-6">
+      <div class="card bg-gradient-to-r from-gray-700 to-gray-800 text-white">
+       <h2 class="text-2xl font-bold mb-1">Painel Administrativo</h2>
+       <p class="text-gray-200">Area Restrita - Gerenciamento do Sistema</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+       <div class="card text-center">
+        <div class="text-3xl font-bold text-green-600" id="admin-users">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Usuarios
+        </div>
+       </div>
+       <div class="card text-center">
+        <div class="text-3xl font-bold text-blue-600" id="admin-projects">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Projetos
+        </div>
+       </div>
+       <div class="card text-center">
+        <div class="text-3xl font-bold text-purple-600" id="admin-sessions">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Sessoes
+        </div>
+       </div>
+      </div>
+      <div class="card">
+       <h3 class="font-bold mb-4">Acoes Administrativas</h3>
+       <div class="space-y-3"><button onclick="showAdminUsers()" class="btn btn-primary w-full">Gerenciar Usuarios</button> <button onclick="showAdminProjects()" class="btn btn-secondary w-full">Gerenciar Projetos</button> <button onclick="showAdminParties()" class="btn bg-purple-600 text-white w-full">Gerenciar Gabinetes</button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+   <div id="modal-container"></div>
+   <div id="toast-container"></div>
+  </div>
+  <script>
+    const ADMIN = { username: 'CongressoNacional.org', password: '777.cn' };
+    const MESA_CAMARA = ['Presidente da Camara', 'Vice-Presidente', '1º Secretario', '2º Secretario', 'Lider Maioria', 'Lider Minoria'];
+    const MESA_SENADO = ['Presidente do Senado', 'Vice-Presidente', '1º Secretario', '2º Secretario', 'Lider Maioria'];
+    const EMOJI_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🎉'];
+    
+    const defaultConfig = { site_title: 'Congresso Nacional Virtual' };
+    let config = { ...defaultConfig };
+    let currentUser = null;
+    let allData = [];
+    let users = [], projects = [], sessions = [], votes = [], presences = [], publications = [], douPubs = [], messages = [], partyGroups = [], channels = [];
+    let currentPartyId = null;
+    let currentChannelId = null;
+    let currentGroupId = null;
+    let replyToMessage = null;
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data;
+        users = data.filter(d => d.type === 'user');
+        projects = data.filter(d => d.type === 'project');
+        sessions = data.filter(d => d.type === 'session');
+        votes = data.filter(d => d.type === 'vote');
+        presences = data.filter(d => d.type === 'presence');
+        publications = data.filter(d => d.type === 'publication');
+        douPubs = data.filter(d => d.type === 'dou');
+        messages = data.filter(d => d.type === 'message');
+        partyGroups = data.filter(d => d.type === 'party');
+        channels = data.filter(d => d.type === 'channel');
+        updateStats();
+        updateUnreadCount();
+        renderCurrent();
+      }
+    };
+
+    function updateStats() {
+      const deps = users.filter(u => u.house === 'camara').length;
+      const sens = users.filter(u => u.house === 'senado').length;
+      document.getElementById('stat-deputados').textContent = deps;
+      document.getElementById('stat-senadores').textContent = sens;
+      document.getElementById('stat-projetos').textContent = projects.length;
+      if (document.getElementById('count-deputados')) document.getElementById('count-deputados').textContent = deps;
+      if (document.getElementById('count-senadores')) document.getElementById('count-senadores').textContent = sens;
+      if (document.getElementById('admin-users')) {
+        document.getElementById('admin-users').textContent = users.length;
+        document.getElementById('admin-projects').textContent = projects.length;
+        document.getElementById('admin-sessions').textContent = sessions.length;
+      }
+    }
+
+    function updateUnreadCount() {
+      if (!currentUser) return;
+      const unread = messages.filter(m => {
+        const readBy = m.readBy ? m.readBy.split(',') : [];
+        if (m.isGroup) {
+          const members = m.recipientIds ? m.recipientIds.split(',') : [];
+          return members.includes(currentUser.__backendId) && !readBy.includes(currentUser.__backendId);
+        }
+        return m.recipientId === currentUser.__backendId && !readBy.includes(currentUser.__backendId);
+      }).length;
+      
+      const badge = document.getElementById('unread-badge');
+      if (unread > 0) {
+        badge.textContent = unread > 99 ? '99+' : unread;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    async function init() {
+      if (window.elementSdk) {
+        await window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (c) => {
+            config = { ...config, ...c };
+            document.getElementById('site-title').textContent = config.site_title || defaultConfig.site_title;
+          },
+          mapToCapabilities: () => ({ recolorables: [], borderables: [], fontEditable: undefined, fontSizeable: undefined }),
+          mapToEditPanelValues: (c) => new Map([['site_title', c.site_title || defaultConfig.site_title]])
+        });
+        config = window.elementSdk.config || defaultConfig;
+      }
+
+      if (window.dataSdk) {
+        const res = await window.dataSdk.init(dataHandler);
+        if (!res.isOk) console.error('SDK init failed');
+      }
+
+      const saved = localStorage.getItem('cvUser');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          const found = users.find(u => u.__backendId === parsed.__backendId);
+          if (found) {
+            currentUser = found;
+            updateUI();
+          }
+        } catch (e) {}
+      }
+
+      document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('header').classList.remove('hidden');
+        document.getElementById('main').classList.remove('hidden');
+      }, 800);
+    }
+
+    function updateUI() {
+      if (!currentUser) {
+        document.getElementById('user-name').textContent = 'Visitante';
+        document.getElementById('user-initial').textContent = '?';
+        document.getElementById('user-avatar').style.display = 'none';
+        document.getElementById('user-avatar-placeholder').style.display = 'flex';
+        document.getElementById('tab-secom-pres').classList.add('hidden');
+        document.getElementById('tab-secom-cong').classList.add('hidden');
+        document.getElementById('tab-gabinetes').classList.add('hidden');
+        document.getElementById('tab-grupos').classList.add('hidden');
+        document.getElementById('tab-admin').classList.add('hidden');
+        document.getElementById('messages-btn').classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('user-name').textContent = currentUser.name;
+      document.getElementById('user-initial').textContent = currentUser.name[0];
+      
+      if (currentUser.photo) {
+        document.getElementById('user-avatar').src = currentUser.photo;
+        document.getElementById('user-avatar').style.display = 'block';
+        document.getElementById('user-avatar-placeholder').style.display = 'none';
+      } else {
+        document.getElementById('user-avatar').style.display = 'none';
+        document.getElementById('user-avatar-placeholder').style.display = 'flex';
+      }
+      
+      document.getElementById('messages-btn').classList.remove('hidden');
+
+      const canProject = ['deputado', 'senador', 'presidente_republica'].includes(currentUser.role);
+      if (canProject) document.getElementById('btn-new-project').classList.remove('hidden');
+
+      if (currentUser.role === 'presidente_republica') {
+        document.getElementById('tab-secom-pres').classList.remove('hidden');
+        document.getElementById('form-dou').classList.remove('hidden');
+        document.getElementById('form-secom-pres').classList.remove('hidden');
+      }
+      
+      if (currentUser.isMesaDirector) {
+        document.getElementById('tab-secom-cong').classList.remove('hidden');
+        document.getElementById('form-secom-cong').classList.remove('hidden');
+      }
+      
+      if (currentUser.isAdmin) document.getElementById('tab-admin').classList.remove('hidden');
+      
+      if (['deputado', 'senador'].includes(currentUser.role) || currentUser.isAdmin) {
+        document.getElementById('tab-gabinetes').classList.remove('hidden');
+      }
+      
+      document.getElementById('tab-grupos').classList.remove('hidden');
+
+      if (currentUser.isMesaDirector && currentUser.house === 'camara') 
+        document.getElementById('convoke-camara').classList.remove('hidden');
+      if (currentUser.isMesaDirector && currentUser.house === 'senado') 
+        document.getElementById('convoke-senado').classList.remove('hidden');
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      document.querySelectorAll('[id^="content-"]').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`content-${tab}`).classList.remove('hidden');
+      renderTab(tab);
+    }
+
+    function renderCurrent() {
+      const active = document.querySelector('[data-tab].active');
+      if (active) renderTab(active.dataset.tab);
+      if (currentPartyId) renderPartyChannels();
+      if (currentChannelId) renderForumThreads();
+      if (currentGroupId) renderGroupChat();
+    }
+
+    function renderTab(tab) {
+      switch(tab) {
+        case 'home': renderHome(); break;
+        case 'camara': renderCamara(); break;
+        case 'senado': renderSenado(); break;
+        case 'projetos': renderProjects(); break;
+        case 'sessoes': renderSessions(); break;
+        case 'representantes': renderReps(); break;
+        case 'dou': renderDou(); break;
+        case 'secom-pres': renderSecom('presidencia'); break;
+        case 'secom-cong': renderSecom('congresso'); break;
+        case 'gabinetes': renderGabinetes(); break;
+        case 'grupos': renderGrupos(); break;
+        case 'admin': renderAdmin(); break;
+      }
+    }
+
+    function renderHome() {
+      const latest = projects.slice(-6).reverse();
+      const html = latest.length ? latest.map(p => {
+        const author = users.find(u => u.__backendId === p.authorId);
+        return `<div class="p-3 bg-gray-50 rounded-lg flex items-center justify-between cursor-pointer hover:bg-gray-100" onclick="viewProject('${p.__backendId}')">
+          <div><span class="badge badge-green">${p.projectType}</span> <span class="font-medium ml-2">${p.title}</span></div>
+          <span class="text-xs text-gray-500">${author?.name || 'Autor'}</span>
+        </div>`;
+      }).join('') : '<p class="text-gray-500 text-center py-4">Nenhum projeto ainda</p>';
+      document.getElementById('latest-projects').innerHTML = html;
+    }
+
+    function renderCamara() {
+      const mesa = MESA_CAMARA.map(pos => {
+        const member = users.find(u => u.house === 'camara' && u.mesaPosition === pos);
+        return `<div class="p-3 bg-green-50 rounded-lg"><span class="badge badge-green text-xs">${pos}</span><p class="font-medium mt-1">${member?.name || 'Vago'}</p></div>`;
+      }).join('');
+      document.getElementById('mesa-camara').innerHTML = mesa;
+
+      const deps = users.filter(u => u.house === 'camara');
+      const depsHtml = deps.length ? deps.map(d => createRepCard(d)).join('') : '<p class="col-span-full text-center text-gray-500 py-4">Nenhum deputado</p>';
+      document.getElementById('list-deputados').innerHTML = depsHtml;
+    }
+
+    function renderSenado() {
+      const mesa = MESA_SENADO.map(pos => {
+        const member = users.find(u => u.house === 'senado' && u.mesaPosition === pos);
+        return `<div class="p-3 bg-blue-50 rounded-lg"><span class="badge badge-blue text-xs">${pos}</span><p class="font-medium mt-1">${member?.name || 'Vago'}</p></div>`;
+      }).join('');
+      document.getElementById('mesa-senado').innerHTML = mesa;
+
+      const sens = users.filter(u => u.house === 'senado');
+      const sensHtml = sens.length ? sens.map(s => createRepCard(s)).join('') : '<p class="col-span-full text-center text-gray-500 py-4">Nenhum senador</p>';
+      document.getElementById('list-senadores').innerHTML = sensHtml;
+    }
+
+    function createRepCard(rep) {
+      const projs = projects.filter(p => p.authorId === rep.__backendId).length;
+      const photoHtml = rep.photo ? 
+        `<img src="${rep.photo}" class="w-10 h-10 rounded-full object-cover" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+         <div class="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center font-bold text-green-700" style="display:none">${rep.name[0]}</div>` :
+        `<div class="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center font-bold text-green-700">${rep.name[0]}</div>`;
+      
+      return `<div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer" onclick="viewRep('${rep.__backendId}')">
+        <div class="flex items-center gap-3">
+          ${photoHtml}
+          <div class="flex-1 min-w-0">
+            <p class="font-bold truncate">${rep.name}</p>
+            <p class="text-xs text-gray-600">${rep.party || ''} ${rep.state ? '- ' + rep.state : ''}</p>
+            <p class="text-xs text-gray-500">${projs} projetos</p>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderProjects() {
+      let filtered = [...projects];
+      const type = document.getElementById('filter-type')?.value;
+      const status = document.getElementById('filter-status')?.value;
+      const urgency = document.getElementById('filter-urgency')?.value;
+      const house = document.getElementById('filter-house')?.value;
+      
+      if (type) filtered = filtered.filter(p => p.projectType === type);
+      if (status) filtered = filtered.filter(p => p.status === status);
+      if (urgency) filtered = filtered.filter(p => p.urgency === urgency);
+      if (house) filtered = filtered.filter(p => p.house === house);
+
+      const html = filtered.length ? filtered.map(p => {
+        const author = users.find(u => u.__backendId === p.authorId);
+        const vs = votes.filter(v => v.projectId === p.__backendId);
+        const fav = vs.filter(v => v.vote === 'favoravel').length;
+        const con = vs.filter(v => v.vote === 'contrario').length;
+        
+        return `<div class="card cursor-pointer hover:shadow-md transition" onclick="viewProject('${p.__backendId}')">
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                ${p.protocolNumber ? `<span class="badge badge-orange text-xs">${p.protocolNumber}</span>` : ''}
+                <span class="badge badge-green">${p.projectType}</span>
+                ${p.urgency === 'urgente' ? '<span class="badge badge-red">Urgente</span>' : ''}
+                <span class="badge badge-${p.status === 'aprovado' ? 'green' : p.status === 'rejeitado' ? 'red' : 'blue'}">${p.status}</span>
+              </div>
+              <h4 class="font-bold">${p.title}</h4>
+              <p class="text-sm text-gray-600 mt-1">${author?.name || 'Autor'}</p>
+              <div class="flex gap-4 text-xs mt-2">
+                <span class="text-green-600">Favoravel: ${fav}</span>
+                <span class="text-red-600">Contrario: ${con}</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 py-8">Nenhum projeto</p>';
+      document.getElementById('list-projects').innerHTML = html;
+    }
+
+    function filterProjects() {
+      renderProjects();
+    }
+
+    function renderSessions() {
+      const html = sessions.length ? sessions.map(s => {
+        const projsInAgenda = s.projectsInAgenda ? s.projectsInAgenda.split(',').filter(i => i).length : 0;
+        
+        return `<div class="card cursor-pointer hover:shadow-md transition" onclick="viewSession('${s.__backendId}')">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="badge badge-${s.house === 'camara' ? 'green' : 'blue'}">${s.house === 'camara' ? 'Camara' : 'Senado'}</span>
+                ${s.isActive ? '<span class="badge badge-green">Ativa</span>' : ''}
+                ${projsInAgenda > 0 ? `<span class="badge badge-orange">${projsInAgenda} projetos</span>` : ''}
+              </div>
+              <h4 class="font-bold">${s.title || 'Sessao'}</h4>
+              <p class="text-sm text-gray-600 mt-1">${new Date(s.date).toLocaleString('pt-BR')}</p>
+            </div>
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 py-8">Nenhuma sessao</p>';
+      document.getElementById('list-sessions').innerHTML = html;
+    }
+
+    function renderReps() {
+      const reps = users.filter(u => u.role !== 'civil');
+      const html = reps.length ? reps.map(r => createRepCard(r)).join('') : '<p class="col-span-full text-center text-gray-500 py-8">Nenhum representante</p>';
+      document.getElementById('list-reps').innerHTML = html;
+    }
+
+    function renderDou() {
+      const html = douPubs.length ? douPubs.map(d => {
+        const author = users.find(u => u.__backendId === d.authorId);
+        
+        return `<div class="card">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-2xl">[DOC]</div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="badge badge-orange">${d.decreeType === 'decreto' ? 'Decreto' : d.decreeType === 'mp' ? 'MP' : 'Nominata'}</span>
+                ${d.decreeNumber ? `<span class="text-xs text-gray-500">No ${d.decreeNumber}</span>` : ''}
+              </div>
+              <h4 class="font-bold">${d.title}</h4>
+              <p class="text-xs text-gray-500">${author?.name || 'Presidencia'} - ${new Date(d.createdAt).toLocaleDateString('pt-BR')}</p>
+            </div>
+          </div>
+          <div class="p-3 bg-gray-50 rounded-lg">
+            <p class="text-sm text-gray-700 whitespace-pre-wrap">${d.content}</p>
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 py-8">Nenhuma publicacao</p>';
+      document.getElementById('list-dou').innerHTML = html;
+    }
+
+    async function handleDou(e) {
+      e.preventDefault();
+      if (!currentUser || currentUser.role !== 'presidente_republica' || douPubs.length >= 999) return;
+      
+      const pub = {
+        type: 'dou',
+        id: Date.now().toString(),
+        authorId: currentUser.__backendId,
+        decreeType: document.getElementById('dou-type').value,
+        decreeNumber: document.getElementById('dou-number').value,
+        title: document.getElementById('dou-title').value,
+        content: document.getElementById('dou-content').value,
+        createdAt: new Date().toISOString()
+      };
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Publicando...';
+      
+      const r = await window.dataSdk.create(pub);
+      btn.disabled = false;
+      btn.innerHTML = 'Publicar no DOU';
+      
+      if (r.isOk) {
+        e.target.reset();
+        toast('Publicado no DOU!', 'success');
+      }
+    }
+
+    function renderSecom(source) {
+      const pubs = publications.filter(p => p.source === source);
+      const listId = source === 'presidencia' ? 'list-secom-pres' : 'list-secom-cong';
+      
+      const html = pubs.length ? pubs.map(pub => {
+        const author = users.find(u => u.__backendId === pub.authorId);
+        const isLiked = currentUser && pub.likedBy?.includes(currentUser.__backendId);
+        
+        return `<div class="card">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center font-bold text-purple-600">${author?.name[0] || 'P'}</div>
+            <div class="flex-1">
+              <h5 class="font-bold">${author?.name || 'Oficial'}</h5>
+              <p class="text-xs text-gray-500">${author?.mesaPosition || author?.role || 'Cargo'}</p>
+            </div>
+          </div>
+          <p class="text-gray-800 mb-3">${pub.text}</p>
+          ${pub.videoUrl ? `<a href="${pub.videoUrl}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 hover:underline mb-3 block">[Ver video]</a>` : ''}
+          <div class="flex gap-3 pt-3 border-t">
+            <button onclick="toggleLike('${pub.__backendId}')" class="text-sm ${isLiked ? 'text-red-500' : 'text-gray-500'}">Curtir ${pub.likes || 0}</button>
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 py-8">Nenhuma publicacao</p>';
+      document.getElementById(listId).innerHTML = html;
+    }
+
+    async function toggleLike(pubId) {
+      if (!currentUser) return toast('Faca login', 'error');
+      const pub = allData.find(d => d.__backendId === pubId);
+      if (!pub) return;
+      
+      const liked = pub.likedBy ? pub.likedBy.split(',') : [];
+      if (liked.includes(currentUser.__backendId)) {
+        pub.likedBy = liked.filter(id => id !== currentUser.__backendId).join(',');
+        pub.likes = Math.max(0, (pub.likes || 0) - 1);
+      } else {
+        liked.push(currentUser.__backendId);
+        pub.likedBy = liked.join(',');
+        pub.likes = (pub.likes || 0) + 1;
+      }
+      
+      await window.dataSdk.update(pub);
+    }
+
+    async function handleSecom(e, source) {
+      e.preventDefault();
+      if (!currentUser || publications.length >= 999) return;
+      
+      const prefix = source === 'presidencia' ? 'secom-pres' : 'secom-cong';
+      const pub = {
+        type: 'publication',
+        id: Date.now().toString(),
+        authorId: currentUser.__backendId,
+        source: source,
+        text: document.getElementById(`${prefix}-text`).value,
+        videoUrl: document.getElementById(`${prefix}-video`).value,
+        likes: 0,
+        reposts: 0,
+        likedBy: '',
+        repostedBy: '',
+        createdAt: new Date().toISOString()
+      };
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      const orig = btn.textContent;
+      btn.innerHTML = '<div class="spinner"></div> Publicando...';
+      
+      const r = await window.dataSdk.create(pub);
+      btn.disabled = false;
+      btn.textContent = orig;
+      
+      if (r.isOk) {
+        e.target.reset();
+        toast('Publicado!', 'success');
+      }
+    }
+
+    function renderGabinetes() {
+      renderPartySidebar();
+      renderPublicPartiesSidebar();
+      renderPublicPartiesCards();
+      if (currentPartyId) {
+        renderPartyChannels();
+        if (currentChannelId) renderForumThreads();
+      }
+    }
+
+    function renderPartySidebar() {
+      let myParties = partyGroups;
+      
+      if (currentUser && !currentUser.isAdmin) {
+        myParties = partyGroups.filter(p => {
+          const members = p.partyMembers ? p.partyMembers.split(',') : [];
+          return members.includes(currentUser.__backendId);
+        });
+      }
+      
+      const html = myParties.length ? myParties.map(p => {
+        const memberCount = p.partyMembers ? p.partyMembers.split(',').filter(m => m).length : 0;
+        const isMember = currentUser && p.partyMembers?.split(',').includes(currentUser.__backendId);
+        const isActive = currentPartyId === p.__backendId;
+        
+        return `<div class="sidebar-item ${isActive ? 'active' : ''}" onclick="selectParty('${p.__backendId}')">
+          ${p.partyLogo ? `<img src="${p.partyLogo}" class="w-8 h-8 rounded object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+            `<div class="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white font-bold">${p.partyName[0]}</div>`}
+          <div class="flex-1 min-w-0">
+            <p class="font-medium truncate">${p.partyName}</p>
+            <p class="text-xs text-gray-400">${memberCount} membros</p>
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-400 text-sm p-4">Nenhum gabinete</p>';
+      
+      document.getElementById('party-list-sidebar').innerHTML = html;
+    }
+
+    function renderPublicPartiesSidebar() {
+      const publicParties = partyGroups.filter(p => !p.isPrivate);
+      
+      const html = publicParties.length ? publicParties.map(p => {
+        const memberCount = p.partyMembers ? p.partyMembers.split(',').filter(m => m).length : 0;
+        const isMember = currentUser && p.partyMembers?.split(',').includes(currentUser.__backendId);
+        
+        return `<div class="p-2 bg-gray-700 hover:bg-gray-600 rounded cursor-pointer" onclick="viewPublicParty('${p.__backendId}')">
+          <div class="flex items-center gap-2">
+            ${p.partyLogo ? `<img src="${p.partyLogo}" class="w-6 h-6 rounded object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+              `<div class="w-6 h-6 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-bold">${p.partyName[0]}</div>`}
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">${p.partyName}</p>
+              <p class="text-xs text-gray-400">${memberCount} membros</p>
+            </div>
+            ${isMember ? '<span class="text-xs text-green-400">✓</span>' : ''}
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 text-xs p-2">Nenhum gabinete publico</p>';
+      
+      document.getElementById('public-parties-list').innerHTML = html;
+    }
+
+    function renderPublicPartiesCards() {
+      const publicParties = partyGroups.filter(p => !p.isPrivate);
+      
+      const html = publicParties.length ? publicParties.map(p => {
+        const creator = users.find(u => u.__backendId === p.partyAdmins?.split(',')[0]);
+        const members = p.partyMembers ? p.partyMembers.split(',') : [];
+        const memberNames = members.slice(0, 3).map(id => users.find(u => u.__backendId === id)?.name || 'Usuario').join(', ');
+        const moreCount = members.length > 3 ? ` +${members.length - 3}` : '';
+        
+        const partyChannels = channels.filter(c => c.partyId === p.__backendId);
+        const lastMessage = partyChannels.length > 0 ? 
+          messages.filter(m => partyChannels.some(ch => ch.channelName === m.channelName))
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0] : null;
+        
+        const isMember = currentUser && members.includes(currentUser.__backendId);
+        
+        return `<div class="card hover:shadow-lg transition cursor-pointer" onclick="viewPublicParty('${p.__backendId}')">
+          <div class="flex items-start gap-3 mb-3">
+            ${p.partyLogo ? `<img src="${p.partyLogo}" class="w-16 h-16 rounded-lg object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+              `<div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">${p.partyName[0]}</div>`}
+            <div class="flex-1 min-w-0">
+              <h4 class="font-bold text-lg truncate">${p.partyName}</h4>
+              <p class="text-xs text-gray-500">Criado por ${creator?.name || 'Administrador'}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="badge badge-blue text-xs">${members.length} membros</span>
+                <span class="badge badge-purple text-xs">${partyChannels.length} canais</span>
+              </div>
+            </div>
+          </div>
+          
+          ${lastMessage ? `<div class="p-2 bg-gray-50 rounded mb-3">
+            <p class="text-xs text-gray-500 mb-1">Ultima mensagem:</p>
+            <p class="text-sm text-gray-700 truncate">${lastMessage.message}</p>
+            <p class="text-xs text-gray-400 mt-1">${new Date(lastMessage.createdAt).toLocaleString('pt-BR')}</p>
+          </div>` : ''}
+          
+          <div class="mb-3">
+            <p class="text-xs text-gray-500 mb-1">Participantes:</p>
+            <p class="text-sm text-gray-700 truncate">${memberNames}${moreCount}</p>
+          </div>
+          
+          ${isMember ? 
+            `<button onclick="event.stopPropagation(); selectParty('${p.__backendId}')" class="btn bg-green-600 text-white w-full text-sm hover:bg-green-700">✓ Membro - Acessar</button>` :
+            `<button onclick="event.stopPropagation(); joinParty('${p.__backendId}')" class="btn btn-primary w-full text-sm">Entrar no Gabinete</button>`}
+        </div>`;
+      }).join('') : '<p class="col-span-full text-center text-gray-500 py-8">Nenhum gabinete publico ainda. Crie o primeiro!</p>';
+      
+      document.getElementById('public-parties-cards').innerHTML = html;
+    }
+
+    function viewPublicParty(partyId) {
+      const party = partyGroups.find(p => p.__backendId === partyId);
+      if (!party) return;
+      
+      const creator = users.find(u => u.__backendId === party.partyAdmins?.split(',')[0]);
+      const members = party.partyMembers ? party.partyMembers.split(',') : [];
+      const membersList = members.map(id => {
+        const u = users.find(user => user.__backendId === id);
+        return u ? `<div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+          ${u.photo ? `<img src="${u.photo}" class="w-8 h-8 rounded-full object-cover" loading="lazy" onerror="this.style.display='none'">` :
+            `<div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-700 text-sm">${u.name[0]}</div>`}
+          <span class="text-sm">${u.name}</span>
+        </div>` : '';
+      }).join('');
+      
+      const isMember = currentUser && members.includes(currentUser.__backendId);
+      
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-start gap-4 mb-6">
+          ${party.partyLogo ? `<img src="${party.partyLogo}" class="w-20 h-20 rounded-lg object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+            `<div class="w-20 h-20 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-3xl font-bold">${party.partyName[0]}</div>`}
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-1">${party.partyName}</h3>
+            <p class="text-sm text-gray-600">Criado por ${creator?.name || 'Administrador'}</p>
+            <div class="flex gap-2 mt-2">
+              <span class="badge badge-blue">${members.length} membros</span>
+              <span class="badge badge-${party.isPrivate ? 'red' : 'green'}">${party.isPrivate ? 'Privado' : 'Publico'}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-6">
+          <h4 class="font-bold mb-3">Membros (${members.length})</h4>
+          <div class="grid md:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+            ${membersList}
+          </div>
+        </div>
+        
+        ${isMember ? 
+          `<button onclick="closeModal(); selectParty('${party.__backendId}')" class="btn bg-green-600 text-white w-full">✓ Acessar Gabinete</button>` :
+          `<button onclick="joinParty('${party.__backendId}')" class="btn btn-primary w-full">Entrar no Gabinete</button>`}
+      </div>`);
+    }
+
+    async function joinParty(partyId) {
+      if (!currentUser) return toast('Faca login para entrar', 'error');
+      
+      const party = partyGroups.find(p => p.__backendId === partyId);
+      if (!party) return;
+      
+      const members = party.partyMembers ? party.partyMembers.split(',') : [];
+      
+      if (members.includes(currentUser.__backendId)) {
+        toast('Voce ja e membro!', 'error');
+        return;
+      }
+      
+      if (party.isPrivate) {
+        const pending = party.partyPendingRequests ? party.partyPendingRequests.split(',') : [];
+        if (!pending.includes(currentUser.__backendId)) {
+          pending.push(currentUser.__backendId);
+          party.partyPendingRequests = pending.join(',');
+          await window.dataSdk.update(party);
+          toast('Solicitacao enviada! Aguarde aprovacao.', 'success');
+        } else {
+          toast('Solicitacao ja enviada', 'error');
+        }
+      } else {
+        members.push(currentUser.__backendId);
+        party.partyMembers = members.join(',');
+        await window.dataSdk.update(party);
+        toast('Bem-vindo ao gabinete!', 'success');
+        closeModal();
+        selectParty(partyId);
+      }
+    }
+
+    function selectParty(partyId) {
+      currentPartyId = partyId;
+      currentChannelId = null;
+      document.getElementById('gabinete-welcome').classList.add('hidden');
+      document.getElementById('party-channels').classList.remove('hidden');
+      document.getElementById('gabinete-content').classList.add('hidden');
+      renderPartySidebar();
+      renderPartyChannels();
+    }
+
+    function renderPartyChannels() {
+      const party = partyGroups.find(p => p.__backendId === currentPartyId);
+      if (!party) return;
+      
+      document.getElementById('party-name-header').textContent = party.partyName;
+      
+      const isAdmin = currentUser && (currentUser.isAdmin || party.partyAdmins?.split(',').includes(currentUser.__backendId));
+      document.getElementById('party-settings-btn').classList.toggle('hidden', !isAdmin);
+      
+      const partyChannels = channels.filter(c => c.partyId === currentPartyId);
+      
+      const html = `
+        ${isAdmin ? `<button onclick="showNewChannel()" class="btn btn-primary w-full text-sm mb-2">+ Novo Canal</button>` : ''}
+        ${partyChannels.map(c => {
+          const unread = messages.filter(m => m.type === 'message' && m.channelName === c.channelName && !m.readBy?.split(',').includes(currentUser?.__backendId)).length;
+          const isActive = currentChannelId === c.__backendId;
+          
+          return `<div class="channel-item ${isActive ? 'active' : ''}" onclick="selectChannel('${c.__backendId}')">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <p class="font-medium"># ${c.channelName}</p>
+                ${c.channelTags ? `<p class="text-xs text-gray-500">${c.channelTags}</p>` : ''}
+              </div>
+              ${unread > 0 ? `<span class="badge badge-red text-xs">${unread}</span>` : ''}
+              ${c.lastActivity ? '<span class="activity-dot ml-2"></span>' : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      `;
+      
+      document.getElementById('channels-list').innerHTML = html;
+    }
+
+    function selectChannel(channelId) {
+      currentChannelId = channelId;
+      document.getElementById('gabinete-content').classList.remove('hidden');
+      renderForumThreads();
+    }
+
+    function renderForumThreads() {
+      const channel = channels.find(c => c.__backendId === currentChannelId);
+      if (!channel) return;
+      
+      document.getElementById('channel-name-header').textContent = '# ' + channel.channelName;
+      document.getElementById('channel-desc-header').textContent = channel.channelDescription || '';
+      
+      const threads = messages.filter(m => m.channelName === channel.channelName && !m.replyToId);
+      
+      const html = threads.length ? threads.map(thread => {
+        const author = users.find(u => u.__backendId === thread.senderId);
+        const replies = messages.filter(m => m.replyToId === thread.__backendId);
+        const lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
+        const lastAuthor = lastReply ? users.find(u => u.__backendId === lastReply.senderId) : null;
+        
+        return `<div class="card cursor-pointer hover:shadow-md transition mb-3" onclick="viewThread('${thread.__backendId}')">
+          <div class="flex items-start gap-3">
+            ${author?.photo ? 
+              `<img src="${author.photo}" class="w-10 h-10 rounded-full object-cover" loading="lazy" onerror="this.style.display='none'">` :
+              `<div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-700">${author?.name[0] || '?'}</div>`}
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold">${author?.name || 'Usuario'}</span>
+                <span class="text-xs text-gray-500">${new Date(thread.createdAt).toLocaleString('pt-BR')}</span>
+                ${thread.channelTags ? `<span class="badge badge-blue text-xs">${thread.channelTags}</span>` : ''}
+              </div>
+              <h4 class="font-bold mb-1">${thread.groupName || 'Topico'}</h4>
+              <p class="text-sm text-gray-700">${thread.message}</p>
+              <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                <span>${replies.length} resposta(s)</span>
+                ${lastReply ? `<span>Ultima: ${lastAuthor?.name || 'Usuario'} - ${new Date(lastReply.createdAt).toLocaleTimeString('pt-BR')}</span>` : ''}
+                <span class="activity-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 py-8">Nenhum topico ainda. Crie o primeiro!</p>';
+      
+      document.getElementById('forum-threads').innerHTML = html;
+    }
+
+    function showNewChannel() {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Novo Canal</h3>
+        <form onsubmit="handleNewChannel(event)" class="space-y-4">
+          <input type="text" id="channel-name" class="input" placeholder="Nome do Canal" required>
+          <textarea id="channel-desc" class="input" rows="2" placeholder="Descricao do canal"></textarea>
+          <input type="text" id="channel-tags" class="input" placeholder="Tags (ex: legislacao, debates, avisos)">
+          <button type="submit" class="btn btn-primary w-full">Criar Canal</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleNewChannel(e) {
+      e.preventDefault();
+      if (!currentUser || !currentPartyId || channels.length >= 999) return;
+      
+      const chan = {
+        type: 'channel',
+        id: Date.now().toString(),
+        partyId: currentPartyId,
+        channelName: document.getElementById('channel-name').value,
+        channelDescription: document.getElementById('channel-desc').value,
+        channelTags: document.getElementById('channel-tags').value,
+        lastActivity: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(chan);
+      if (r.isOk) {
+        closeModal();
+        toast('Canal criado!', 'success');
+      }
+    }
+
+    function showNewThread() {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Novo Topico</h3>
+        <form onsubmit="handleNewThread(event)" class="space-y-4">
+          <input type="text" id="thread-title" class="input" placeholder="Titulo do Topico" required>
+          <textarea id="thread-message" class="input" rows="4" placeholder="Mensagem inicial" required></textarea>
+          <input type="text" id="thread-tags" class="input" placeholder="Tags (ex: urgente, discussao, proposta)">
+          <button type="submit" class="btn btn-primary w-full">Criar Topico</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleNewThread(e) {
+      e.preventDefault();
+      if (!currentUser || !currentChannelId || messages.length >= 999) return;
+      
+      const channel = channels.find(c => c.__backendId === currentChannelId);
+      if (!channel) return;
+      
+      const thread = {
+        type: 'message',
+        id: Date.now().toString(),
+        senderId: currentUser.__backendId,
+        senderName: currentUser.name,
+        channelName: channel.channelName,
+        groupName: document.getElementById('thread-title').value,
+        message: document.getElementById('thread-message').value,
+        channelTags: document.getElementById('thread-tags').value,
+        isGroup: false,
+        readBy: currentUser.__backendId,
+        reactions: '',
+        replyToId: '',
+        replyToText: '',
+        mediaUrl: '',
+        mediaType: '',
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(thread);
+      if (r.isOk) {
+        channel.lastActivity = new Date().toISOString();
+        await window.dataSdk.update(channel);
+        closeModal();
+        toast('Topico criado!', 'success');
+      }
+    }
+
+    function viewThread(threadId) {
+      const thread = messages.find(m => m.__backendId === threadId);
+      if (!thread) return;
+      
+      const author = users.find(u => u.__backendId === thread.senderId);
+      const replies = messages.filter(m => m.replyToId === threadId);
+      
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <div class="mb-6">
+          <div class="flex items-start gap-3 mb-4">
+            ${author?.photo ? 
+              `<img src="${author.photo}" class="w-12 h-12 rounded-full object-cover" loading="lazy" onerror="this.style.display='none'">` :
+              `<div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-700">${author?.name[0] || '?'}</div>`}
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-lg">${author?.name || 'Usuario'}</span>
+                <span class="text-sm text-gray-500">${new Date(thread.createdAt).toLocaleString('pt-BR')}</span>
+              </div>
+              <h3 class="text-xl font-bold mb-2">${thread.groupName || 'Topico'}</h3>
+              <p class="text-gray-700">${thread.message}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="border-t pt-4">
+          <h4 class="font-bold mb-3">${replies.length} Resposta(s)</h4>
+          <div class="space-y-4 mb-4">
+            ${replies.map(reply => {
+              const replyAuthor = users.find(u => u.__backendId === reply.senderId);
+              return `<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                ${replyAuthor?.photo ? 
+                  `<img src="${replyAuthor.photo}" class="w-8 h-8 rounded-full object-cover" loading="lazy" onerror="this.style.display='none'">` :
+                  `<div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center font-bold text-gray-700">${replyAuthor?.name[0] || '?'}</div>`}
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-bold text-sm">${replyAuthor?.name || 'Usuario'}</span>
+                    <span class="text-xs text-gray-500">${new Date(reply.createdAt).toLocaleString('pt-BR')}</span>
+                  </div>
+                  <p class="text-sm text-gray-700">${reply.message}</p>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+          
+          <form onsubmit="replyToThread(event, '${threadId}')" class="space-y-3">
+            <textarea id="reply-text" class="input" rows="3" placeholder="Sua resposta..." required></textarea>
+            <button type="submit" class="btn btn-primary w-full">Responder</button>
+          </form>
+        </div>
+      </div>`);
+    }
+
+    async function replyToThread(e, threadId) {
+      e.preventDefault();
+      if (!currentUser || messages.length >= 999) return;
+      
+      const thread = messages.find(m => m.__backendId === threadId);
+      if (!thread) return;
+      
+      const reply = {
+        type: 'message',
+        id: Date.now().toString(),
+        senderId: currentUser.__backendId,
+        senderName: currentUser.name,
+        channelName: thread.channelName,
+        message: document.getElementById('reply-text').value,
+        replyToId: threadId,
+        replyToText: thread.message.substring(0, 100),
+        isGroup: false,
+        readBy: currentUser.__backendId,
+        reactions: '',
+        mediaUrl: '',
+        mediaType: '',
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(reply);
+      if (r.isOk) {
+        const channel = channels.find(c => c.channelName === thread.channelName);
+        if (channel) {
+          channel.lastActivity = new Date().toISOString();
+          await window.dataSdk.update(channel);
+        }
+        closeModal();
+        viewThread(threadId);
+      }
+    }
+
+    function showCreateParty() {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Criar Gabinete Partidario</h3>
+        <form onsubmit="handleCreateParty(event)" class="space-y-4">
+          <input type="text" id="party-name" class="input" placeholder="Nome do Partido/Bancada" required>
+          <input type="url" id="party-logo" class="input" placeholder="URL do logo (opcional)">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="party-private">
+            <span class="text-sm">Gabinete Privado (requer aprovacao para entrar)</span>
+          </label>
+          <div>
+            <label class="block text-sm font-medium mb-1">Adicionar Membros Iniciais</label>
+            <div id="party-members-select" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded">
+              ${users.filter(u => ['deputado', 'senador'].includes(u.role)).map(u => 
+                `<label class="flex items-center gap-2">
+                  <input type="checkbox" value="${u.__backendId}" ${u.__backendId === currentUser.__backendId ? 'checked disabled' : ''}>
+                  <span class="text-sm">${u.name} (${u.party || 'Sem partido'})</span>
+                </label>`
+              ).join('')}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-full">Criar Gabinete</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleCreateParty(e) {
+      e.preventDefault();
+      if (!currentUser || partyGroups.length >= 999) return;
+      
+      const checkboxes = document.querySelectorAll('#party-members-select input[type="checkbox"]:checked');
+      const memberIds = Array.from(checkboxes).map(cb => cb.value);
+      const partyName = document.getElementById('party-name').value;
+      
+      const party = {
+        type: 'party',
+        id: Date.now().toString(),
+        partyName: partyName,
+        partyLogo: document.getElementById('party-logo').value,
+        partyMembers: memberIds.join(','),
+        partyAdmins: currentUser.__backendId,
+        partyPendingRequests: '',
+        isPrivate: document.getElementById('party-private').checked,
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(party);
+      if (r.isOk) {
+        closeModal();
+        toast('Gabinete criado!', 'success');
+        renderPartySidebar();
+        selectParty(party.id);
+      }
+    }
+
+    function showPartySettings() {
+      const party = partyGroups.find(p => p.__backendId === currentPartyId);
+      if (!party) return;
+      
+      const currentMembers = party.partyMembers ? party.partyMembers.split(',') : [];
+      const pendingRequests = party.partyPendingRequests ? party.partyPendingRequests.split(',') : [];
+      const availableUsers = users.filter(u => ['deputado', 'senador'].includes(u.role) && !currentMembers.includes(u.__backendId));
+      
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Configuracoes - ${party.partyName}</h3>
+        
+        ${pendingRequests.length > 0 ? `<div class="mb-6">
+          <h4 class="font-bold mb-2">Solicitacoes Pendentes (${pendingRequests.length})</h4>
+          <div class="space-y-2">
+            ${pendingRequests.map(uId => {
+              const user = users.find(u => u.__backendId === uId);
+              if (!user) return '';
+              return `<div class="flex items-center justify-between p-2 bg-yellow-50 rounded border border-yellow-200">
+                <span class="text-sm">${user.name}</span>
+                <div class="flex gap-2">
+                  <button onclick="approvePartyRequest('${currentPartyId}', '${uId}')" class="btn btn-primary text-xs py-1">Aprovar</button>
+                  <button onclick="rejectPartyRequest('${currentPartyId}', '${uId}')" class="btn btn-danger text-xs py-1">Rejeitar</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>` : ''}
+        
+        <div class="mb-6">
+          <h4 class="font-bold mb-2">Membros Atuais (${currentMembers.length})</h4>
+          <div class="space-y-2 max-h-48 overflow-y-auto">
+            ${currentMembers.map(mId => {
+              const member = users.find(u => u.__backendId === mId);
+              if (!member) return '';
+              return `<div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span class="text-sm">${member.name}</span>
+                ${mId !== currentUser.__backendId ? `<button onclick="removePartyMember('${currentPartyId}', '${mId}')" class="btn btn-danger text-xs py-1">Remover</button>` : ''}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-2">Adicionar Novos Membros</h4>
+          <div class="space-y-2 max-h-48 overflow-y-auto">
+            ${availableUsers.map(u => 
+              `<div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span class="text-sm">${u.name} (${u.party || 'Sem partido'})</span>
+                <button onclick="addPartyMember('${currentPartyId}', '${u.__backendId}')" class="btn btn-primary text-xs py-1">Adicionar</button>
+              </div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>`);
+    }
+
+    async function addPartyMember(partyId, userId) {
+      const party = partyGroups.find(p => p.__backendId === partyId);
+      if (!party) return;
+      
+      const members = party.partyMembers ? party.partyMembers.split(',') : [];
+      if (!members.includes(userId)) {
+        members.push(userId);
+        party.partyMembers = members.join(',');
+        await window.dataSdk.update(party);
+        toast('Membro adicionado!', 'success');
+        showPartySettings();
+      }
+    }
+
+    async function removePartyMember(partyId, userId) {
+      const party = partyGroups.find(p => p.__backendId === partyId);
+      if (!party) return;
+      
+      const members = party.partyMembers ? party.partyMembers.split(',') : [];
+      party.partyMembers = members.filter(m => m !== userId).join(',');
+      await window.dataSdk.update(party);
+      toast('Membro removido!', 'success');
+      showPartySettings();
+    }
+
+    async function approvePartyRequest(partyId, userId) {
+      const party = partyGroups.find(p => p.__backendId === partyId);
+      if (!party) return;
+      
+      const pending = party.partyPendingRequests ? party.partyPendingRequests.split(',') : [];
+      const members = party.partyMembers ? party.partyMembers.split(',') : [];
+      
+      party.partyPendingRequests = pending.filter(id => id !== userId).join(',');
+      if (!members.includes(userId)) {
+        members.push(userId);
+        party.partyMembers = members.join(',');
+      }
+      
+      await window.dataSdk.update(party);
+      toast('Solicitacao aprovada!', 'success');
+      showPartySettings();
+    }
+
+    async function rejectPartyRequest(partyId, userId) {
+      const party = partyGroups.find(p => p.__backendId === partyId);
+      if (!party) return;
+      
+      const pending = party.partyPendingRequests ? party.partyPendingRequests.split(',') : [];
+      party.partyPendingRequests = pending.filter(id => id !== userId).join(',');
+      
+      await window.dataSdk.update(party);
+      toast('Solicitacao rejeitada', 'success');
+      showPartySettings();
+    }
+
+    function renderGrupos() {
+      renderGroupSidebar();
+      renderPublicGroupsSidebar();
+      renderPublicGroupsCards();
+      if (currentGroupId) renderGroupChat();
+    }
+
+    function renderGroupSidebar() {
+      const myGroups = messages.filter(m => m.isGroup && m.groupType === 'congresso').reduce((acc, m) => {
+        const groupId = m.groupName;
+        if (!acc.has(groupId)) {
+          const members = m.recipientIds ? m.recipientIds.split(',') : [];
+          if (currentUser && members.includes(currentUser.__backendId)) {
+            acc.set(groupId, { ...m, id: m.__backendId });
+          }
+        }
+        return acc;
+      }, new Map());
+      
+      const html = myGroups.size > 0 ? Array.from(myGroups.values()).map(g => {
+        const isActive = currentGroupId === g.groupName;
+        const unread = messages.filter(m => m.groupName === g.groupName && !m.readBy?.split(',').includes(currentUser?.__backendId)).length;
+        
+        return `<div class="sidebar-item ${isActive ? 'active' : ''}" onclick="selectGroup('${g.groupName}')">
+          ${g.groupPhoto ? `<img src="${g.groupPhoto}" class="w-8 h-8 rounded object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+            `<div class="w-8 h-8 rounded bg-green-500 flex items-center justify-center text-white font-bold">${g.groupName[0]}</div>`}
+          <div class="flex-1 min-w-0">
+            <p class="font-medium truncate">${g.groupName}</p>
+            ${unread > 0 ? `<span class="badge badge-red text-xs">${unread}</span>` : ''}
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-400 text-sm p-4">Nenhum grupo</p>';
+      
+      document.getElementById('group-list-sidebar').innerHTML = html;
+    }
+
+    function renderPublicGroupsSidebar() {
+      const allGroups = messages.filter(m => m.isGroup && m.groupType === 'congresso').reduce((acc, m) => {
+        const groupId = m.groupName;
+        if (!acc.has(groupId)) {
+          acc.set(groupId, m);
+        }
+        return acc;
+      }, new Map());
+      
+      const publicGroups = Array.from(allGroups.values()).filter(g => !g.isPrivate);
+      
+      const html = publicGroups.length ? publicGroups.map(g => {
+        const members = g.recipientIds ? g.recipientIds.split(',') : [];
+        const isMember = currentUser && members.includes(currentUser.__backendId);
+        
+        return `<div class="p-2 bg-gray-700 hover:bg-gray-600 rounded cursor-pointer" onclick="viewPublicGroup('${g.groupName}')">
+          <div class="flex items-center gap-2">
+            ${g.groupPhoto ? `<img src="${g.groupPhoto}" class="w-6 h-6 rounded object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+              `<div class="w-6 h-6 rounded bg-green-500 flex items-center justify-center text-white text-xs font-bold">${g.groupName[0]}</div>`}
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">${g.groupName}</p>
+              <p class="text-xs text-gray-400">${members.length} membros</p>
+            </div>
+            ${isMember ? '<span class="text-xs text-green-400">✓</span>' : ''}
+          </div>
+        </div>`;
+      }).join('') : '<p class="text-center text-gray-500 text-xs p-2">Nenhum grupo publico</p>';
+      
+      document.getElementById('public-groups-list').innerHTML = html;
+    }
+
+    function renderPublicGroupsCards() {
+      const allGroups = messages.filter(m => m.isGroup && m.groupType === 'congresso').reduce((acc, m) => {
+        const groupId = m.groupName;
+        if (!acc.has(groupId)) {
+          acc.set(groupId, m);
+        }
+        return acc;
+      }, new Map());
+      
+      const publicGroups = Array.from(allGroups.values()).filter(g => !g.isPrivate);
+      
+      const html = publicGroups.length ? publicGroups.map(g => {
+        const creator = users.find(u => u.__backendId === g.groupLeaderId);
+        const members = g.recipientIds ? g.recipientIds.split(',') : [];
+        const memberNames = members.slice(0, 3).map(id => users.find(u => u.__backendId === id)?.name || 'Usuario').join(', ');
+        const moreCount = members.length > 3 ? ` +${members.length - 3}` : '';
+        
+        const groupMessages = messages.filter(m => m.groupName === g.groupName).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const lastMessage = groupMessages.length > 1 ? groupMessages[1] : null;
+        
+        const isMember = currentUser && members.includes(currentUser.__backendId);
+        
+        return `<div class="card hover:shadow-lg transition cursor-pointer" onclick="viewPublicGroup('${g.groupName}')">
+          <div class="flex items-start gap-3 mb-3">
+            ${g.groupPhoto ? `<img src="${g.groupPhoto}" class="w-16 h-16 rounded-lg object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+              `<div class="w-16 h-16 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-2xl font-bold">${g.groupName[0]}</div>`}
+            <div class="flex-1 min-w-0">
+              <h4 class="font-bold text-lg truncate">${g.groupName}</h4>
+              <p class="text-xs text-gray-500">Criado por ${creator?.name || 'Usuario'}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="badge badge-blue text-xs">${members.length} membros</span>
+                <span class="badge badge-green text-xs">${groupMessages.length} mensagens</span>
+              </div>
+            </div>
+          </div>
+          
+          ${lastMessage ? `<div class="p-2 bg-gray-50 rounded mb-3">
+            <p class="text-xs text-gray-500 mb-1">Ultima mensagem:</p>
+            <p class="text-sm text-gray-700 truncate">${lastMessage.message}</p>
+            <p class="text-xs text-gray-400 mt-1">${new Date(lastMessage.createdAt).toLocaleString('pt-BR')}</p>
+          </div>` : ''}
+          
+          <div class="mb-3">
+            <p class="text-xs text-gray-500 mb-1">Participantes:</p>
+            <p class="text-sm text-gray-700 truncate">${memberNames}${moreCount}</p>
+          </div>
+          
+          ${isMember ? 
+            `<button onclick="event.stopPropagation(); selectGroup('${g.groupName}')" class="btn bg-green-600 text-white w-full text-sm hover:bg-green-700">✓ Membro - Acessar</button>` :
+            `<button onclick="event.stopPropagation(); joinGroup('${g.groupName}')" class="btn btn-primary w-full text-sm">Entrar no Grupo</button>`}
+        </div>`;
+      }).join('') : '<p class="col-span-full text-center text-gray-500 py-8">Nenhum grupo publico ainda. Crie o primeiro!</p>';
+      
+      document.getElementById('public-groups-cards').innerHTML = html;
+    }
+
+    function viewPublicGroup(groupName) {
+      const groupMsg = messages.find(m => m.groupName === groupName);
+      if (!groupMsg) return;
+      
+      const creator = users.find(u => u.__backendId === groupMsg.groupLeaderId);
+      const members = groupMsg.recipientIds ? groupMsg.recipientIds.split(',') : [];
+      const membersList = members.map(id => {
+        const u = users.find(user => user.__backendId === id);
+        return u ? `<div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+          ${u.photo ? `<img src="${u.photo}" class="w-8 h-8 rounded-full object-cover" loading="lazy" onerror="this.style.display='none'">` :
+            `<div class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center font-bold text-green-700 text-sm">${u.name[0]}</div>`}
+          <span class="text-sm">${u.name}</span>
+        </div>` : '';
+      }).join('');
+      
+      const isMember = currentUser && members.includes(currentUser.__backendId);
+      
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-start gap-4 mb-6">
+          ${groupMsg.groupPhoto ? `<img src="${groupMsg.groupPhoto}" class="w-20 h-20 rounded-lg object-cover" loading="lazy" onerror="this.style.display='none'">` : 
+            `<div class="w-20 h-20 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-3xl font-bold">${groupMsg.groupName[0]}</div>`}
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-1">${groupMsg.groupName}</h3>
+            <p class="text-sm text-gray-600">Criado por ${creator?.name || 'Usuario'}</p>
+            <div class="flex gap-2 mt-2">
+              <span class="badge badge-blue">${members.length} membros</span>
+              <span class="badge badge-green">Publico</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-6">
+          <h4 class="font-bold mb-3">Membros (${members.length})</h4>
+          <div class="grid md:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+            ${membersList}
+          </div>
+        </div>
+        
+        ${isMember ? 
+          `<button onclick="closeModal(); selectGroup('${groupMsg.groupName}')" class="btn bg-green-600 text-white w-full">✓ Acessar Grupo</button>` :
+          `<button onclick="joinGroup('${groupMsg.groupName}')" class="btn btn-primary w-full">Entrar no Grupo</button>`}
+      </div>`);
+    }
+
+    async function joinGroup(groupName) {
+      if (!currentUser) return toast('Faca login para entrar', 'error');
+      
+      const groupMsgs = messages.filter(m => m.groupName === groupName);
+      if (groupMsgs.length === 0) return;
+      
+      const firstMsg = groupMsgs[0];
+      const members = firstMsg.recipientIds ? firstMsg.recipientIds.split(',') : [];
+      
+      if (members.includes(currentUser.__backendId)) {
+        toast('Voce ja e membro!', 'error');
+        return;
+      }
+      
+      members.push(currentUser.__backendId);
+      
+      for (const msg of groupMsgs) {
+        msg.recipientIds = members.join(',');
+        await window.dataSdk.update(msg);
+      }
+      
+      toast('Bem-vindo ao grupo!', 'success');
+      closeModal();
+      selectGroup(groupName);
+    }
+
+    function selectGroup(groupName) {
+      currentGroupId = groupName;
+      document.getElementById('grupo-welcome').classList.add('hidden');
+      document.getElementById('grupo-chat').classList.remove('hidden');
+      renderGroupChat();
+    }
+
+    function renderGroupChat() {
+      const groupMsgs = messages.filter(m => m.groupName === currentGroupId);
+      if (groupMsgs.length === 0) return;
+      
+      const firstMsg = groupMsgs[0];
+      const members = firstMsg.recipientIds ? firstMsg.recipientIds.split(',') : [];
+      const memberNames = members.map(id => users.find(u => u.__backendId === id)?.name || 'Usuario').join(', ');
+      
+      document.getElementById('group-chat-name').textContent = firstMsg.groupName;
+      document.getElementById('group-chat-members').textContent = `${members.length} membros: ${memberNames}`;
+      
+      if (firstMsg.groupPhoto) {
+        document.getElementById('group-chat-photo').src = firstMsg.groupPhoto;
+        document.getElementById('group-chat-photo').classList.remove('hidden');
+      } else {
+        document.getElementById('group-chat-photo').classList.add('hidden');
+      }
+      
+      const isLeader = firstMsg.groupLeaderId === currentUser?.__backendId;
+      document.getElementById('group-settings-btn').classList.toggle('hidden', !isLeader);
+      
+      const sortedMsgs = [...groupMsgs].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      
+      const msgsHtml = sortedMsgs.map(m => {
+        const sender = users.find(u => u.__backendId === m.senderId);
+        const isMine = m.senderId === currentUser?.__backendId;
+        const reactions = m.reactions ? JSON.parse(m.reactions) : {};
+        
+        return `<div class="message-bubble ${isMine ? 'message-sent' : 'message-received'}">
+          ${!isMine ? `<p class="text-xs font-bold mb-1 opacity-80">${sender?.name || 'Usuario'}</p>` : ''}
+          ${m.replyToText ? `<div class="message-reply">${m.replyToText}</div>` : ''}
+          <p class="text-sm">${m.message}</p>
+          ${m.mediaUrl ? renderMedia(m.mediaUrl, m.mediaType) : ''}
+          <div class="flex items-center justify-between mt-2">
+            <p class="text-xs opacity-70">${new Date(m.createdAt).toLocaleTimeString('pt-BR')}</p>
+            <div class="flex gap-1">
+              ${EMOJI_REACTIONS.map(emoji => {
+                const count = reactions[emoji] ? reactions[emoji].length : 0;
+                const hasReacted = reactions[emoji]?.includes(currentUser?.__backendId);
+                return count > 0 ? `<span class="reaction-btn ${hasReacted ? 'active' : ''}" onclick="toggleReaction('${m.__backendId}', '${emoji}')">${emoji} ${count}</span>` : '';
+              }).join('')}
+              <button onclick="showReactionPicker('${m.__backendId}')" class="text-xs opacity-50 hover:opacity-100">+</button>
+              ${!isMine ? `<button onclick="setReplyTo('${m.__backendId}', '${m.message.substring(0, 50)}')" class="text-xs opacity-50 hover:opacity-100 ml-2">Responder</button>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      
+      document.getElementById('group-messages').innerHTML = msgsHtml;
+      
+      groupMsgs.forEach(async m => {
+        const readBy = m.readBy ? m.readBy.split(',') : [];
+        if (currentUser && !readBy.includes(currentUser.__backendId)) {
+          readBy.push(currentUser.__backendId);
+          m.readBy = readBy.join(',');
+          await window.dataSdk.update(m);
+        }
+      });
+    }
+
+    function renderMedia(url, type) {
+      if (!url) return '';
+      
+      if (type === 'image' || url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        return `<img src="${url}" class="max-w-full rounded mt-2" loading="lazy" onerror="this.style.display='none'">`;
+      } else if (type === 'video' || url.match(/\.(mp4|webm|ogg)$/i)) {
+        return `<video src="${url}" controls class="max-w-full rounded mt-2"></video>`;
+      } else if (type === 'audio' || url.match(/\.(mp3|wav|ogg)$/i)) {
+        return `<audio src="${url}" controls class="w-full mt-2"></audio>`;
+      }
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-xs underline">[Ver midia]</a>`;
+    }
+
+    function handleMediaUpload(input) {
+      const urlInput = document.getElementById('group-media-url');
+      if (input.files.length > 0) {
+        urlInput.classList.remove('hidden');
+        urlInput.placeholder = `Arquivo selecionado: ${input.files[0].name}. Cole a URL da midia aqui.`;
+        urlInput.focus();
+      } else {
+        urlInput.classList.add('hidden');
+      }
+    }
+
+    function setReplyTo(msgId, text) {
+      replyToMessage = msgId;
+      document.getElementById('reply-preview').classList.remove('hidden');
+      document.getElementById('reply-preview-text').textContent = text + '...';
+      document.getElementById('group-msg-input').focus();
+    }
+
+    function cancelReply() {
+      replyToMessage = null;
+      document.getElementById('reply-preview').classList.add('hidden');
+    }
+
+    async function sendGroupMessage(e) {
+      e.preventDefault();
+      if (!currentUser || !currentGroupId || messages.length >= 999) return;
+      
+      const groupMsgs = messages.filter(m => m.groupName === currentGroupId);
+      const firstMsg = groupMsgs[0];
+      if (!firstMsg) return;
+      
+      const mediaUrl = document.getElementById('group-media-url').value;
+      let mediaType = '';
+      if (mediaUrl) {
+        if (mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)) mediaType = 'image';
+        else if (mediaUrl.match(/\.(mp4|webm|ogg)$/i)) mediaType = 'video';
+        else if (mediaUrl.match(/\.(mp3|wav|ogg)$/i)) mediaType = 'audio';
+      }
+      
+      const msg = {
+        type: 'message',
+        id: Date.now().toString(),
+        senderId: currentUser.__backendId,
+        senderName: currentUser.name,
+        groupName: currentGroupId,
+        groupType: firstMsg.groupType,
+        recipientIds: firstMsg.recipientIds,
+        groupLeaderId: firstMsg.groupLeaderId,
+        groupPhoto: firstMsg.groupPhoto,
+        isGroup: true,
+        message: document.getElementById('group-msg-input').value,
+        mediaUrl: mediaUrl,
+        mediaType: mediaType,
+        replyToId: replyToMessage || '',
+        replyToText: replyToMessage ? document.getElementById('reply-preview-text').textContent : '',
+        readBy: currentUser.__backendId,
+        reactions: '{}',
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(msg);
+      if (r.isOk) {
+        document.getElementById('group-msg-input').value = '';
+        document.getElementById('group-media-url').value = '';
+        document.getElementById('group-media-url').classList.add('hidden');
+        document.getElementById('group-media-input').value = '';
+        cancelReply();
+      }
+    }
+
+    function showReactionPicker(msgId) {
+      const picker = EMOJI_REACTIONS.map(emoji => 
+        `<button onclick="toggleReaction('${msgId}', '${emoji}'); closeModal();" class="text-3xl p-2 hover:bg-gray-100 rounded">${emoji}</button>`
+      ).join('');
+      
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Escolha uma reacao</h3>
+        <div class="flex flex-wrap gap-2 justify-center">${picker}</div>
+      </div>`);
+    }
+
+    async function toggleReaction(msgId, emoji) {
+      if (!currentUser) return;
+      const msg = messages.find(m => m.__backendId === msgId);
+      if (!msg) return;
+      
+      const reactions = msg.reactions ? JSON.parse(msg.reactions) : {};
+      if (!reactions[emoji]) reactions[emoji] = [];
+      
+      const idx = reactions[emoji].indexOf(currentUser.__backendId);
+      if (idx > -1) {
+        reactions[emoji].splice(idx, 1);
+        if (reactions[emoji].length === 0) delete reactions[emoji];
+      } else {
+        reactions[emoji].push(currentUser.__backendId);
+      }
+      
+      msg.reactions = JSON.stringify(reactions);
+      await window.dataSdk.update(msg);
+    }
+
+    function showCreateGroup() {
+      const recipients = users.filter(u => u.__backendId !== currentUser.__backendId);
+      
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Criar Grupo do Congresso</h3>
+        <form onsubmit="handleCreateGroup(event)" class="space-y-4">
+          <input type="text" id="group-name" class="input" placeholder="Nome do Grupo" required>
+          <input type="url" id="group-photo" class="input" placeholder="URL da foto do grupo (opcional)">
+          <div>
+            <label class="block text-sm font-medium mb-1">Membros</label>
+            <div id="group-members-select" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded">
+              ${recipients.map(u => 
+                `<label class="flex items-center gap-2">
+                  <input type="checkbox" value="${u.__backendId}">
+                  <span class="text-sm">${u.name}</span>
+                </label>`
+              ).join('')}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-full">Criar Grupo</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleCreateGroup(e) {
+      e.preventDefault();
+      if (!currentUser || messages.length >= 999) return;
+      
+      const checkboxes = document.querySelectorAll('#group-members-select input[type="checkbox"]:checked');
+      const memberIds = [currentUser.__backendId, ...Array.from(checkboxes).map(cb => cb.value)];
+      const groupName = document.getElementById('group-name').value;
+      
+      const group = {
+        type: 'message',
+        id: Date.now().toString(),
+        senderId: currentUser.__backendId,
+        senderName: currentUser.name,
+        groupName: groupName,
+        groupType: 'congresso',
+        groupPhoto: document.getElementById('group-photo').value,
+        recipientIds: memberIds.join(','),
+        groupLeaderId: currentUser.__backendId,
+        isGroup: true,
+        message: 'Grupo criado',
+        readBy: currentUser.__backendId,
+        reactions: '{}',
+        replyToId: '',
+        replyToText: '',
+        mediaUrl: '',
+        mediaType: '',
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(group);
+      if (r.isOk) {
+        closeModal();
+        toast('Grupo criado!', 'success');
+        currentGroupId = groupName;
+        renderGroupSidebar();
+        selectGroup(groupName);
+      }
+    }
+
+    function showGroupSettings() {
+      const groupMsgs = messages.filter(m => m.groupName === currentGroupId);
+      const firstMsg = groupMsgs[0];
+      if (!firstMsg) return;
+      
+      const currentMembers = firstMsg.recipientIds ? firstMsg.recipientIds.split(',') : [];
+      const availableUsers = users.filter(u => !currentMembers.includes(u.__backendId));
+      
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Configuracoes - ${firstMsg.groupName}</h3>
+        
+        <div class="mb-6">
+          <h4 class="font-bold mb-2">Membros Atuais (${currentMembers.length})</h4>
+          <div class="space-y-2 max-h-48 overflow-y-auto">
+            ${currentMembers.map(mId => {
+              const member = users.find(u => u.__backendId === mId);
+              if (!member) return '';
+              return `<div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span class="text-sm">${member.name}</span>
+                ${mId !== currentUser.__backendId && mId !== firstMsg.groupLeaderId ? `<button onclick="removeGroupMember('${mId}')" class="btn btn-danger text-xs py-1">Remover</button>` : ''}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-2">Adicionar Novos Membros</h4>
+          <div class="space-y-2 max-h-48 overflow-y-auto">
+            ${availableUsers.map(u => 
+              `<div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span class="text-sm">${u.name}</span>
+                <button onclick="addGroupMember('${u.__backendId}')" class="btn btn-primary text-xs py-1">Adicionar</button>
+              </div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>`);
+    }
+
+    async function addGroupMember(userId) {
+      const groupMsgs = messages.filter(m => m.groupName === currentGroupId);
+      
+      for (const msg of groupMsgs) {
+        const members = msg.recipientIds ? msg.recipientIds.split(',') : [];
+        if (!members.includes(userId)) {
+          members.push(userId);
+          msg.recipientIds = members.join(',');
+          await window.dataSdk.update(msg);
+        }
+      }
+      
+      toast('Membro adicionado!', 'success');
+      showGroupSettings();
+    }
+
+    async function removeGroupMember(userId) {
+      const groupMsgs = messages.filter(m => m.groupName === currentGroupId);
+      
+      for (const msg of groupMsgs) {
+        const members = msg.recipientIds ? msg.recipientIds.split(',') : [];
+        msg.recipientIds = members.filter(m => m !== userId).join(',');
+        await window.dataSdk.update(msg);
+      }
+      
+      toast('Membro removido!', 'success');
+      showGroupSettings();
+    }
+
+    function renderAdmin() {
+      if (!currentUser?.isAdmin) {
+        document.getElementById('content-admin').innerHTML = '<div class="card text-center py-12"><h3 class="text-xl font-bold text-gray-600">Acesso Negado</h3></div>';
+      }
+    }
+
+    function showAdminUsers() {
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Gerenciar Usuarios</h3>
+        <div class="space-y-2">
+          ${users.map(u => `<div class="p-3 bg-gray-50 rounded flex justify-between items-center">
+            <div>
+              <p class="font-bold">${u.name}</p>
+              <p class="text-xs text-gray-600">${u.email} - ${u.role}</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="editUser('${u.__backendId}')" class="btn btn-secondary text-xs py-1">Editar</button>
+              <button onclick="deleteUser('${u.__backendId}')" class="btn btn-danger text-xs py-1">Excluir</button>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`);
+    }
+
+    function editUser(userId) {
+      const user = users.find(u => u.__backendId === userId);
+      if (!user) return;
+      
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Editar Usuario - ${user.name}</h3>
+        <form onsubmit="handleEditUser(event, '${userId}')" class="space-y-4">
+          <input type="text" id="edit-name" class="input" value="${user.name}" placeholder="Nome" required>
+          <input type="email" id="edit-email" class="input" value="${user.email}" placeholder="Email" required>
+          <input type="url" id="edit-photo" class="input" value="${user.photo || ''}" placeholder="URL da Foto">
+          <input type="url" id="edit-seal" class="input" value="${user.seal || ''}" placeholder="URL do Selo">
+          <textarea id="edit-bio" class="input" rows="3" placeholder="Biografia">${user.bio || ''}</textarea>
+          <button type="submit" class="btn btn-primary w-full">Salvar Alteracoes</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleEditUser(e, userId) {
+      e.preventDefault();
+      const user = users.find(u => u.__backendId === userId);
+      if (!user) return;
+      
+      user.name = document.getElementById('edit-name').value;
+      user.email = document.getElementById('edit-email').value;
+      user.photo = document.getElementById('edit-photo').value;
+      user.seal = document.getElementById('edit-seal').value;
+      user.bio = document.getElementById('edit-bio').value;
+      
+      const r = await window.dataSdk.update(user);
+      if (r.isOk) {
+        closeModal();
+        toast('Usuario atualizado!', 'success');
+      }
+    }
+
+    async function deleteUser(id) {
+      const u = users.find(x => x.__backendId === id);
+      if (u && await window.dataSdk.delete(u).then(r => r.isOk)) {
+        toast('Excluido', 'success');
+        closeModal();
+      }
+    }
+
+    function showAdminProjects() {
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Gerenciar Projetos</h3>
+        <div class="space-y-2">
+          ${projects.map(p => {
+            const statusOptions = ['tramitando', 'aprovado', 'rejeitado', 'aguardando_pauta', 'em_votacao'].map(s => 
+              `<option value="${s}" ${p.status === s ? 'selected' : ''}>${s}</option>`
+            ).join('');
+            
+            return `<div class="p-3 bg-gray-50 rounded">
+              <div class="flex justify-between items-start mb-2">
+                <div><p class="font-bold">${p.title}</p><p class="text-xs text-gray-600">${p.projectType}</p></div>
+                <button onclick="deleteProject('${p.__backendId}')" class="btn btn-danger text-xs py-1">Excluir</button>
+              </div>
+              <select onchange="updateProjectStatus('${p.__backendId}', this.value)" class="input text-xs">
+                ${statusOptions}
+              </select>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`);
+    }
+
+    async function updateProjectStatus(projectId, newStatus) {
+      const proj = projects.find(p => p.__backendId === projectId);
+      if (!proj) return;
+      
+      proj.status = newStatus;
+      const r = await window.dataSdk.update(proj);
+      if (r.isOk) toast('Status atualizado!', 'success');
+    }
+
+    async function deleteProject(id) {
+      const p = projects.find(x => x.__backendId === id);
+      if (p && await window.dataSdk.delete(p).then(r => r.isOk)) {
+        toast('Excluido', 'success');
+        closeModal();
+      }
+    }
+
+    function showAdminParties() {
+      showModal(`<div class="p-6 max-h-[85vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Gerenciar Gabinetes</h3>
+        <div class="space-y-2">
+          ${partyGroups.map(p => `<div class="p-3 bg-gray-50 rounded flex justify-between items-center">
+            <div>
+              <p class="font-bold">${p.partyName}</p>
+              <p class="text-xs text-gray-600">${p.partyMembers?.split(',').length || 0} membros</p>
+            </div>
+            <button onclick="deleteParty('${p.__backendId}')" class="btn btn-danger text-xs py-1">Excluir</button>
+          </div>`).join('')}
+        </div>
+      </div>`);
+    }
+
+    async function deleteParty(id) {
+      const p = partyGroups.find(x => x.__backendId === id);
+      if (p && await window.dataSdk.delete(p).then(r => r.isOk)) {
+        toast('Excluido', 'success');
+        closeModal();
+      }
+    }
+
+    function handleUserClick() {
+      if (currentUser) showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Meu Perfil</h3>
+        <div class="space-y-3">
+          ${currentUser.photo ? `<img src="${currentUser.photo}" class="w-24 h-24 rounded-full mx-auto object-cover" loading="lazy" onerror="this.style.display='none'">` : ''}
+          <p><strong>Nome:</strong> ${currentUser.name}</p>
+          <p><strong>Cargo:</strong> ${currentUser.mesaPosition || currentUser.role}</p>
+          <p><strong>Casa:</strong> ${currentUser.house}</p>
+          ${currentUser.state ? `<p><strong>Estado:</strong> ${currentUser.state}</p>` : ''}
+          ${currentUser.party ? `<p><strong>Partido:</strong> ${currentUser.party}</p>` : ''}
+          ${currentUser.bio ? `<p><strong>Bio:</strong> ${currentUser.bio}</p>` : ''}
+          <button onclick="showEditProfile()" class="btn btn-secondary w-full">Editar Perfil</button>
+          <button onclick="logout()" class="btn btn-danger w-full mt-4">Sair</button>
+        </div>
+      </div>`);
+      else showLogin();
+    }
+
+    function showEditProfile() {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Editar Perfil</h3>
+        <form onsubmit="handleEditProfile(event)" class="space-y-4">
+          <input type="url" id="profile-photo" class="input" value="${currentUser.photo || ''}" placeholder="URL da Foto de Perfil">
+          <input type="url" id="profile-seal" class="input" value="${currentUser.seal || ''}" placeholder="URL do Selo">
+          <textarea id="profile-bio" class="input" rows="4" placeholder="Biografia">${currentUser.bio || ''}</textarea>
+          <button type="submit" class="btn btn-primary w-full">Salvar</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleEditProfile(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      
+      currentUser.photo = document.getElementById('profile-photo').value;
+      currentUser.seal = document.getElementById('profile-seal').value;
+      currentUser.bio = document.getElementById('profile-bio').value;
+      
+      const r = await window.dataSdk.update(currentUser);
+      if (r.isOk) {
+        localStorage.setItem('cvUser', JSON.stringify(currentUser));
+        closeModal();
+        toast('Perfil atualizado!', 'success');
+        updateUI();
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('cvUser');
+      location.reload();
+    }
+
+    function showLogin() {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Entrar</h3>
+        <form onsubmit="handleLogin(event)" class="space-y-3">
+          <input type="text" id="login-email" class="input" placeholder="E-mail ou Username" required>
+          <input type="password" id="login-password" class="input" placeholder="Senha" required>
+          <button type="submit" class="btn btn-primary w-full">Entrar</button>
+          <p class="text-center text-sm"><a href="#" onclick="showRegister()" class="text-blue-600">Criar conta</a></p>
+        </form>
+      </div>`);
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const id = document.getElementById('login-email').value;
+      const pw = document.getElementById('login-password').value;
+      
+      if (id === ADMIN.username && pw === ADMIN.password) {
+        let admin = users.find(u => u.username === ADMIN.username);
+        if (!admin) {
+          const newAdmin = {
+            type: 'user',
+            id: 'admin-' + Date.now(),
+            name: 'Administrador',
+            username: ADMIN.username,
+            email: 'admin@congresso.gov.br',
+            password: ADMIN.password,
+            role: 'admin',
+            house: 'admin',
+            photo: '',
+            bio: '',
+            seal: '',
+            mesaPosition: '',
+            state: '',
+            party: '',
+            isAdmin: true,
+            isMesaDirector: false,
+            createdAt: new Date().toISOString()
+          };
+          const r = await window.dataSdk.create(newAdmin);
+          if (r.isOk) admin = newAdmin;
+        }
+        if (admin) {
+          currentUser = admin;
+          localStorage.setItem('cvUser', JSON.stringify(admin));
+          updateUI();
+          closeModal();
+          toast('Bem-vindo, Admin!', 'success');
+          switchTab('admin');
+          return;
+        }
+      }
+      
+      const user = users.find(u => (u.email === id || u.username === id) && u.password === pw);
+      if (user) {
+        currentUser = user;
+        localStorage.setItem('cvUser', JSON.stringify(user));
+        updateUI();
+        closeModal();
+        toast(`Bem-vindo, ${user.name}!`, 'success');
+      } else {
+        toast('Credenciais incorretas', 'error');
+      }
+    }
+
+    function showRegister() {
+      showModal(`<div class="p-6 max-h-[90vh] overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4">Criar Conta</h3>
+        <form onsubmit="handleRegister(event)" class="space-y-3">
+          <input type="text" id="reg-name" class="input" placeholder="Nome Completo" required>
+          <input type="text" id="reg-username" class="input" placeholder="Username" required>
+          <input type="email" id="reg-email" class="input" placeholder="E-mail" required>
+          <input type="password" id="reg-password" class="input" placeholder="Senha" required>
+          <select id="reg-role" class="input" required onchange="updateRegFields()">
+            <option value="civil">Cidadao</option>
+            <option value="deputado">Deputado</option>
+            <option value="senador">Senador</option>
+            <option value="governador">Governador</option>
+            <option value="presidente_republica">Presidente</option>
+          </select>
+          <div id="reg-mesa-field" class="hidden">
+            <select id="reg-mesa" class="input"><option value="">Parlamentar Regular</option></select>
+          </div>
+          <div id="reg-state-field" class="hidden">
+            <select id="reg-state" class="input"><option value="">Estado</option>
+              <option value="GO">Goias</option><option value="RS">Rio Grande do Sul</option>
+              <option value="PE">Pernambuco</option><option value="SP">Sao Paulo</option>
+              <option value="AM">Amazonas</option>
+            </select>
+          </div>
+          <div id="reg-party-field" class="hidden">
+            <input type="text" id="reg-party" class="input" placeholder="Partido">
+          </div>
+          <input type="url" id="reg-photo" class="input" placeholder="URL da Foto (opcional)">
+          <input type="url" id="reg-seal" class="input" placeholder="URL do Selo (opcional)">
+          <textarea id="reg-bio" class="input" rows="2" placeholder="Biografia (opcional)"></textarea>
+          <button type="submit" class="btn btn-primary w-full">Criar Conta</button>
+        </form>
+      </div>`);
+    }
+
+    function updateRegFields() {
+      const role = document.getElementById('reg-role').value;
+      const mesa = document.getElementById('reg-mesa-field');
+      const state = document.getElementById('reg-state-field');
+      const party = document.getElementById('reg-party-field');
+      
+      mesa.classList.toggle('hidden', !['deputado', 'senador'].includes(role));
+      state.classList.toggle('hidden', !['deputado', 'senador', 'governador'].includes(role));
+      party.classList.toggle('hidden', role === 'civil');
+      
+      if (role === 'deputado') {
+        document.getElementById('reg-mesa').innerHTML = '<option value="">Parlamentar Regular</option>' + 
+          MESA_CAMARA.map(p => `<option value="${p}">${p}</option>`).join('');
+      } else if (role === 'senador') {
+        document.getElementById('reg-mesa').innerHTML = '<option value="">Parlamentar Regular</option>' + 
+          MESA_SENADO.map(p => `<option value="${p}">${p}</option>`).join('');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      if (allData.length >= 999) return toast('Limite atingido', 'error');
+      
+      const email = document.getElementById('reg-email').value;
+      const username = document.getElementById('reg-username').value;
+      const role = document.getElementById('reg-role').value;
+      
+      if (users.find(u => u.email === email)) return toast('E-mail ja cadastrado', 'error');
+      if (users.find(u => u.username === username)) return toast('Username ja em uso', 'error');
+      
+      const mesa = document.getElementById('reg-mesa')?.value || '';
+      const state = document.getElementById('reg-state')?.value || '';
+      
+      if (mesa && users.find(u => u.mesaPosition === mesa)) return toast('Cargo ocupado', 'error');
+      
+      if (role === 'deputado' && users.filter(u => u.house === 'camara').length >= 30) {
+        return toast('Limite de 30 deputados atingido', 'error');
+      }
+      if (role === 'senador' && users.filter(u => u.house === 'senado').length >= 30) {
+        return toast('Limite de 30 senadores atingido', 'error');
+      }
+      
+      const house = role === 'deputado' || mesa.includes('Camara') ? 'camara' :
+                    role === 'senador' || mesa.includes('Senado') ? 'senado' :
+                    ['governador', 'presidente_republica'].includes(role) ? 'executivo' : 'civil';
+      
+      const newUser = {
+        type: 'user',
+        id: Date.now().toString(),
+        name: document.getElementById('reg-name').value,
+        username: username,
+        email: email,
+        password: document.getElementById('reg-password').value,
+        role: role,
+        house: house,
+        state: state,
+        party: document.getElementById('reg-party')?.value || '',
+        photo: document.getElementById('reg-photo').value,
+        seal: document.getElementById('reg-seal').value,
+        bio: document.getElementById('reg-bio').value,
+        mesaPosition: mesa,
+        isMesaDirector: !!mesa,
+        isAdmin: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(newUser);
+      if (r.isOk) {
+        currentUser = newUser;
+        localStorage.setItem('cvUser', JSON.stringify(newUser));
+        updateUI();
+        closeModal();
+        toast('Conta criada!', 'success');
+      }
+    }
+
+    function showNewProject() {
+      const canMP = currentUser?.role === 'presidente_republica';
+      
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Novo Projeto</h3>
+        <form onsubmit="handleNewProject(event)" class="space-y-3">
+          <select id="proj-type" class="input" required>
+            <option value="PL">PL - Projeto de Lei</option>
+            <option value="PEC">PEC - Emenda Constitucional</option>
+            <option value="PLC">PLC - Lei Complementar</option>
+            ${canMP ? '<option value="MP">MP - Medida Provisoria</option>' : ''}
+            <option value="RES">Resolucao</option>
+            <option value="REQ">Requerimento</option>
+          </select>
+          <input type="text" id="proj-title" class="input" placeholder="Titulo do Projeto" required>
+          <textarea id="proj-content" class="input" rows="3" placeholder="Ementa (resumo do projeto)" required></textarea>
+          <input type="url" id="proj-pdf" class="input" placeholder="URL do PDF completo (opcional)">
+          <select id="proj-urgency" class="input">
+            <option value="normal">Normal</option>
+            <option value="urgente">Urgente</option>
+          </select>
+          <button type="submit" class="btn btn-primary w-full">Criar Projeto</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleNewProject(e) {
+      e.preventDefault();
+      if (!currentUser || projects.length >= 999) return toast('Limite atingido', 'error');
+      
+      const pdfUrl = document.getElementById('proj-pdf').value;
+      
+      const proj = {
+        type: 'project',
+        id: Date.now().toString(),
+        projectType: document.getElementById('proj-type').value,
+        title: document.getElementById('proj-title').value,
+        content: document.getElementById('proj-content').value,
+        category: '',
+        urgency: document.getElementById('proj-urgency').value,
+        authorId: currentUser.__backendId,
+        authorName: currentUser.name,
+        coAuthorIds: '',
+        coAuthorNames: '',
+        house: currentUser.house,
+        status: 'tramitando',
+        protocolNumber: '',
+        pdfName: pdfUrl ? 'documento.pdf' : '',
+        pdfData: pdfUrl,
+        pdfSize: 0,
+        inSession: false,
+        sessionId: '',
+        sessionBlock: '',
+        maxVotingTime: '',
+        approved: true,
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(proj);
+      if (r.isOk) {
+        closeModal();
+        toast('Projeto criado!', 'success');
+        switchTab('projetos');
+      }
+    }
+
+    function showConvoke(house) {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Convocar Sessao - ${house === 'camara' ? 'Camara' : 'Senado'}</h3>
+        <form onsubmit="handleConvoke(event, '${house}')" class="space-y-3">
+          <input type="text" id="sess-title" class="input" placeholder="Titulo" required>
+          <input type="datetime-local" id="sess-date" class="input" required>
+          <textarea id="sess-agenda" class="input" rows="3" placeholder="Pauta" required></textarea>
+          <button type="submit" class="btn btn-primary w-full">Convocar</button>
+        </form>
+      </div>`);
+    }
+
+    async function handleConvoke(e, house) {
+      e.preventDefault();
+      if (sessions.length >= 999) return toast('Limite atingido', 'error');
+      
+      const sess = {
+        type: 'session',
+        id: Date.now().toString(),
+        title: document.getElementById('sess-title').value,
+        date: document.getElementById('sess-date').value,
+        agenda: document.getElementById('sess-agenda').value,
+        projectsInAgenda: '',
+        blocks: '{}',
+        openMinutes: '',
+        closeMinutes: '',
+        house: house,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      };
+      
+      const r = await window.dataSdk.create(sess);
+      if (r.isOk) {
+        closeModal();
+        toast('Sessao convocada!', 'success');
+      }
+    }
+
+    function viewProject(id) {
+      const p = projects.find(x => x.__backendId === id);
+      if (!p) return;
+      const author = users.find(u => u.__backendId === p.authorId);
+      const vs = votes.filter(v => v.projectId === id);
+      const fav = vs.filter(v => v.vote === 'favoravel').length;
+      const con = vs.filter(v => v.vote === 'contrario').length;
+      
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">${p.title}</h3>
+        <div class="space-y-3">
+          <div class="flex gap-2 flex-wrap">
+            <span class="badge badge-green">${p.projectType}</span>
+            ${p.urgency === 'urgente' ? '<span class="badge badge-red">Urgente</span>' : ''}
+            <span class="badge badge-blue">${p.status}</span>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <p class="font-bold text-sm mb-1">Ementa:</p>
+            <p class="text-sm">${p.content}</p>
+          </div>
+          ${p.pdfData ? `<div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="font-bold text-sm mb-2 text-blue-700">📄 Documento Completo</p>
+            <a href="${p.pdfData}" target="_blank" rel="noopener noreferrer" class="btn btn-primary text-sm">Abrir PDF</a>
+          </div>` : ''}
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div><span class="text-gray-600">Autor:</span> <p class="font-medium">${author?.name || 'Desconhecido'}</p></div>
+            <div><span class="text-gray-600">Situacao:</span> <p class="font-medium">${p.status}</p></div>
+            <div><span class="text-gray-600">Casa:</span> <p class="font-medium">${p.house === 'camara' ? 'Camara' : p.house === 'senado' ? 'Senado' : 'Executivo'}</p></div>
+            <div><span class="text-gray-600">Data:</span> <p class="font-medium">${new Date(p.createdAt).toLocaleDateString('pt-BR')}</p></div>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <p class="font-bold text-sm mb-2">Votacao:</p>
+            <div class="space-y-1 text-sm">
+              <div class="flex justify-between"><span class="text-green-600">Favoraveis</span><span class="font-bold">${fav}</span></div>
+              <div class="flex justify-between"><span class="text-red-600">Contrarios</span><span class="font-bold">${con}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>`);
+    }
+
+    function viewSession(id) {
+      const s = sessions.find(x => x.__backendId === id);
+      if (!s) return;
+      const projIds = s.projectsInAgenda ? s.projectsInAgenda.split(',') : [];
+      const projs = projIds.map(pid => projects.find(p => p.__backendId === pid)).filter(p => p);
+      
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">${s.title}</h3>
+        ${s.isActive ? '<div class="p-3 bg-green-50 border border-green-200 rounded-lg mb-3"><span class="text-green-700 font-medium">Sessao em Andamento</span></div>' : ''}
+        <div class="space-y-3">
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <p class="font-bold mb-1">Pauta:</p>
+            <p class="text-sm">${s.agenda}</p>
+          </div>
+          ${projs.length ? `<div class="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <p class="font-bold mb-2">Projetos em Pauta (${projs.length}):</p>
+            <div class="space-y-2">
+              ${projs.map(p => `<div class="p-2 bg-white rounded flex justify-between items-center">
+                <span class="text-sm"><span class="badge badge-green text-xs">${p.projectType}</span> ${p.title}</span>
+                <button onclick="viewProject('${p.__backendId}')" class="text-xs text-blue-600">Ver</button>
+              </div>`).join('')}
+            </div>
+          </div>` : ''}
+        </div>
+      </div>`);
+    }
+
+    function viewRep(id) {
+      const r = users.find(u => u.__backendId === id);
+      if (!r) return;
+      const projs = projects.filter(p => p.authorId === id).length;
+      const pres = presences.filter(p => p.oderId === id && p.presence === 'presente').length;
+      
+      showModal(`<div class="p-6">
+        <div class="text-center mb-4">
+          ${r.photo ? 
+            `<img src="${r.photo}" class="w-24 h-24 mx-auto rounded-full object-cover mb-3" loading="lazy" onerror="this.style.display='none'">` :
+            `<div class="w-24 h-24 mx-auto rounded-full bg-blue-200 flex items-center justify-center text-4xl font-bold text-blue-700 mb-3">${r.name[0]}</div>`}
+          <div class="flex items-center justify-center gap-2">
+            <h3 class="text-xl font-bold">${r.name}</h3>
+            ${r.seal ? `<img src="${r.seal}" class="w-8 h-8 object-contain" loading="lazy" onerror="this.style.display='none'">` : ''}
+          </div>
+          <p class="text-sm text-gray-600">${r.mesaPosition || r.role}</p>
+          ${r.party ? `<p class="text-sm text-gray-500">${r.party} ${r.state ? '- ' + r.state : ''}</p>` : ''}
+        </div>
+        ${r.bio ? `<div class="p-4 bg-gray-50 rounded-lg mb-3"><p class="text-sm">${r.bio}</p></div>` : ''}
+        <div class="grid grid-cols-3 gap-3">
+          <div class="text-center p-3 bg-green-50 rounded-lg">
+            <div class="text-2xl font-bold text-green-600">${projs}</div>
+            <div class="text-xs text-gray-600">Projetos</div>
+          </div>
+          <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <div class="text-2xl font-bold text-blue-600">${pres}</div>
+            <div class="text-xs text-gray-600">Presencas</div>
+          </div>
+          <div class="text-center p-3 bg-purple-50 rounded-lg">
+            <div class="text-2xl font-bold text-purple-600">${votes.filter(v => v.oderId === id).length}</div>
+            <div class="text-xs text-gray-600">Votos</div>
+          </div>
+        </div>
+      </div>`);
+    }
+
+    function showMessagesMenu() {
+      showModal(`<div class="p-6">
+        <h3 class="text-xl font-bold mb-4">Mensagens</h3>
+        <div class="space-y-2">
+          <button onclick="closeModal(); switchTab('grupos')" class="btn bg-blue-100 text-blue-700 w-full justify-start">
+            <span class="text-xl mr-2">&#128172;</span> Grupos do Congresso
+          </button>
+          <button onclick="closeModal(); switchTab('gabinetes')" class="btn bg-purple-100 text-purple-700 w-full justify-start">
+            <span class="text-xl mr-2">&#128221;</span> Gabinetes Partidarios
+          </button>
+        </div>
+      </div>`);
+    }
+
+    function showModal(html) {
+      document.getElementById('modal-container').innerHTML = `<div class="modal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">${html}<button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">×</button></div>
+      </div>`;
+    }
+
+    function closeModal() {
+      document.getElementById('modal-container').innerHTML = '';
+    }
+
+    function toast(msg, type) {
+      const div = document.createElement('div');
+      div.className = `toast toast-${type}`;
+      div.textContent = msg;
+      document.getElementById('toast-container').appendChild(div);
+      setTimeout(() => div.remove(), 3000);
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c7b1511b0b1ae51',t:'MTc3MDA0OTkyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
