@@ -1,0 +1,2522 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSE Educacional - Sistema de Simulação Eleitoral</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;family=Roboto+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    * {
+      font-family: 'Roboto', sans-serif;
+    }
+    .mono {
+      font-family: 'Roboto Mono', monospace;
+    }
+    .urna-container {
+      background: linear-gradient(145deg, #3a3a3a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      border-radius: 20px 20px 8px 8px;
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.6),
+        0 5px 15px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        inset 0 -2px 5px rgba(0,0,0,0.3);
+      border: 3px solid #1a1a1a;
+      position: relative;
+    }
+    .urna-container::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 8px;
+      background: linear-gradient(90deg, #2a2a2a 0%, #3d3d3d 50%, #2a2a2a 100%);
+      border-radius: 4px 4px 0 0;
+    }
+    .urna-screen {
+      background: linear-gradient(180deg, #d8d8d8 0%, #c5c5c5 50%, #b8b8b8 100%);
+      border: 4px solid #1a1a1a;
+      border-radius: 3px;
+      box-shadow: 
+        inset 0 3px 12px rgba(0,0,0,0.3),
+        inset 0 -1px 3px rgba(255,255,255,0.2),
+        0 2px 5px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .urna-screen::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%);
+      pointer-events: none;
+      border-radius: 2px;
+    }
+    .urna-key {
+      background: linear-gradient(180deg, #f8f8f8 0%, #e8e8e8 50%, #d5d5d5 100%);
+      border: none;
+      border-radius: 8px;
+      box-shadow: 
+        0 5px 0 #888,
+        0 6px 2px rgba(0,0,0,0.2),
+        0 8px 10px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.8),
+        inset 0 -1px 2px rgba(0,0,0,0.1);
+      transition: all 0.08s ease;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .urna-key:active {
+      transform: translateY(4px);
+      box-shadow: 
+        0 1px 0 #888,
+        0 2px 2px rgba(0,0,0,0.2),
+        0 3px 5px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+    .urna-key-tactil::before {
+      content: '⠿';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 16px;
+      color: #666;
+      line-height: 1;
+      font-weight: normal;
+    }
+    .urna-key-braille-branco::after {
+      content: 'BRANCO';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 7px;
+      color: #999;
+      letter-spacing: 0.5px;
+      font-weight: normal;
+    }
+    .urna-key-braille-corrige::after {
+      content: 'CORRIGE';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 7px;
+      color: #999;
+      letter-spacing: 0.5px;
+      font-weight: normal;
+    }
+    .urna-key-braille-confirma::after {
+      content: 'CONFIRMA';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 7px;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.5px;
+      font-weight: normal;
+    }
+    .urna-key-white {
+      background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 50%, #e8e8e8 100%);
+      box-shadow: 
+        0 5px 0 #999,
+        0 6px 2px rgba(0,0,0,0.2),
+        0 8px 10px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    .urna-key-white:active {
+      box-shadow: 
+        0 1px 0 #999,
+        0 2px 2px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .urna-key-orange {
+      background: linear-gradient(180deg, #ffb347 0%, #ff9800 50%, #f57c00 100%);
+      box-shadow: 
+        0 5px 0 #b36b00,
+        0 6px 2px rgba(0,0,0,0.2),
+        0 8px 10px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+    .urna-key-orange:active {
+      box-shadow: 
+        0 1px 0 #b36b00,
+        0 2px 2px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .urna-key-green {
+      background: linear-gradient(180deg, #66bb6a 0%, #4caf50 50%, #388e3c 100%);
+      box-shadow: 
+        0 6px 0 #2e7d32,
+        0 7px 2px rgba(0,0,0,0.2),
+        0 9px 12px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+      color: #ffffff;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .urna-key-green:active {
+      box-shadow: 
+        0 2px 0 #2e7d32,
+        0 3px 2px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .candidate-photo {
+      border: 3px solid #2a2a2a;
+      background: #ddd;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .pulse-green {
+      animation: pulseGreen 1s infinite;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+      50% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .brasil-flag {
+      background: linear-gradient(180deg, #009c3b 0%, #009c3b 33%, #ffdf00 33%, #ffdf00 67%, #002776 67%, #002776 100%);
+    }
+    .loading-spinner {
+      border: 3px solid #e0e0e0;
+      border-top: 3px solid #1a5f2a;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .toast {
+      animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full bg-gray-100 overflow-auto">
+  <div id="app" class="min-h-full w-full"></div>
+  <script>
+    // ============================================
+    // SISTEMA ELEITORAL EDUCACIONAL - TSE FICTÍCIO
+    // ============================================
+    
+    const defaultConfig = {
+      system_title: 'Sistema Eleitoral Educacional'
+    };
+
+    let config = { ...defaultConfig };
+    let allData = [];
+    let currentScreen = 'home';
+    let currentUser = null;
+    let isAdmin = false;
+    let votingStep = 0;
+    let currentVoteNumber = '';
+    let selectedCandidate = null;
+    let votacaoAberta = true;
+    let isLoading = false;
+
+    // Comarcas e seções
+    const COMARCAS = {
+      'GO': { 
+        nome: 'Goiás', 
+        secoes: ['001', '002', '003'],
+        colegios: [
+          'Colégio Eleitoral de Goiânia Central',
+          'Colégio Eleitoral do Entorno do DF',
+          'Colégio Eleitoral do Sul Goiano'
+        ]
+      },
+      'SP': { 
+        nome: 'São Paulo', 
+        secoes: ['001', '002', '003', '004', '005'],
+        colegios: [
+          'Colégio Eleitoral da Capital Paulista',
+          'Colégio Eleitoral do Interior Paulista',
+          'Colégio Eleitoral do Litoral Paulista'
+        ]
+      },
+      'PE': { 
+        nome: 'Pernambuco', 
+        secoes: ['001', '002', '003'],
+        colegios: [
+          'Colégio Eleitoral do Recife Metropolitano',
+          'Colégio Eleitoral do Agreste',
+          'Colégio Eleitoral do Sertão'
+        ]
+      },
+      'AM': { 
+        nome: 'Amazonas', 
+        secoes: ['001', '002'],
+        colegios: [
+          'Colégio Eleitoral de Manaus',
+          'Colégio Eleitoral do Médio Amazonas',
+          'Colégio Eleitoral do Alto Solimões'
+        ]
+      },
+      'RS': { 
+        nome: 'Rio Grande do Sul', 
+        secoes: ['001', '002', '003', '004'],
+        colegios: [
+          'Colégio Eleitoral de Porto Alegre',
+          'Colégio Eleitoral da Serra Gaúcha',
+          'Colégio Eleitoral da Fronteira Oeste'
+        ]
+      }
+    };
+
+    // Cargos em ordem de votaç��o
+    const CARGOS_ORDEM = [
+      { id: 'deputado', nome: 'Deputado Federal', digitos: 4, temVice: false, temSuplentes: true },
+      { id: 'governador', nome: 'Governador', digitos: 2, temVice: true, temSuplentes: false },
+      { id: 'presidente', nome: 'Presidente', digitos: 2, temVice: true, temSuplentes: false }
+    ];
+
+    // Som da urna (base64 beep)
+    const urnaSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp+dnZaQjIuKjI2Oj5COjIqJiYqLjI2Oj5GSkpKSkZCQj4+Pj4+Pj4+QkJCQkJCQkJCQj4+Pj4+Pj4+Pj4+Pj4+Pj5CQkJCQkJCQkJCQkJCQkI+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+QkJCQkJCQkJCPj4+Pj4+Pj4+Pj4+Pj4+Pj4+PkJCQkJCQkJCQj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj5CQkJCQkJCQkI+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+QkJCQkJCQkJCPj4+Pj4+Pj4+Pj4+Pj4+Pj4+PkA==');
+
+    // Helpers
+    function getEleitores() {
+      return allData.filter(d => d.type === 'eleitor');
+    }
+
+    function getCandidatos() {
+      return allData.filter(d => d.type === 'candidato');
+    }
+
+    function getPartidos() {
+      return allData.filter(d => d.type === 'partido');
+    }
+
+    function getConfig() {
+      return allData.find(d => d.type === 'config') || { votacaoAberta: true };
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600'} text-white font-medium`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function playUrnaSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = 800;
+        oscillator.type = 'square';
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.2);
+      } catch(e) {}
+    }
+
+    function playConfirmSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Primeiro beep
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.frequency.value = 900;
+        osc1.type = 'sine';
+        gain1.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc1.start(audioCtx.currentTime);
+        osc1.stop(audioCtx.currentTime + 0.15);
+        
+        // Segundo beep (mais grave)
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.frequency.value = 700;
+        osc2.type = 'sine';
+        gain2.gain.setValueAtTime(0.4, audioCtx.currentTime + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc2.start(audioCtx.currentTime + 0.15);
+        osc2.stop(audioCtx.currentTime + 0.35);
+      } catch(e) {}
+    }
+
+    function playFimSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Som longo característico do FIM
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 600;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch(e) {}
+    }
+
+    // ============================================
+    // RENDERIZAÇÃO
+    // ============================================
+
+    function render() {
+      const app = document.getElementById('app');
+      
+      switch(currentScreen) {
+        case 'home':
+          app.innerHTML = renderHome();
+          break;
+        case 'login':
+          app.innerHTML = renderLogin();
+          break;
+        case 'cadastro':
+          app.innerHTML = renderCadastro();
+          break;
+        case 'tutorial':
+          app.innerHTML = renderTutorial();
+          break;
+        case 'votacao':
+          app.innerHTML = renderVotacao();
+          break;
+        case 'fim':
+          app.innerHTML = renderFim();
+          break;
+        case 'admin-login':
+          app.innerHTML = renderAdminLogin();
+          break;
+        case 'admin':
+          app.innerHTML = renderAdmin();
+          break;
+        default:
+          app.innerHTML = renderHome();
+      }
+
+      attachEventListeners();
+    }
+
+    // ============================================
+    // TELA INICIAL
+    // ============================================
+
+    function renderLogin() {
+      return `
+        <div class="min-h-full bg-gray-100 flex flex-col">
+          <header class="bg-blue-700 text-white p-4 shadow-lg">
+            <div class="max-w-2xl mx-auto flex items-center gap-3">
+              <button id="btn-voltar-login" class="p-2 hover:bg-blue-600 rounded-lg transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <div>
+                <h1 class="font-bold text-lg">Login do Eleitor</h1>
+                <p class="text-blue-200 text-sm">Acesse seu cadastro existente</p>
+              </div>
+            </div>
+          </header>
+
+          <main class="flex-1 flex items-center justify-center p-4">
+            <div class="max-w-md w-full">
+              <div class="bg-white rounded-xl shadow-lg p-6 fade-in">
+                <div class="text-center mb-6">
+                  <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="text-3xl">🔐</span>
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-800">Acesso ao Sistema</h2>
+                  <p class="text-sm text-gray-500">Digite seu nome completo e senha</p>
+                </div>
+
+                <form id="form-login" class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Nome Completo do Personagem
+                    </label>
+                    <input type="text" id="login-nome" required
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      placeholder="Nome exato do seu cadastro">
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Senha de Acesso
+                    </label>
+                    <input type="password" id="login-senha" required
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      placeholder="Sua senha fictícia">
+                  </div>
+
+                  <button type="submit" id="btn-entrar"
+                    class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition">
+                    ENTRAR E VOTAR
+                  </button>
+                </form>
+
+                <div class="mt-6 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg hidden" id="erro-login">
+                  <p class="text-red-700 font-medium text-sm"></p>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      `;
+    }
+
+    function renderHome() {
+      const cfg = getConfig();
+      const statusVotacao = cfg.votacaoAberta !== false;
+
+      return `
+        <div class="min-h-full bg-gradient-to-b from-gray-50 to-gray-200 flex flex-col">
+          <!-- Header -->
+          <header class="bg-white shadow-md">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center shadow-lg">
+                  <span class="text-white text-xl font-bold">⚖️</span>
+                </div>
+                <div>
+                  <h1 class="text-lg md:text-xl font-bold text-gray-800">TSE EDUCACIONAL</h1>
+                  <p class="text-xs text-gray-500">Sistema de Simulação Eleitoral</p>
+                </div>
+              </div>
+              <button id="btn-admin-login" class="text-xs text-gray-400 hover:text-gray-600 transition">
+                Área Restrita
+              </button>
+            </div>
+          </header>
+
+          <!-- Main Content -->
+          <main class="flex-1 flex items-center justify-center p-4">
+            <div class="max-w-lg w-full">
+              <!-- Aviso Educacional -->
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+                <div class="flex items-start gap-3">
+                  <span class="text-2xl">📚</span>
+                  <div>
+                    <h3 class="font-bold text-yellow-800">Simulação Educacional</h3>
+                    <p class="text-sm text-yellow-700">Este é um sistema fictício para fins didáticos. Não representa eleições reais.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Principal -->
+              <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="bg-gradient-to-r from-green-700 to-green-600 p-6 text-center">
+                  <div class="w-20 h-20 mx-auto bg-white rounded-full flex items-center justify-center shadow-lg mb-4">
+                    <span class="text-4xl">🗳️</span>
+                  </div>
+                  <h2 class="text-2xl font-bold text-white">Eleições Simuladas</h2>
+                  <p class="text-green-100 text-sm mt-1">Sistema Educacional de Votação</p>
+                </div>
+
+                <div class="p-6 space-y-4">
+                  <!-- Status -->
+                  <div class="flex items-center justify-center gap-2 py-2 px-4 rounded-full ${statusVotacao ? 'bg-green-100' : 'bg-red-100'}">
+                    <span class="w-3 h-3 rounded-full ${statusVotacao ? 'bg-green-500 pulse-green' : 'bg-red-500'}"></span>
+                    <span class="font-medium ${statusVotacao ? 'text-green-700' : 'text-red-700'}">
+                      ${statusVotacao ? 'Votação Aberta' : 'Votação Encerrada'}
+                    </span>
+                  </div>
+
+                  ${statusVotacao ? `
+                    <div class="space-y-3">
+                      <button id="btn-novo-eleitor" class="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-lg rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
+                        NOVO CADASTRO
+                      </button>
+                      <button id="btn-ja-cadastrado" class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
+                        JÁ SOU CADASTRADO
+                      </button>
+                    </div>
+                  ` : `
+                    <div class="text-center py-4">
+                      <p class="text-gray-600">A votação foi encerrada.</p>
+                      <p class="text-sm text-gray-500">Aguarde a apuração dos resultados.</p>
+                    </div>
+                  `}
+
+                  <div class="pt-4 border-t">
+                    <h4 class="font-medium text-gray-700 mb-2 text-center">Cargos em Votação</h4>
+                    <div class="grid grid-cols-3 gap-2 text-center text-sm">
+                      <div class="bg-gray-50 p-3 rounded-lg">
+                        <span class="text-2xl">🏛️</span>
+                        <p class="text-gray-600 mt-1">Deputado Federal</p>
+                      </div>
+                      <div class="bg-gray-50 p-3 rounded-lg">
+                        <span class="text-2xl">🏢</span>
+                        <p class="text-gray-600 mt-1">Governador</p>
+                      </div>
+                      <div class="bg-gray-50 p-3 rounded-lg">
+                        <span class="text-2xl">🇧🇷</span>
+                        <p class="text-gray-600 mt-1">Presidente</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Info -->
+              <p class="text-center text-xs text-gray-400 mt-6">
+                Sistema desenvolvido para fins educacionais • Versão 2.0
+              </p>
+            </div>
+          </main>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // CADASTRO DE ELEITOR
+    // ============================================
+
+    function renderCadastro() {
+      return `
+        <div class="min-h-full bg-gray-100 flex flex-col">
+          <header class="bg-green-700 text-white p-4 shadow-lg">
+            <div class="max-w-2xl mx-auto flex items-center gap-3">
+              <button id="btn-voltar-home" class="p-2 hover:bg-green-600 rounded-lg transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <div>
+                <h1 class="font-bold text-lg">Cadastro do Eleitor</h1>
+                <p class="text-green-200 text-sm">Preencha seus dados fictícios</p>
+              </div>
+            </div>
+          </header>
+
+          <main class="flex-1 p-4">
+            <div class="max-w-2xl mx-auto">
+              <div class="bg-white rounded-xl shadow-lg p-6 fade-in">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b">
+                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <span class="text-2xl">📝</span>
+                  </div>
+                  <div>
+                    <h2 class="font-bold text-gray-800">Identificação do Eleitor</h2>
+                    <p class="text-sm text-gray-500">Todos os campos são obrigatórios</p>
+                  </div>
+                </div>
+
+                <form id="form-cadastro" class="space-y-5">
+                  <!-- Discord -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Usuário do Discord *
+                    </label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">@</span>
+                      <input type="text" id="input-discord" required
+                        class="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                        placeholder="seu_usuario">
+                    </div>
+                  </div>
+
+                  <!-- Nome Completo -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Nome Completo do Personagem *
+                    </label>
+                    <input type="text" id="input-nome" required
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                      placeholder="Nome do seu personagem fictício">
+                  </div>
+
+                  <!-- Comarca -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Comarca (Estado) *
+                    </label>
+                    <select id="input-comarca" required
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition bg-white">
+                      <option value="">Selecione sua comarca</option>
+                      ${Object.entries(COMARCAS).map(([sigla, dados]) => `
+                        <option value="${sigla}">${dados.nome} (${sigla})</option>
+                      `).join('')}
+                    </select>
+                  </div>
+
+                  <!-- Seção -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Seção Eleitoral *
+                    </label>
+                    <select id="input-secao" required
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition bg-white" disabled>
+                      <option value="">Selecione primeiro a comarca</option>
+                    </select>
+                  </div>
+
+                  <!-- Senha -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Senha de Acesso (Fictícia) *
+                    </label>
+                    <input type="password" id="input-senha" required minlength="4"
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                      placeholder="Crie uma senha para seu cadastro">
+                    <p class="text-xs text-gray-500 mt-1">Você precisará desta senha para acessar novamente</p>
+                  </div>
+
+                  <!-- Aviso NGV -->
+                  <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                    <div class="flex items-start gap-3">
+                      <span class="text-xl">⚠️</span>
+                      <div>
+                        <p class="font-medium text-yellow-800">Importante</p>
+                        <p class="text-sm text-yellow-700">Confirme seu voto no servidor NGV do Discord após votar, caso contrário seu voto poderá ser anulado na apuração fictícia.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" id="btn-cadastrar"
+                    class="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+                    <span>VALIDAR E CONTINUAR</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </main>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // TUTORIAL
+    // ============================================
+
+    function renderTutorial() {
+      return `
+        <div class="min-h-full bg-gray-100 flex flex-col">
+          <header class="bg-green-700 text-white p-4 shadow-lg">
+            <div class="max-w-2xl mx-auto">
+              <h1 class="font-bold text-lg">Como Votar</h1>
+              <p class="text-green-200 text-sm">Instruções para a votação</p>
+            </div>
+          </header>
+
+          <main class="flex-1 p-4">
+            <div class="max-w-2xl mx-auto space-y-4 fade-in">
+              <!-- Boas vindas -->
+              <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="text-center mb-4">
+                  <span class="text-5xl">👋</span>
+                  <h2 class="text-xl font-bold text-gray-800 mt-2">Olá, ${currentUser?.nome?.split(' ')[0] || 'Eleitor'}!</h2>
+                  <p class="text-gray-600">Bem-vindo(a) à urna eletrônica educacional</p>
+                </div>
+              </div>
+
+              <!-- Ordem de votação -->
+              <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <span class="text-xl">📋</span>
+                  Ordem da Votação
+                </h3>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <span class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">1</span>
+                    <div>
+                      <p class="font-medium text-gray-800">Deputado Federal</p>
+                      <p class="text-sm text-gray-500">4 dígitos (ou 2 para voto de legenda)</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                    <span class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                    <div>
+                      <p class="font-medium text-gray-800">Governador e Vice</p>
+                      <p class="text-sm text-gray-500">2 dígitos</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                    <span class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                    <div>
+                      <p class="font-medium text-gray-800">Presidente e Vice</p>
+                      <p class="text-sm text-gray-500">2 dígitos</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Instruções -->
+              <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <span class="text-xl">💡</span>
+                  Instruções
+                </h3>
+                <ul class="space-y-2 text-gray-600">
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-600">✓</span>
+                    Digite o número do candidato no teclado
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-600">✓</span>
+                    Confira os dados na tela antes de confirmar
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-orange-500">⟲</span>
+                    Use CORRIGE para apagar e recomeçar
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-white bg-gray-400 px-1 rounded text-xs">BRANCO</span>
+                    Para votar em branco
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-600 font-bold">CONFIRMA</span>
+                    Para registrar seu voto
+                  </li>
+                </ul>
+              </div>
+
+              <button id="btn-iniciar-votacao"
+                class="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-lg rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
+                INICIAR VOTAÇÃO
+              </button>
+            </div>
+          </main>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // URNA ELETRÔNICA
+    // ============================================
+
+    function renderVotacao() {
+      const cargo = CARGOS_ORDEM[votingStep];
+      const candidatos = getCandidatos().filter(c => c.cargo === cargo.id && !c.subJudice);
+      const cfg = getConfig();
+      
+      // Verificar se votação encerrada
+      if (cfg.votacaoAberta === false) {
+        return renderUrnaEncerrada();
+      }
+      
+      // Encontrar candidato pelo número
+      let candidatoEncontrado = null;
+      let isLegenda = false;
+      
+      if (currentVoteNumber.length >= 2) {
+        // Verificar se é voto de legenda (apenas 2 dígitos para deputado)
+        if (cargo.id === 'deputado' && currentVoteNumber.length === 2) {
+          const partidoNum = currentVoteNumber;
+          candidatoEncontrado = candidatos.find(c => c.numero.startsWith(partidoNum));
+          if (candidatoEncontrado) isLegenda = true;
+        }
+        
+        // Busca exata
+        if (!isLegenda && currentVoteNumber.length === cargo.digitos) {
+          candidatoEncontrado = candidatos.find(c => c.numero === currentVoteNumber);
+        }
+      }
+
+      const showConfirmButton = currentVoteNumber.length === cargo.digitos || 
+                                 (cargo.id === 'deputado' && currentVoteNumber.length === 2 && isLegenda);
+
+      return `
+        <div class="min-h-full bg-gray-400 flex flex-col items-center justify-center p-2 md:p-6">
+          <!-- Header Urna -->
+          <div class="w-full max-w-6xl mb-3">
+            <div class="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white text-center py-3 px-4 rounded-t-xl shadow-lg">
+              <p class="text-xs font-bold tracking-wider">JUSTIÇA ELEITORAL EDUCACIONAL</p>
+            </div>
+          </div>
+
+          <!-- Corpo da Urna -->
+          <div class="urna-container w-full max-w-6xl p-4 md:p-8">
+            <div class="flex flex-col lg:flex-row gap-6">
+              <!-- Tela da Urna -->
+              <div class="urna-screen flex-1 p-5 min-h-[480px]">
+                <!-- Cargo -->
+                <div class="bg-gray-200 border-b-2 border-gray-400 pb-2 mb-4">
+                  <p class="text-center text-sm text-gray-600">VOTE PARA</p>
+                  <p class="text-center text-xl font-bold text-gray-800 uppercase">${cargo.nome}</p>
+                  ${cargo.id !== 'presidente' ? `
+                    <p class="text-center text-xs text-gray-500">Comarca: ${COMARCAS[currentUser?.comarca]?.nome || 'Nacional'}</p>
+                  ` : ''}
+                </div>
+
+                <!-- Número digitado -->
+                <div class="mb-4">
+                  <p class="text-sm text-gray-600 mb-1">Número:</p>
+                  <div class="flex gap-2">
+                    ${Array(cargo.digitos).fill(0).map((_, i) => `
+                      <div class="w-12 h-14 border-2 ${currentVoteNumber[i] ? 'border-gray-800 bg-white' : 'border-gray-400 bg-gray-100'} flex items-center justify-center">
+                        <span class="mono text-3xl font-bold">${currentVoteNumber[i] || ''}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+
+                ${candidatoEncontrado ? `
+                  <!-- Candidato Encontrado -->
+                  <div class="bg-white border-2 border-gray-400 rounded-lg p-4 fade-in">
+                    <div class="flex gap-5">
+                      <!-- Foto Principal -->
+                      <div class="flex-shrink-0">
+                        <div class="candidate-photo w-32 h-40 md:w-40 md:h-52 overflow-hidden rounded-lg">
+                          <img src="${candidatoEncontrado.fotoUrl}" alt="${candidatoEncontrado.nome}" 
+                               class="w-full h-full object-cover"
+                               onerror="this.style.background='#e0e0e0'; this.alt='Foto indisponível';">
+                        </div>
+                        ${isLegenda ? `
+                          <p class="text-center text-xs text-orange-600 font-bold mt-2 bg-orange-100 py-1 rounded">VOTO DE LEGENDA</p>
+                        ` : ''}
+                      </div>
+
+                      <!-- Info -->
+                      <div class="flex-1 space-y-2">
+                        <div>
+                          <p class="text-xs text-gray-500 uppercase">Nome:</p>
+                          <p class="font-bold text-gray-900 text-lg">${candidatoEncontrado.nome}</p>
+                        </div>
+                        <div>
+                          <p class="text-xs text-gray-500 uppercase">Partido:</p>
+                          <p class="font-semibold text-gray-800">${candidatoEncontrado.sigla} - ${candidatoEncontrado.partido}</p>
+                        </div>
+
+                        ${cargo.temVice && candidatoEncontrado.nomeVice ? `
+                          <div class="pt-3 border-t border-gray-300">
+                            <p class="text-xs text-gray-500 uppercase mb-2">Vice:</p>
+                            <div class="flex items-center gap-3">
+                              <div class="candidate-photo w-16 h-20 overflow-hidden rounded">
+                                <img src="${candidatoEncontrado.fotoVice}" alt="${candidatoEncontrado.nomeVice}"
+                                     class="w-full h-full object-cover"
+                                     onerror="this.style.background='#e0e0e0';">
+                              </div>
+                              <p class="font-medium text-gray-800">${candidatoEncontrado.nomeVice}</p>
+                            </div>
+                          </div>
+                        ` : ''}
+
+                        ${cargo.temSuplentes && candidatoEncontrado.suplente1 ? `
+                          <div class="pt-3 border-t border-gray-300">
+                            <p class="text-xs text-gray-500 uppercase mb-2">Suplentes:</p>
+                            <div class="flex gap-3">
+                              <div class="text-center">
+                                <div class="candidate-photo w-14 h-14 overflow-hidden rounded-lg">
+                                  <img src="${candidatoEncontrado.fotoSuplente1}" alt="${candidatoEncontrado.suplente1}"
+                                       class="w-full h-full object-cover"
+                                       onerror="this.style.background='#e0e0e0';">
+                                </div>
+                                <p class="text-xs text-gray-700 mt-1 font-medium truncate w-20">${candidatoEncontrado.suplente1?.split(' ')[0] || ''}</p>
+                              </div>
+                              ${candidatoEncontrado.suplente2 ? `
+                                <div class="text-center">
+                                  <div class="candidate-photo w-14 h-14 overflow-hidden rounded-lg">
+                                    <img src="${candidatoEncontrado.fotoSuplente2}" alt="${candidatoEncontrado.suplente2}"
+                                         class="w-full h-full object-cover"
+                                         onerror="this.style.background='#e0e0e0';">
+                                  </div>
+                                  <p class="text-xs text-gray-700 mt-1 font-medium truncate w-20">${candidatoEncontrado.suplente2?.split(' ')[0] || ''}</p>
+                                </div>
+                              ` : ''}
+                            </div>
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  </div>
+                ` : currentVoteNumber.length === cargo.digitos ? `
+                  <!-- Voto Nulo -->
+                  <div class="bg-red-50 border-2 border-red-300 rounded-lg p-6 text-center fade-in">
+                    <span class="text-4xl">❌</span>
+                    <p class="text-xl font-bold text-red-700 mt-2">VOTO NULO</p>
+                    <p class="text-sm text-red-600">Número não corresponde a nenhum candidato</p>
+                  </div>
+                ` : ''}
+
+                ${selectedCandidate === 'branco' ? `
+                  <div class="bg-gray-100 border-2 border-gray-400 rounded-lg p-6 text-center fade-in">
+                    <span class="text-4xl">⬜</span>
+                    <p class="text-xl font-bold text-gray-700 mt-2">VOTO EM BRANCO</p>
+                  </div>
+                ` : ''}
+
+                <!-- Instrução -->
+                <div class="mt-4 text-center">
+                  <p class="text-sm text-gray-600">
+                    ${showConfirmButton || selectedCandidate === 'branco' 
+                      ? 'Aperte CONFIRMA para registrar ou CORRIGE para alterar' 
+                      : 'Digite o número do candidato'}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Teclado -->
+              <div class="lg:w-72 flex flex-col gap-4 bg-gray-700 p-5 rounded-xl shadow-2xl">
+                <!-- Teclado Numérico -->
+                <div class="grid grid-cols-3 gap-3">
+                  ${[1,2,3,4,5,6,7,8,9,0].map(n => `
+                    <button class="urna-key ${n === 5 ? 'urna-key-tactil' : ''} h-16 text-2xl font-bold ${n === 0 ? 'col-start-2' : ''}"
+                            onclick="handleKeyPress('${n}')">
+                      ${n}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="space-y-3 mt-3">
+                  <button class="urna-key urna-key-white urna-key-braille-branco w-full h-14 font-bold text-lg tracking-wide"
+                          onclick="handleKeyPress('branco')">
+                    BRANCO
+                  </button>
+                  <button class="urna-key urna-key-orange urna-key-braille-corrige w-full h-14 font-bold text-lg tracking-wide"
+                          onclick="handleKeyPress('corrige')">
+                    CORRIGE
+                  </button>
+                  <button class="urna-key urna-key-green urna-key-braille-confirma w-full h-16 font-bold text-xl tracking-wider ${!showConfirmButton && selectedCandidate !== 'branco' ? 'opacity-50' : ''}"
+                          onclick="handleKeyPress('confirma')"
+                          ${!showConfirmButton && selectedCandidate !== 'branco' ? 'disabled' : ''}>
+                    CONFIRMA
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progresso -->
+          <div class="w-full max-w-6xl mt-6">
+            <div class="flex justify-center gap-3">
+              ${CARGOS_ORDEM.map((c, i) => `
+                <div class="flex items-center gap-2">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg
+                    ${i < votingStep ? 'bg-green-600 text-white' : i === votingStep ? 'bg-blue-600 text-white pulse-green' : 'bg-gray-400 text-gray-700'}">
+                    ${i < votingStep ? '✓' : i + 1}
+                  </div>
+                  ${i < CARGOS_ORDEM.length - 1 ? '<div class="w-12 h-2 bg-gray-400 rounded-full"></div>' : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Função global para teclas
+    window.handleKeyPress = async function(key) {
+      const cargo = CARGOS_ORDEM[votingStep];
+
+      if (key === 'branco') {
+        currentVoteNumber = '';
+        selectedCandidate = 'branco';
+        playUrnaSound();
+      } else if (key === 'corrige') {
+        currentVoteNumber = '';
+        selectedCandidate = null;
+        playUrnaSound();
+      } else if (key === 'confirma') {
+        if (selectedCandidate === 'branco' || currentVoteNumber.length === cargo.digitos || 
+            (cargo.id === 'deputado' && currentVoteNumber.length === 2)) {
+          await registrarVoto();
+        }
+      } else {
+        if (currentVoteNumber.length < cargo.digitos) {
+          currentVoteNumber += key;
+          selectedCandidate = null;
+          playUrnaSound();
+        }
+      }
+      render();
+    };
+
+    async function registrarVoto() {
+      const cargo = CARGOS_ORDEM[votingStep];
+      const candidatos = getCandidatos().filter(c => c.cargo === cargo.id);
+
+      if (selectedCandidate === 'branco') {
+        // Voto em branco - não precisa atualizar nenhum candidato
+      } else {
+        const candidato = candidatos.find(c => c.numero === currentVoteNumber || 
+          (cargo.id === 'deputado' && currentVoteNumber.length === 2 && c.numero.startsWith(currentVoteNumber)));
+        
+        if (candidato) {
+          if (cargo.id === 'deputado' && currentVoteNumber.length === 2) {
+            // Voto de legenda
+            candidato.votosLegenda = (candidato.votosLegenda || 0) + 1;
+          } else {
+            candidato.votos = (candidato.votos || 0) + 1;
+          }
+          await window.dataSdk.update(candidato);
+        }
+      }
+
+      playConfirmSound();
+      
+      // Próximo cargo ou finalizar
+      if (votingStep < CARGOS_ORDEM.length - 1) {
+        votingStep++;
+        currentVoteNumber = '';
+        selectedCandidate = null;
+        setTimeout(() => render(), 400);
+      } else {
+        // Marcar eleitor como votou
+        if (currentUser) {
+          currentUser.votou = true;
+          await window.dataSdk.update(currentUser);
+        }
+        
+        // Tocar som do FIM e mostrar tela
+        setTimeout(() => {
+          playFimSound();
+          currentScreen = 'fim';
+          render();
+        }, 500);
+        return;
+      }
+    }
+
+    // ============================================
+    // TELA FINAL
+    // ============================================
+
+    function renderFim() {
+      const comarca = COMARCAS[currentUser?.comarca];
+      const colegioIndex = Math.floor(Math.random() * (comarca?.colegios?.length || 1));
+      const colegioEleitoral = comarca?.colegios?.[colegioIndex] || 'Colégio Eleitoral';
+      const anoEleicao = getConfig().ano_eleicao || new Date().getFullYear();
+      
+      return `
+        <div class="min-h-full bg-gray-400 flex flex-col items-center justify-center p-4">
+          <div class="max-w-5xl w-full fade-in space-y-6">
+            <!-- Urna com FIM -->
+            <div class="urna-container p-8">
+              <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Tela da Urna com FIM -->
+                <div class="urna-screen flex-1 p-12 flex items-center justify-center min-h-[400px]">
+                  <div class="text-center w-full">
+                    <div class="text-9xl font-bold text-gray-800 mb-4 tracking-widest" style="font-family: 'Roboto Mono', monospace;">
+                      FIM
+                    </div>
+                    <div class="h-2 w-full bg-green-600 rounded-full"></div>
+                  </div>
+                </div>
+
+                <!-- Teclado (mantido visível) -->
+                <div class="lg:w-72 flex flex-col gap-4 bg-gray-700 p-5 rounded-xl shadow-2xl">
+                  <!-- Teclado Numérico -->
+                  <div class="grid grid-cols-3 gap-3 opacity-50">
+                    ${[1,2,3,4,5,6,7,8,9,0].map(n => `
+                      <button class="urna-key ${n === 5 ? 'urna-key-tactil' : ''} h-16 text-2xl font-bold ${n === 0 ? 'col-start-2' : ''}" disabled>
+                        ${n}
+                      </button>
+                    `).join('')}
+                  </div>
+
+                  <!-- Botões de Ação -->
+                  <div class="space-y-3 mt-3 opacity-50">
+                    <button class="urna-key urna-key-white urna-key-braille-branco w-full h-14 font-bold text-lg tracking-wide" disabled>
+                      BRANCO
+                    </button>
+                    <button class="urna-key urna-key-orange urna-key-braille-corrige w-full h-14 font-bold text-lg tracking-wide" disabled>
+                      CORRIGE
+                    </button>
+                    <button class="urna-key urna-key-green urna-key-braille-confirma w-full h-16 font-bold text-xl tracking-wider" disabled>
+                      CONFIRMA
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Certificado -->
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-green-700">
+              <div class="bg-gradient-to-r from-green-700 via-green-600 to-green-700 p-6 text-center relative">
+                <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                <div class="relative z-10">
+                  <div class="w-20 h-20 mx-auto bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
+                    <span class="text-4xl">⚖️</span>
+                  </div>
+                  <h1 class="text-2xl font-bold text-white mb-1">CERTIFICADO DE VOTO</h1>
+                  <p class="text-green-100 text-sm">Simulação Eleitoral</p>
+                </div>
+              </div>
+
+              <div class="p-8">
+                <div class="mb-6 pb-6 border-b-2 border-gray-200 text-justify leading-relaxed text-gray-700">
+                  <p class="mb-4">
+                    <strong>Certificamos</strong>, para os devidos fins, que <strong>${currentUser?.nome || 'Eleitor'}</strong> 
+                    (<strong>@${currentUser?.discord || 'discord'}</strong>), devidamente cadastrado(a) no sistema de simulação eleitoral, 
+                    residente na comarca de <strong>${comarca?.nome || 'Nacional'}</strong>, participou regularmente do processo de 
+                    votação eletrônica fictícia, tendo exercido seu direito de voto na <strong>Seção Eleitoral ${currentUser?.secao || '000'}</strong>, 
+                    conforme regras e procedimentos previamente estabelecidos.
+                  </p>
+                  <p class="mb-4">
+                    A votação ocorreu de forma individual, guiada e validada pelo sistema, respeitando a ordem oficial dos cargos e 
+                    os critérios de registro eletrônico. O voto foi computado na seção autuada pelo <strong>${colegioEleitoral}</strong>, 
+                    correspondente à comarca de registro do eleitor, garantindo autenticidade, integridade e finalidade educacional do processo.
+                  </p>
+                  <p>
+                    Este certificado comprova exclusivamente a participação na simulação, <strong>sem qualquer efeito jurídico real</strong>, 
+                    sendo emitido automaticamente após o encerramento da votação, para fins de registro institucional, memória histórica e 
+                    validação interna do sistema.
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                  <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <p class="text-xs text-blue-600 uppercase font-medium mb-1">Comarca</p>
+                    <p class="font-bold text-blue-900">${comarca?.nome || 'Nacional'}</p>
+                  </div>
+                  <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <p class="text-xs text-purple-600 uppercase font-medium mb-1">Seção Eleitoral</p>
+                    <p class="font-bold text-purple-900">${currentUser?.secao || '000'}</p>
+                  </div>
+                  <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <p class="text-xs text-green-600 uppercase font-medium mb-1">Data</p>
+                    <p class="font-bold text-green-900">${new Date().toLocaleDateString('pt-BR')}</p>
+                  </div>
+                  <div class="text-center p-4 bg-orange-50 rounded-lg">
+                    <p class="text-xs text-orange-600 uppercase font-medium mb-1">Horário</p>
+                    <p class="font-bold text-orange-900">${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                  </div>
+                </div>
+
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <p class="text-center text-sm text-gray-600">
+                    <strong>Colégio Eleitoral:</strong> ${colegioEleitoral}
+                  </p>
+                  <p class="text-center text-sm text-gray-600 mt-1">
+                    <strong>Ano da Eleição:</strong> ${anoEleicao}
+                  </p>
+                </div>
+
+                <div class="border-t-2 border-gray-200 pt-6">
+                  <div class="text-center">
+                    <div class="inline-block border-t-2 border-gray-800 pt-2 px-12 mb-2">
+                      <p class="font-bold text-gray-800">Kowalski</p>
+                    </div>
+                    <p class="text-sm text-gray-600">Administrador do Sistema NGV</p>
+                    <p class="text-xs text-gray-500 mt-2">Núcleo de Gestão de Votação - TSE Educacional</p>
+                  </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                  <p class="text-yellow-800 text-sm font-medium">📚 Documento Educacional</p>
+                  <p class="text-yellow-700 text-xs mt-1">Este certificado faz parte de uma simulação educacional e não tem validade oficial.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button onclick="location.reload()"
+                class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition transform hover:scale-105">
+                Voltar ao Início
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // URNA ENCERRADA
+    // ============================================
+
+ function renderUrnaEncerrada() {  
+  return `  
+    <div class="min-h-full bg-gray-400 flex flex-col items-center justify-center p-2 md:p-6">  
+      <div class="w-full max-w-6xl mb-3">  
+        <div class="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white text-center py-3 px-4 rounded-t-xl shadow-lg">  
+          <p class="text-xs font-bold tracking-wider">TSE</p>  
+        </div>  
+      </div>  
+
+      <div class="urna-container w-full max-w-6xl p-4 md:p-8">  
+        <div class="flex flex-col lg:flex-row gap-6">  
+          <!-- Tela da Urna -->  
+          <div class="urna-screen flex-1 p-12 flex items-center justify-center min-h-[480px]">  
+            <div class="text-center fade-in">  
+              <div class="text-9xl font-bold text-gray-800 mb-8 tracking-widest" style="font-family: 'Roboto Mono', monospace;">  
+                FIM  
+              </div>  
+              <div class="h-3 w-full bg-red-600 rounded-full mb-6"></div>  
+              <p class="text-xl text-gray-700 font-medium">VOTAÇÃO ENCERRADA</p>  
+              <p class="text-gray-600 mt-2">Aguarde a apuração dos resultados</p>  
+            </div>  
+          </div>  
+
+          <!-- Teclado (mantido visível) -->  
+          <div class="lg:w-72 flex flex-col gap-4 bg-gray-700 p-5 rounded-xl shadow-2xl">  
+            <!-- Teclado Numérico -->  
+            <div class="grid grid-cols-3 gap-3 opacity-50">  
+              ${[1,2,3,4,5,6,7,8,9,0].map(n => `  
+                <button class="urna-key ${n === 5 ? 'urna-key-tactil' : ''} h-16 text-2xl font-bold ${n === 0 ? 'col-start-2' : ''}" disabled>  
+                  ${n}  
+                </button>  
+              `).join('')}  
+            </div>  
+
+            <!-- Botões de Ação -->  
+            <div class="space-y-3 mt-3 opacity-50">  
+              <button class="urna-key urna-key-white urna-key-braille-branco w-full h-14 font-bold text-lg tracking-wide" disabled>  
+                BRANCO  
+              </button>  
+              <button class="urna-key urna-key-orange urna-key-braille-corrige w-full h-14 font-bold text-lg tracking-wide" disabled>  
+                CORRIGE  
+              </button>  
+              <button class="urna-key urna-key-green urna-key-braille-confirma w-full h-16 font-bold text-xl tracking-wider" disabled>  
+                CONFIRMA  
+              </button>  
+            </div>  
+          </div>  
+        </div>  
+
+        <!-- Logo do TSE no final da urna -->  
+        <div class="mt-6 flex justify-center">  
+          <img src="https://www.tse.jus.br/imagens/logo-tse.png" alt="Logo TSE" class="h-16 object-contain">  
+        </div>  
+
+      </div>  
+    </div>  
+  `;  
+} ============================================
+    // LOGIN ADMIN
+    // ============================================
+
+    function renderAdminLogin() {
+      return `
+        <div class="min-h-full bg-gray-900 flex items-center justify-center p-4">
+          <div class="max-w-md w-full fade-in">
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+              <div class="bg-gradient-to-r from-gray-800 to-gray-700 p-6 text-center">
+                <div class="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center mb-3">
+                  <span class="text-3xl">🔐</span>
+                </div>
+                <h1 class="text-xl font-bold text-white">Área Restrita</h1>
+                <p class="text-gray-300 text-sm">Painel Administrativo TSE</p>
+              </div>
+
+              <form id="form-admin-login" class="p-6 space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
+                  <input type="text" id="admin-user" required
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-gray-500 transition"
+                    placeholder="Digite seu usuário">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                  <input type="password" id="admin-pass" required
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-gray-500 transition"
+                    placeholder="Digite sua senha">
+                </div>
+                <button type="submit"
+                  class="w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-lg transition">
+                  ENTRAR
+                </button>
+                <button type="button" id="btn-voltar-admin"
+                  class="w-full py-2 text-gray-500 hover:text-gray-700 text-sm transition">
+                  Voltar
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // PAINEL ADMINISTRATIVO
+    // ============================================
+
+    function renderAdmin() {
+      const eleitores = getEleitores();
+      const candidatos = getCandidatos();
+      const partidos = getPartidos();
+      const cfg = getConfig();
+
+      return `
+        <div class="min-h-full bg-gray-100">
+          <!-- Header Admin -->
+          <header class="bg-gray-800 text-white shadow-lg sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">⚖️</span>
+                <div>
+                  <h1 class="font-bold">TSE EDUCACIONAL</h1>
+                  <p class="text-xs text-gray-400">Painel Administrativo</p>
+                </div>
+              </div>
+              <button id="btn-logout-admin" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition">
+                Sair
+              </button>
+            </div>
+          </header>
+
+          <!-- Tabs -->
+          <div class="bg-white border-b sticky top-14 z-30">
+            <div class="max-w-7xl mx-auto px-4">
+              <nav class="flex gap-1 overflow-x-auto">
+                <button class="admin-tab px-4 py-3 text-sm font-medium border-b-2 border-green-600 text-green-700" data-tab="dashboard">
+                  📊 Dashboard
+                </button>
+                <button class="admin-tab px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="eleitores">
+                  👥 Eleitores
+                </button>
+                <button class="admin-tab px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="partidos">
+                  🏛️ Partidos
+                </button>
+                <button class="admin-tab px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="candidatos">
+                  🎯 Candidatos
+                </button>
+                <button class="admin-tab px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="apuracao">
+                  📈 Apuração
+                </button>
+                <button class="admin-tab px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="config">
+                  ⚙️ Configuraç��es
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <main class="max-w-7xl mx-auto p-4">
+            <!-- Dashboard -->
+            <div id="tab-dashboard" class="admin-content">
+              ${renderAdminDashboard(eleitores, candidatos, partidos, cfg)}
+            </div>
+
+            <!-- Eleitores -->
+            <div id="tab-eleitores" class="admin-content hidden">
+              ${renderAdminEleitores(eleitores)}
+            </div>
+
+            <!-- Partidos -->
+            <div id="tab-partidos" class="admin-content hidden">
+              ${renderAdminPartidos(partidos)}
+            </div>
+
+            <!-- Candidatos -->
+            <div id="tab-candidatos" class="admin-content hidden">
+              ${renderAdminCandidatos(candidatos, partidos)}
+            </div>
+
+            <!-- Apuração -->
+            <div id="tab-apuracao" class="admin-content hidden">
+              ${renderAdminApuracao(candidatos, eleitores)}
+            </div>
+
+            <!-- Fraudes -->
+            <div id="tab-fraudes" class="admin-content hidden">
+              ${renderAdminFraudes()}
+            </div>
+
+            <!-- Configurações -->
+            <div id="tab-config" class="admin-content hidden">
+              ${renderAdminConfig(cfg)}
+            </div>
+          </main>
+        </div>
+      `;
+    }
+
+    function renderAdminDashboard(eleitores, candidatos, partidos, cfg) {
+      const votaram = eleitores.filter(e => e.votou).length;
+      const naoVotaram = eleitores.length - votaram;
+
+      return `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <span class="text-2xl">👥</span>
+              </div>
+              <div>
+                <p class="text-3xl font-bold text-gray-800">${eleitores.length}</p>
+                <p class="text-sm text-gray-500">Eleitores</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <span class="text-2xl">✅</span>
+              </div>
+              <div>
+                <p class="text-3xl font-bold text-green-600">${votaram}</p>
+                <p class="text-sm text-gray-500">Já Votaram</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <span class="text-2xl">⏳</span>
+              </div>
+              <div>
+                <p class="text-3xl font-bold text-orange-600">${naoVotaram}</p>
+                <p class="text-sm text-gray-500">Pendentes</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <span class="text-2xl">🎯</span>
+              </div>
+              <div>
+                <p class="text-3xl font-bold text-purple-600">${candidatos.length}</p>
+                <p class="text-sm text-gray-500">Candidatos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6">
+          <h3 class="font-bold text-gray-800 mb-4">Status da Votação</h3>
+          <div class="flex items-center gap-4">
+            <div class="w-4 h-4 rounded-full ${cfg.votacaoAberta !== false ? 'bg-green-500 pulse-green' : 'bg-red-500'}"></div>
+            <span class="font-medium ${cfg.votacaoAberta !== false ? 'text-green-700' : 'text-red-700'}">
+              ${cfg.votacaoAberta !== false ? 'Votação Aberta' : 'Votação Encerrada'}
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminEleitores(eleitores) {
+      return `
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <div class="p-4 border-b bg-gray-50">
+            <h3 class="font-bold text-gray-800">Eleitores Cadastrados (${eleitores.length})</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Foto</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discord</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Comarca</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                ${eleitores.length === 0 ? `
+                  <tr>
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                      Nenhum eleitor cadastrado
+                    </td>
+                  </tr>
+                ` : eleitores.map(e => `
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">
+                      <img src="${e.fotoUrl}" class="w-10 h-10 rounded-full object-cover border"
+                           onerror="this.style.background='#e0e0e0';">
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-800">${e.nome}</td>
+                    <td class="px-4 py-3 text-gray-600">@${e.discord}</td>
+                    <td class="px-4 py-3 text-gray-600">${COMARCAS[e.comarca]?.nome || e.comarca} - Seção ${e.secao}</td>
+                    <td class="px-4 py-3">
+                      <span class="px-2 py-1 rounded-full text-xs font-medium ${e.votou ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                        ${e.votou ? 'Votou' : 'Pendente'}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3">
+                      <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteEleitor('${e.__backendId}')">
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminPartidos(partidos) {
+      return `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Formulário -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h3 class="font-bold text-gray-800 mb-4">Novo Partido</h3>
+            <form id="form-partido" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Sigla</label>
+                <input type="text" id="partido-sigla" required maxlength="10"
+                  class="w-full px-3 py-2 border rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  placeholder="Ex: PART">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                <input type="text" id="partido-nome" required
+                  class="w-full px-3 py-2 border rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  placeholder="Ex: Partido da Simulação">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número (2 dígitos)</label>
+                <input type="text" id="partido-numero" required maxlength="2" pattern="[0-9]{2}"
+                  class="w-full px-3 py-2 border rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  placeholder="Ex: 45">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cor do Partido</label>
+                <input type="color" id="partido-cor" value="#22c55e"
+                  class="w-full h-10 border rounded-lg cursor-pointer">
+              </div>
+              <button type="submit" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition">
+                Cadastrar Partido
+              </button>
+            </form>
+          </div>
+
+          <!-- Lista -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="p-4 border-b bg-gray-50">
+              <h3 class="font-bold text-gray-800">Partidos (${partidos.length})</h3>
+            </div>
+            <div class="divide-y max-h-96 overflow-y-auto">
+              ${partidos.length === 0 ? `
+                <p class="p-4 text-center text-gray-500">Nenhum partido cadastrado</p>
+              ` : partidos.map(p => `
+                <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded" style="background: ${p.corPartido || '#22c55e'}"></div>
+                    <div>
+                      <p class="font-bold text-gray-800">${p.sigla} - ${p.numero}</p>
+                      <p class="text-sm text-gray-500">${p.nomePartido}</p>
+                    </div>
+                  </div>
+                  <button class="text-red-600 hover:text-red-800 text-sm" onclick="deletePartido('${p.__backendId}')">
+                    Excluir
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminCandidatos(candidatos, partidos) {
+      return `
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <!-- Formulário -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h3 class="font-bold text-gray-800 mb-4">Novo Candidato</h3>
+            <form id="form-candidato" class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                  <select id="cand-cargo" required class="w-full px-3 py-2 border rounded-lg">
+                    <option value="">Selecione</option>
+                    ${CARGOS_ORDEM.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Partido</label>
+                  <select id="cand-partido" required class="w-full px-3 py-2 border rounded-lg">
+                    <option value="">Selecione</option>
+                    ${partidos.map(p => `<option value="${p.sigla}" data-numero="${p.numero}">${p.sigla} - ${p.nomePartido}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número do Candidato</label>
+                <input type="text" id="cand-numero" required maxlength="4"
+                  class="w-full px-3 py-2 border rounded-lg" placeholder="Ex: 4512">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                <input type="text" id="cand-nome" required
+                  class="w-full px-3 py-2 border rounded-lg" placeholder="Nome do candidato">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">URL da Foto</label>
+                <input type="url" id="cand-foto" required
+                  class="w-full px-3 py-2 border rounded-lg" placeholder="https://...">
+              </div>
+
+              <div id="campos-vice" class="space-y-4 hidden">
+                <div class="border-t pt-4">
+                  <p class="font-medium text-gray-700 mb-2">Vice</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Vice</label>
+                  <input type="text" id="cand-vice-nome"
+                    class="w-full px-3 py-2 border rounded-lg" placeholder="Nome do vice">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">URL Foto do Vice</label>
+                  <input type="url" id="cand-vice-foto"
+                    class="w-full px-3 py-2 border rounded-lg" placeholder="https://...">
+                </div>
+              </div>
+
+              <div id="campos-suplentes" class="space-y-4 hidden">
+                <div class="border-t pt-4">
+                  <p class="font-medium text-gray-700 mb-2">Suplentes</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">1º Suplente</label>
+                    <input type="text" id="cand-sup1-nome"
+                      class="w-full px-3 py-2 border rounded-lg" placeholder="Nome">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+                    <input type="url" id="cand-sup1-foto"
+                      class="w-full px-3 py-2 border rounded-lg" placeholder="URL">
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">2º Suplente</label>
+                    <input type="text" id="cand-sup2-nome"
+                      class="w-full px-3 py-2 border rounded-lg" placeholder="Nome">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+                    <input type="url" id="cand-sup2-foto"
+                      class="w-full px-3 py-2 border rounded-lg" placeholder="URL">
+                  </div>
+                </div>
+              </div>
+
+              <div id="campo-comarca" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Comarca (para Governador)</label>
+                <select id="cand-comarca" class="w-full px-3 py-2 border rounded-lg">
+                  <option value="">Nacional</option>
+                  ${Object.entries(COMARCAS).map(([s, d]) => `<option value="${s}">${d.nome}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="cand-subjudice" class="w-4 h-4">
+                <label for="cand-subjudice" class="text-sm text-gray-700">Marcar como Sub Judice (oculto na urna)</label>
+              </div>
+
+              <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
+                Cadastrar Candidato
+              </button>
+            </form>
+          </div>
+
+          <!-- Lista -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="p-4 border-b bg-gray-50">
+              <h3 class="font-bold text-gray-800">Candidatos (${candidatos.length})</h3>
+            </div>
+            <div class="divide-y max-h-[600px] overflow-y-auto">
+              ${candidatos.length === 0 ? `
+                <p class="p-4 text-center text-gray-500">Nenhum candidato cadastrado</p>
+              ` : candidatos.map(c => `
+                <div class="p-4 hover:bg-gray-50 ${c.subJudice ? 'bg-red-50' : ''}">
+                  <div class="flex items-start gap-4">
+                    <img src="${c.fotoUrl}" class="w-16 h-20 object-cover rounded border"
+                         onerror="this.style.background='#e0e0e0';">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold text-gray-800">${c.numero}</span>
+                        <span class="text-gray-600">- ${c.nome}</span>
+                        ${c.subJudice ? `<span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded">Sub Judice</span>` : ''}
+                      </div>
+                      <p class="text-sm text-gray-500">${c.sigla} - ${CARGOS_ORDEM.find(x => x.id === c.cargo)?.nome || c.cargo}</p>
+                      <p class="text-sm text-gray-400">Votos: ${c.votos || 0} | Legenda: ${c.votosLegenda || 0}</p>
+                    </div>
+                    <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteCandidato('${c.__backendId}')">
+                      Excluir
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdminApuracao(candidatos, eleitores) {
+      // Separar por classe
+      const presidentes = candidatos.filter(c => c.cargo === 'presidente' && !c.subJudice);
+      const governadores = candidatos.filter(c => c.cargo === 'governador' && !c.subJudice);
+      const deputados = candidatos.filter(c => c.cargo === 'deputado' && !c.subJudice);
+
+      // Calcular totais
+      const totalVotosPresidente = presidentes.reduce((a, c) => a + (c.votos || 0), 0);
+      const totalVotosGovernador = governadores.reduce((a, c) => a + (c.votos || 0), 0);
+      const totalVotosDeputado = deputados.reduce((a, c) => a + (c.votos || 0) + (c.votosLegenda || 0), 0);
+
+      return `
+        <div class="space-y-6">
+          <!-- Cálculo NPC -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h3 class="font-bold text-gray-800 mb-4">🎲 Calculadora NPC</h3>
+            <p class="text-sm text-gray-600 mb-4">Fórmula: (50% NPC + 50% Votos Reais) = Resultado Nacional</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Candidato</label>
+                <select id="calc-candidato" class="w-full px-3 py-2 border rounded-lg">
+                  <option value="">Selecione</option>
+                  ${candidatos.filter(c => !c.subJudice).map(c => `
+                    <option value="${c.__backendId}" data-votos="${c.votos || 0}">${c.numero} - ${c.nome} (${c.cargo})</option>
+                  `).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">% NPC</label>
+                <input type="number" id="calc-npc" min="0" max="100" step="0.1"
+                  class="w-full px-3 py-2 border rounded-lg" placeholder="0-100">
+              </div>
+              <div class="flex items-end">
+                <button onclick="calcularNPC()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+                  Calcular
+                </button>
+              </div>
+            </div>
+            <div id="resultado-npc" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+              <!-- Resultado aparece aqui -->
+            </div>
+          </div>
+
+          <!-- Executivo Nacional -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="p-4 border-b bg-green-50">
+              <h3 class="font-bold text-green-800">🇧🇷 Executivo Nacional - Presidente</h3>
+              <p class="text-sm text-green-600">Total de votos: ${totalVotosPresidente}</p>
+            </div>
+            <div class="p-4">
+              ${renderGraficoVotos(presidentes, totalVotosPresidente)}
+            </div>
+          </div>
+
+          <!-- Executivo Estadual -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="p-4 border-b bg-purple-50">
+              <h3 class="font-bold text-purple-800">🏢 Executivo Estadual - Governadores</h3>
+              <p class="text-sm text-purple-600">Total de votos: ${totalVotosGovernador}</p>
+            </div>
+            <div class="p-4">
+              ${Object.entries(COMARCAS).map(([sigla, dados]) => {
+                const govComarca = governadores.filter(g => g.comarca === sigla);
+                const totalComarca = govComarca.reduce((a, c) => a + (c.votos || 0), 0);
+                if (govComarca.length === 0) return '';
+                return `
+                  <div class="mb-6">
+                    <h4 class="font-medium text-gray-700 mb-2">${dados.nome}</h4>
+                    ${renderGraficoVotos(govComarca, totalComarca)}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Legislativo -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="p-4 border-b bg-blue-50">
+              <h3 class="font-bold text-blue-800">🏛️ Legislativo Nacional - Deputados</h3>
+              <p class="text-sm text-blue-600">Total de votos: ${totalVotosDeputado}</p>
+            </div>
+            <div class="p-4">
+              ${renderGraficoVotos(deputados.map(d => ({
+                ...d,
+                totalVotos: (d.votos || 0) + (d.votosLegenda || 0)
+              })), totalVotosDeputado, true)}
+            </div>
+          </div>
+
+          <!-- Relatório por Comarca -->
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <div class="p-4 border-b bg-gray-50">
+              <h3 class="font-bold text-gray-800">📊 Relatório por Comarca</h3>
+            </div>
+            <div class="p-4 overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-gray-100">
+                  <tr>
+                    <th class="px-4 py-2 text-left">Comarca</th>
+                    <th class="px-4 py-2 text-right">Eleitores</th>
+                    <th class="px-4 py-2 text-right">Votaram</th>
+                    <th class="px-4 py-2 text-right">Abstenção</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y">
+                  ${Object.entries(COMARCAS).map(([sigla, dados]) => {
+                    const eleitoresComarca = eleitores.filter(e => e.comarca === sigla);
+                    const votaramComarca = eleitoresComarca.filter(e => e.votou).length;
+                    return `
+                      <tr>
+                        <td class="px-4 py-2 font-medium">${dados.nome}</td>
+                        <td class="px-4 py-2 text-right">${eleitoresComarca.length}</td>
+                        <td class="px-4 py-2 text-right text-green-600">${votaramComarca}</td>
+                        <td class="px-4 py-2 text-right text-red-600">${eleitoresComarca.length - votaramComarca}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGraficoVotos(candidatos, total, incluiLegenda = false) {
+      if (candidatos.length === 0) {
+        return '<p class="text-gray-500 text-center py-4">Nenhum candidato registrado</p>';
+      }
+
+      const sorted = [...candidatos].sort((a, b) => {
+        const votosA = incluiLegenda ? (a.totalVotos || a.votos || 0) : (a.votos || 0);
+        const votosB = incluiLegenda ? (b.totalVotos || b.votos || 0) : (b.votos || 0);
+        return votosB - votosA;
+      });
+
+      return `
+        <div class="space-y-3">
+          ${sorted.map((c, i) => {
+            const votos = incluiLegenda ? (c.totalVotos || c.votos || 0) : (c.votos || 0);
+            const pct = total > 0 ? ((votos / total) * 100).toFixed(1) : 0;
+            return `
+              <div class="flex items-center gap-4">
+                <div class="w-8 text-center font-bold ${i === 0 ? 'text-green-600' : 'text-gray-500'}">${i + 1}º</div>
+                <img src="${c.fotoUrl}" class="w-10 h-12 object-cover rounded border"
+                     onerror="this.style.background='#e0e0e0';">
+                <div class="flex-1">
+                  <div class="flex justify-between mb-1">
+                    <span class="font-medium text-gray-800">${c.nome} (${c.numero})</span>
+                    <span class="text-gray-600">${votos} votos (${pct}%)</span>
+                  </div>
+                  <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full ${i === 0 ? 'bg-green-500' : 'bg-blue-400'} rounded-full transition-all duration-500"
+                         style="width: ${pct}%"></div>
+                  </div>
+                  ${incluiLegenda && c.votosLegenda ? `
+                    <p class="text-xs text-gray-500 mt-1">Votos nominais: ${c.votos || 0} | Legenda: ${c.votosLegenda}</p>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    window.calcularNPC = function() {
+      const select = document.getElementById('calc-candidato');
+      const npcInput = document.getElementById('calc-npc');
+      const resultado = document.getElementById('resultado-npc');
+
+      if (!select.value || !npcInput.value) {
+        showToast('Preencha todos os campos', 'error');
+        return;
+      }
+
+      const candidato = getCandidatos().find(c => c.__backendId === select.value);
+      if (!candidato) return;
+
+      const votosReais = candidato.votos || 0;
+      const pctNPC = parseFloat(npcInput.value);
+
+      // Cálculo: 50% NPC + 50% dos votos reais (normalizado)
+      // Primeiro, calcular total de votos do mesmo cargo
+      const mesmoCargo = getCandidatos().filter(c => c.cargo === candidato.cargo && !c.subJudice);
+      const totalVotos = mesmoCargo.reduce((a, c) => a + (c.votos || 0), 0);
+      const pctReal = totalVotos > 0 ? (votosReais / totalVotos) * 100 : 0;
+
+      const resultadoFinal = (pctNPC * 0.5) + (pctReal * 0.5);
+
+      resultado.classList.remove('hidden');
+      resultado.innerHTML = `
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="p-3 bg-blue-100 rounded-lg">
+            <p class="text-xs text-blue-600">50% NPC</p>
+            <p class="text-xl font-bold text-blue-800">${(pctNPC * 0.5).toFixed(2)}%</p>
+          </div>
+          <div class="p-3 bg-green-100 rounded-lg">
+            <p class="text-xs text-green-600">50% Votos Reais</p>
+            <p class="text-xl font-bold text-green-800">${(pctReal * 0.5).toFixed(2)}%</p>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-yellow-100 rounded-lg text-center">
+          <p class="text-sm text-yellow-700">Resultado Nacional</p>
+          <p class="text-3xl font-bold text-yellow-800">${resultadoFinal.toFixed(2)}%</p>
+        </div>
+      `;
+    };
+
+    function renderAdminConfig(cfg) {
+      return `
+        <div class="max-w-2xl mx-auto space-y-6">
+          <!-- Configuração do Ano -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h3 class="font-bold text-gray-800 mb-4">Ano da Eleição</h3>
+            <form id="form-ano-eleicao" class="flex gap-3">
+              <input type="number" id="input-ano" 
+                value="${cfg.ano_eleicao || new Date().getFullYear()}" 
+                min="1900" max="2100"
+                class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                placeholder="Ex: 1979">
+              <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition">
+                Salvar
+              </button>
+            </form>
+          </div>
+
+          <!-- Status Votação -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h3 class="font-bold text-gray-800 mb-4">Status da Votação</h3>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full ${cfg.votacaoAberta !== false ? 'bg-green-500 pulse-green' : 'bg-red-500'}"></div>
+                <span class="font-medium">${cfg.votacaoAberta !== false ? 'Votação Aberta' : 'Votação Encerrada'}</span>
+              </div>
+              <button id="btn-toggle-votacao" 
+                class="px-6 py-2 ${cfg.votacaoAberta !== false ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white font-medium rounded-lg transition">
+                ${cfg.votacaoAberta !== false ? 'Encerrar Votação' : 'Reabrir Votação'}
+              </button>
+            </div>
+            ${cfg.votacaoAberta === false ? `
+              <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                <p class="text-yellow-800 font-medium">⚠️ Votação Encerrada</p>
+                <p class="text-sm text-yellow-700">Novos votos estão bloqueados. Os eleitores verão uma mensagem informativa.</p>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Limpar Dados -->
+          <div class="bg-white rounded-xl shadow p-6">
+            <h3 class="font-bold text-gray-800 mb-4">Gerenciar Dados</h3>
+            <div class="space-y-3">
+              <button id="btn-reset-votos" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition">
+                Zerar Contagem de Votos
+              </button>
+              <button id="btn-reset-eleitores" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition">
+                Resetar Status dos Eleitores
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+
+    function attachEventListeners() {
+      // Home
+      document.getElementById('btn-novo-eleitor')?.addEventListener('click', () => {
+        currentScreen = 'cadastro';
+        render();
+      });
+
+      document.getElementById('btn-ja-cadastrado')?.addEventListener('click', () => {
+        currentScreen = 'login';
+        render();
+      });
+
+      document.getElementById('btn-admin-login')?.addEventListener('click', () => {
+        currentScreen = 'admin-login';
+        render();
+      });
+
+      // Login
+      document.getElementById('btn-voltar-login')?.addEventListener('click', () => {
+        currentScreen = 'home';
+        render();
+      });
+
+      document.getElementById('form-login')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nome = document.getElementById('login-nome').value.trim();
+        const senha = document.getElementById('login-senha').value;
+        const erroDiv = document.getElementById('erro-login');
+        const erroMsg = erroDiv.querySelector('p');
+
+        // Buscar eleitor
+        const eleitor = getEleitores().find(e => e.nome.toLowerCase() === nome.toLowerCase());
+        
+        if (!eleitor) {
+          erroDiv.classList.remove('hidden');
+          erroMsg.textContent = 'Nome não encontrado no sistema. Verifique se digitou corretamente.';
+          return;
+        }
+
+        if (eleitor.senha !== senha) {
+          erroDiv.classList.remove('hidden');
+          erroMsg.textContent = 'Senha incorreta. Tente novamente.';
+          return;
+        }
+
+        if (eleitor.votou) {
+          erroDiv.classList.remove('hidden');
+          erroMsg.textContent = 'Você já votou nesta eleição. Cada eleitor pode votar apenas uma vez.';
+          return;
+        }
+
+        // Login bem-sucedido
+        currentUser = eleitor;
+        currentScreen = 'tutorial';
+        showToast('Login realizado com sucesso!');
+        render();
+      });
+
+      // Cadastro
+      document.getElementById('btn-voltar-home')?.addEventListener('click', () => {
+        currentScreen = 'home';
+        render();
+      });
+
+      document.getElementById('input-comarca')?.addEventListener('change', (e) => {
+        const secaoSelect = document.getElementById('input-secao');
+        const comarca = e.target.value;
+        if (comarca && COMARCAS[comarca]) {
+          secaoSelect.disabled = false;
+          secaoSelect.innerHTML = `
+            <option value="">Selecione a seção</option>
+            ${COMARCAS[comarca].secoes.map(s => `<option value="${s}">Seção ${s}</option>`).join('')}
+          `;
+        } else {
+          secaoSelect.disabled = true;
+          secaoSelect.innerHTML = '<option value="">Selecione primeiro a comarca</option>';
+        }
+      });
+
+      document.getElementById('form-cadastro')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (isLoading) return;
+
+        const discord = document.getElementById('input-discord').value.trim();
+        const nome = document.getElementById('input-nome').value.trim();
+        const comarca = document.getElementById('input-comarca').value;
+        const secao = document.getElementById('input-secao').value;
+        const senha = document.getElementById('input-senha').value;
+
+        if (!discord || !nome || !comarca || !secao || !senha) {
+          showToast('Preencha todos os campos obrigatórios', 'error');
+          return;
+        }
+
+        // Verificar se nome já existe (proteção contra duplicação)
+        const nomeExistente = getEleitores().find(e => e.nome.toLowerCase() === nome.toLowerCase());
+        if (nomeExistente) {
+          showToast('Este nome já está cadastrado no sistema', 'error');
+          
+          // Registrar tentativa fraudulenta
+          if (allData.length < 999) {
+            await window.dataSdk.create({
+              type: 'fraude',
+              tentativaFraudulenta: true,
+              detalheFraude: `Tentativa de cadastro duplicado: ${nome}`,
+              discord: discord,
+              dataRegistro: new Date().toISOString()
+            });
+          }
+          return;
+        }
+
+        // Verificar limite
+        if (allData.length >= 999) {
+          showToast('Limite de registros atingido', 'error');
+          return;
+        }
+
+        isLoading = true;
+        const btn = document.getElementById('btn-cadastrar');
+        btn.innerHTML = '<div class="loading-spinner mx-auto"></div>';
+        btn.disabled = true;
+
+        const result = await window.dataSdk.create({
+          type: 'eleitor',
+          nome,
+          discord,
+          senha,
+          comarca,
+          secao,
+          votou: false,
+          dataRegistro: new Date().toISOString()
+        });
+
+        isLoading = false;
+
+        if (result.isOk) {
+          currentUser = getEleitores().find(e => e.nome === nome);
+          currentScreen = 'tutorial';
+          showToast('Cadastro realizado com sucesso!');
+        } else {
+          showToast('Erro ao cadastrar. Tente novamente.', 'error');
+        }
+        render();
+      });
+
+      // Tutorial
+      document.getElementById('btn-iniciar-votacao')?.addEventListener('click', () => {
+        votingStep = 0;
+        currentVoteNumber = '';
+        selectedCandidate = null;
+        currentScreen = 'votacao';
+        render();
+      });
+
+      // Admin Login
+      document.getElementById('form-admin-login')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const user = document.getElementById('admin-user').value;
+        const pass = document.getElementById('admin-pass').value;
+
+        if (user === 'TSE.JUS.RPG' && pass === '1233.ahahabthe') {
+          isAdmin = true;
+          currentScreen = 'admin';
+          showToast('Bem-vindo ao painel administrativo');
+          render();
+        } else {
+          showToast('Credenciais inválidas', 'error');
+        }
+      });
+
+      document.getElementById('btn-voltar-admin')?.addEventListener('click', () => {
+        currentScreen = 'home';
+        render();
+      });
+
+      // Admin
+      document.getElementById('btn-logout-admin')?.addEventListener('click', () => {
+        isAdmin = false;
+        currentScreen = 'home';
+        render();
+      });
+
+      // Admin Tabs
+      document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const tabId = e.target.dataset.tab;
+          document.querySelectorAll('.admin-tab').forEach(t => {
+            t.classList.remove('border-green-600', 'text-green-700');
+            t.classList.add('text-gray-500');
+          });
+          e.target.classList.add('border-green-600', 'text-green-700');
+          e.target.classList.remove('text-gray-500');
+
+          document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById(`tab-${tabId}`)?.classList.remove('hidden');
+        });
+      });
+
+      // Form Partido
+      document.getElementById('form-partido')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (isLoading || allData.length >= 999) return;
+
+        const sigla = document.getElementById('partido-sigla').value.trim().toUpperCase();
+        const nome = document.getElementById('partido-nome').value.trim();
+        const numero = document.getElementById('partido-numero').value.trim();
+        const cor = document.getElementById('partido-cor').value;
+
+        isLoading = true;
+        const result = await window.dataSdk.create({
+          type: 'partido',
+          sigla,
+          nomePartido: nome,
+          numero,
+          corPartido: cor
+        });
+        isLoading = false;
+
+        if (result.isOk) {
+          showToast('Partido cadastrado!');
+          e.target.reset();
+        } else {
+          showToast('Erro ao cadastrar partido', 'error');
+        }
+        render();
+      });
+
+      // Candidato cargo change
+      document.getElementById('cand-cargo')?.addEventListener('change', (e) => {
+        const cargo = CARGOS_ORDEM.find(c => c.id === e.target.value);
+        document.getElementById('campos-vice').classList.toggle('hidden', !cargo?.temVice);
+        document.getElementById('campos-suplentes').classList.toggle('hidden', !cargo?.temSuplentes);
+        document.getElementById('campo-comarca').classList.toggle('hidden', e.target.value !== 'governador');
+      });
+
+      // Form Candidato
+      document.getElementById('form-candidato')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (isLoading || allData.length >= 999) return;
+
+        const cargo = document.getElementById('cand-cargo').value;
+        const partidoSelect = document.getElementById('cand-partido');
+        const sigla = partidoSelect.value;
+        const partido = getPartidos().find(p => p.sigla === sigla);
+
+        isLoading = true;
+        const result = await window.dataSdk.create({
+          type: 'candidato',
+          cargo,
+          sigla,
+          partido: partido?.nomePartido || sigla,
+          numero: document.getElementById('cand-numero').value.trim(),
+          nome: document.getElementById('cand-nome').value.trim(),
+          fotoUrl: document.getElementById('cand-foto').value.trim(),
+          nomeVice: document.getElementById('cand-vice-nome')?.value.trim() || '',
+          fotoVice: document.getElementById('cand-vice-foto')?.value.trim() || '',
+          suplente1: document.getElementById('cand-sup1-nome')?.value.trim() || '',
+          fotoSuplente1: document.getElementById('cand-sup1-foto')?.value.trim() || '',
+          suplente2: document.getElementById('cand-sup2-nome')?.value.trim() || '',
+          fotoSuplente2: document.getElementById('cand-sup2-foto')?.value.trim() || '',
+          comarca: document.getElementById('cand-comarca')?.value || '',
+          subJudice: document.getElementById('cand-subjudice')?.checked || false,
+          votos: 0,
+          votosLegenda: 0,
+          votosNPC: 0
+        });
+        isLoading = false;
+
+        if (result.isOk) {
+          showToast('Candidato cadastrado!');
+          e.target.reset();
+          document.getElementById('campos-vice').classList.add('hidden');
+          document.getElementById('campos-suplentes').classList.add('hidden');
+        } else {
+          showToast('Erro ao cadastrar candidato', 'error');
+        }
+        render();
+      });
+
+      // Toggle Votação
+      document.getElementById('btn-toggle-votacao')?.addEventListener('click', async () => {
+        const cfg = getConfig();
+        const novoStatus = cfg.votacaoAberta === false;
+
+        if (cfg.__backendId) {
+          cfg.votacaoAberta = novoStatus;
+          await window.dataSdk.update(cfg);
+        } else {
+          await window.dataSdk.create({
+            type: 'config',
+            configId: 'main',
+            votacaoAberta: novoStatus
+          });
+        }
+
+        showToast(novoStatus ? 'Votação reaberta!' : 'Votação encerrada!');
+        render();
+      });
+
+      // Form Ano Eleição
+      document.getElementById('form-ano-eleicao')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const ano = parseInt(document.getElementById('input-ano').value);
+        
+        if (isNaN(ano) || ano < 1900 || ano > 2100) {
+          showToast('Ano inválido (1900-2100)', 'error');
+          return;
+        }
+
+        const cfg = getConfig();
+        if (cfg.__backendId) {
+          cfg.ano_eleicao = ano;
+          await window.dataSdk.update(cfg);
+        } else {
+          await window.dataSdk.create({
+            type: 'config',
+            configId: 'main',
+            ano_eleicao: ano,
+            votacaoAberta: true
+          });
+        }
+
+        showToast('Ano atualizado com sucesso!');
+        render();
+      });
+
+      // Reset votos
+      document.getElementById('btn-reset-votos')?.addEventListener('click', async () => {
+        const candidatos = getCandidatos();
+        for (const c of candidatos) {
+          c.votos = 0;
+          c.votosLegenda = 0;
+          await window.dataSdk.update(c);
+        }
+        showToast('Votos zerados!');
+        render();
+      });
+
+      // Reset eleitores
+      document.getElementById('btn-reset-eleitores')?.addEventListener('click', async () => {
+        const eleitores = getEleitores();
+        for (const e of eleitores) {
+          e.votou = false;
+          await window.dataSdk.update(e);
+        }
+        showToast('Status dos eleitores resetado!');
+        render();
+      });
+    }
+
+    // Funções globais de delete
+    window.deleteEleitor = async function(id) {
+      const eleitor = allData.find(d => d.__backendId === id);
+      if (eleitor) {
+        await window.dataSdk.delete(eleitor);
+        showToast('Eleitor excluído');
+        render();
+      }
+    };
+
+    window.deletePartido = async function(id) {
+      const partido = allData.find(d => d.__backendId === id);
+      if (partido) {
+        await window.dataSdk.delete(partido);
+        showToast('Partido excluído');
+        render();
+      }
+    };
+
+    window.deleteCandidato = async function(id) {
+      const candidato = allData.find(d => d.__backendId === id);
+      if (candidato) {
+        await window.dataSdk.delete(candidato);
+        showToast('Candidato excluído');
+        render();
+      }
+    };
+
+    window.deleteFraude = async function(id) {
+      const fraude = allData.find(d => d.__backendId === id);
+      if (fraude) {
+        await window.dataSdk.delete(fraude);
+        showToast('Registro de fraude removido');
+        render();
+      }
+    };
+
+    function renderAdminFraudes() {
+      const fraudes = allData.filter(d => d.type === 'fraude');
+
+      return `
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <div class="p-4 border-b bg-red-50">
+            <h3 class="font-bold text-red-800">🚨 Tentativas de Fraude Detectadas (${fraudes.length})</h3>
+            <p class="text-sm text-red-600">Registro de tentativas de cadastro duplicado e ações suspeitas</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data/Hora</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discord</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Detalhes</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                ${fraudes.length === 0 ? `
+                  <tr>
+                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                      <span class="text-4xl">✅</span>
+                      <p class="mt-2">Nenhuma tentativa de fraude detectada</p>
+                    </td>
+                  </tr>
+                ` : fraudes.map(f => `
+                  <tr class="hover:bg-red-50">
+                    <td class="px-4 py-3 text-gray-800">
+                      ${new Date(f.dataRegistro).toLocaleString('pt-BR')}
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-800">@${f.discord}</td>
+                    <td class="px-4 py-3 text-gray-600">${f.detalheFraude}</td>
+                    <td class="px-4 py-3">
+                      <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteFraude('${f.__backendId}')">
+                        Limpar
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data;
+        const cfg = getConfig();
+        votacaoAberta = cfg.votacaoAberta !== false;
+        render();
+      }
+    };
+
+    async function init() {
+      await window.dataSdk.init(dataHandler);
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...defaultConfig, ...newConfig };
+            render();
+          },
+          mapToCapabilities: () => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['system_title', cfg.system_title || defaultConfig.system_title]
+          ])
+        });
+      }
+
+      render();
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c7e16e2b106af3e',t:'MTc3MDA4MTQ1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
