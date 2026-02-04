@@ -362,7 +362,7 @@
          </div>
         </div><!-- Características do Universo -->
         <div class="mt-8">
-         <h4 class="font-display text-xl font-bold text-amber-400 mb-4">🌎 Características do Universo</h4>
+         <h4 class="font-display text-xl font-bold text-amber-400 mb-4">��� Características do Universo</h4>
          <div class="grid md:grid-cols-2 gap-4">
           <div class="bg-neutral-800 rounded-lg p-4">
            <h5 class="font-semibold text-white mb-2">Sistema Político</h5>
@@ -697,7 +697,7 @@
          </div>
          <div class="bg-neutral-800 rounded-lg p-4">
           <div class="font-semibold text-amber-400 mb-2">
-           🎭 Pernambuco
+           ���� Pernambuco
           </div>
           <div class="text-gray-500 text-sm">
            Aguardando apuração...
@@ -719,7 +719,7 @@
         <h3 class="font-display text-xl font-bold text-white mb-4">🏛️ Legislativo Nacional</h3>
         <div class="text-center py-8 text-gray-500">
          <div class="text-4xl mb-2">
-          🏗️
+          ��️
          </div>
          <p>Sistema legislativo em desenvolvimento...</p>
         </div>
@@ -1161,7 +1161,7 @@
       const username = document.getElementById('reg-username').value.trim();
       const password = document.getElementById('reg-password').value;
       const comarca = document.getElementById('reg-comarca').value;
-      const secao = parseInt(document.getElementById('reg-secao').value);
+      const secao = document.getElementById('reg-secao').value;
       const isCandidate = document.getElementById('reg-is-candidate').checked;
       const office = isCandidate ? document.getElementById('reg-office').value : '';
       const state = isCandidate && office === 'governador' ? document.getElementById('reg-state').value : '';
@@ -1177,30 +1177,22 @@
       btn.innerHTML = '<span class="animate-spin">⏳</span> Registrando...';
       
       try {
-        const result = await window.dataSdk.create({
+        const userData = {
           type: 'user',
-          fullName,
-          username,
-          password,
-          comarca,
-          secao: secao.toString(),
-          isCandidate: isCandidate.toString(),
-          office,
-          state,
-          party: '',
-          slogan: '',
-          photoUrl: '',
-          viceCandidate: '',
-          coalition: '',
-          campaignEvents: '',
-          endorsements: '',
-          formResponses: '',
-          votes: '0',
-          votedAt: '',
-          voteNumber: '',
-          colegio: '',
+          fullName: fullName,
+          username: username,
+          password: password,
+          comarca: comarca,
+          secao: secao,
+          isCandidate: isCandidate ? 'true' : 'false',
+          office: office,
+          state: state,
           createdAt: new Date().toISOString()
-        });
+        };
+        
+        console.log('Attempting to create user:', userData);
+        
+        const result = await window.dataSdk.create(userData);
         
         btn.disabled = false;
         btn.innerHTML = '<span>Criar Cadastro</span>';
@@ -1214,29 +1206,30 @@
           setTimeout(() => {
             currentUser = {
               type: 'user',
-              fullName,
-              username,
-              password,
-              comarca,
-              secao,
-              isCandidate,
-              office,
-              state,
-              party: '',
+              fullName: fullName,
+              username: username,
+              password: password,
+              comarca: comarca,
+              secao: secao,
+              isCandidate: isCandidate,
+              office: office,
+              state: state,
               votes: 0,
               votedAt: ''
             };
             localStorage.setItem('brrpg_user', username);
             updateUserDisplay();
-          }, 300);
+          }, 500);
         } else {
-          showToast('Erro ao criar cadastro: ' + (result.error?.message || 'Erro desconhecido'), 'error');
+          const errorMsg = result.error?.message || 'Erro desconhecido';
+          console.error('Create failed:', result.error);
+          showToast('Erro: ' + errorMsg, 'error');
         }
       } catch (error) {
         btn.disabled = false;
         btn.innerHTML = '<span>Criar Cadastro</span>';
-        showToast('Erro ao criar cadastro: ' + error.message, 'error');
         console.error('Registration error:', error);
+        showToast('Erro: ' + error.message, 'error');
       }
     }
     
@@ -2066,5 +2059,5 @@
     // Initialize
     initApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8bafb2265a2d4c',t:'MTc3MDIyNDAyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8bb4c0f3b0a16a',t:'MTc3MDIyNDIzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
