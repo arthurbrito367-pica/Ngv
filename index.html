@@ -1,1053 +1,2050 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="h-full">
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BRRPG — TSE</title>
+  <title>BRRPG - Comissão Eleitoral / TSE (RPG)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Source+Sans+Pro:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-      background: #0a0a0a;
-      color: #e8e8e8;
-      line-height: 1.6;
       box-sizing: border-box;
     }
-
-    #app {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      background: #0a0a0a;
+    * { box-sizing: border-box; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    .font-body { font-family: 'Source Sans Pro', sans-serif; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a1a; }
+    ::-webkit-scrollbar-thumb { background: #3d3d3d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4d4d4d; }
+    
+    /* Urna 3D effect */
+    .urna-container {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      box-shadow: 
+        inset 0 2px 4px rgba(255,255,255,0.05),
+        0 20px 40px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05);
+      transform: perspective(1000px) rotateX(2deg);
     }
-
-    /* ===== MODAL DE SELEÇÃO INICIAL ===== */
-    .initial-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      animation: fadeInScale 0.4s ease;
+    
+    .urna-key {
+      background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+      box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        0 4px 8px rgba(0,0,0,0.3),
+        0 2px 0 #1a1a1a;
+      transition: all 0.1s ease;
     }
-
-    .initial-modal.hidden {
-      display: none;
+    
+    .urna-key:active {
+      transform: translateY(2px);
+      box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 2px 4px rgba(0,0,0,0.3),
+        0 1px 0 #1a1a1a;
     }
-
-    @keyframes fadeInScale {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    
+    .urna-key-branco { background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%); color: #1a1a1a; }
+    .urna-key-corrige { background: linear-gradient(180deg, #ff6b35 0%, #d4501e 100%); }
+    .urna-key-confirma { background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%); }
+    
+    .tactile-dot {
+      width: 4px;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
     }
-
-    .initial-content {
-      text-align: center;
-      max-width: 700px;
-      padding: 40px;
-      background: rgba(15, 15, 15, 0.8);
-      border: 1px solid #1a1a1a;
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-    }
-
-    .initial-content h1 {
-      font-size: 2.8rem;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, #ffc107, #ffed4e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -1px;
-    }
-
-    .initial-content p {
-      color: #aaa;
-      margin-bottom: 40px;
-      font-size: 1.05rem;
-    }
-
-    .device-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .device-btn {
-      background: #111;
-      border: 2px solid #222;
-      color: #e8e8e8;
-      padding: 24px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      font-family: inherit;
-    }
-
-    .device-btn:hover {
-      border-color: #ffc107;
-      background: #0f0f0f;
-      box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .device-btn-icon {
-      font-size: 2rem;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    /* ===== MODAL DE CADASTRO ===== */
-    .register-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      overflow-y: auto;
-      padding: 20px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .register-modal.hidden {
-      display: none;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .register-container {
-      background: #111;
-      border: 1px solid #1a1a1a;
-      border-radius: 12px;
-      padding: 40px;
-      max-width: 600px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .register-container h2 {
-      color: #ffc107;
-      margin-bottom: 8px;
-      font-size: 1.6rem;
-    }
-
-    .register-container .subtitle {
-      color: #888;
-      margin-bottom: 32px;
-      font-size: 0.9rem;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #e8e8e8;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px 12px;
-      background: #0a0a0a;
-      border: 1px solid #222;
-      color: #e8e8e8;
-      font-family: inherit;
-      font-size: 0.9rem;
-      border-radius: 6px;
+    
+    /* Tab animations */
+    .tab-content { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Glow effects */
+    .glow-gold { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+    .glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+    
+    /* Form styling */
+    .form-input {
+      background: #1a1a1a;
+      border: 1px solid #3d3d3d;
+      color: #f5f5f5;
       transition: all 0.2s ease;
     }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-input:focus {
+      border-color: #d4af37;
       outline: none;
-      border-color: #ffc107;
-      background: #0f0f0f;
-      box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
     }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    
+    /* News card */
+    .news-card {
+      background: linear-gradient(180deg, #1f1f1f 0%, #171717 100%);
+      border: 1px solid #2a2a2a;
     }
-
-    @media (max-width: 640px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
+    
+    /* Chart bars */
+    .chart-bar {
+      transition: width 1s ease-out;
     }
-
-    .tab-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 32px;
+    
+    /* Mobile menu */
+    .mobile-menu {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
     }
-
-    .tab-btn {
-      padding: 12px;
-      border: 2px solid #222;
-      background: transparent;
-      color: #888;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
-      font-family: inherit;
+    .mobile-menu.open {
+      transform: translateX(0);
     }
-
-    .tab-btn.active {
-      border-color: #ffc107;
-      color: #ffc107;
-      background: rgba(255, 193, 7, 0.1);
-    }
-
-    .tab-btn:hover {
-      border-color: #ffc107;
-      color: #ffc107;
-    }
-
-    .form-section {
-      display: none;
-    }
-
-    .form-section.active {
-      display: block;
-    }
-
-    button.btn-primary {
-      background: #ffc107;
-      color: #000;
-      border: none;
-      padding: 12px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-      width: 100%;
-    }
-
-    button.btn-primary:hover {
-      background: #ffcd38;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
-    }
-
-    button.btn-primary:active {
-      transform: translateY(0);
-    }
-
-    button.btn-secondary {
-      background: transparent;
-      color: #888;
-      border: 2px solid #222;
-      padding: 12px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-      width: 100%;
-    }
-
-    button.btn-secondary:hover {
-      border-color: #888;
-      color: #e8e8e8;
-    }
-
-    .form-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 32px;
-    }
-
-    @media (max-width: 640px) {
-      .form-buttons {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ===== HEADER ===== */
-    .header {
-      background: #0a0a0a;
-      border-bottom: 1px solid #1a1a1a;
-      padding: 20px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header-content {
-      flex: 1;
-    }
-
-    .header h1 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
-      background: linear-gradient(135deg, #ffc107, #ffed4e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .header p {
-      font-size: 0.85rem;
-      color: #888;
-      font-weight: 400;
-    }
-
-    .disclaimer {
-      background: rgba(255, 193, 7, 0.05);
-      border: 1px solid rgba(255, 193, 7, 0.15);
-      padding: 8px 12px;
-      border-radius: 6px;
-      color: #ffc107;
-      font-size: 0.75rem;
-      font-weight: 500;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    /* ===== NAVEGAÇÃO ===== */
-    .nav-container {
-      background: #0a0a0a;
-      border-bottom: 1px solid #1a1a1a;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 0 24px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .nav {
-      display: flex;
-      gap: 2px;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .nav button {
-      background: transparent;
-      border: none;
-      color: #888;
-      padding: 12px 14px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-    }
-
-    .nav button:hover {
-      color: #e8e8e8;
-    }
-
-    .nav button.active {
-      color: #ffc107;
-      border-bottom-color: #ffc107;
-    }
-
-    /* ===== CONTEÚDO ===== */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 40px 32px;
-      background: #0a0a0a;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .page {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .section-title {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-
-    .section-subtitle {
-      color: #888;
-      font-size: 0.95rem;
-      margin-bottom: 32px;
-      font-weight: 400;
-    }
-
-    .intro-text {
-      background: rgba(255, 193, 7, 0.03);
-      border: 1px solid rgba(255, 193, 7, 0.1);
-      padding: 24px;
-      margin-bottom: 32px;
-      border-radius: 8px;
-      color: #d0d0d0;
-      line-height: 1.7;
-    }
-
-    .intro-text h3 {
-      color: #ffc107;
-      margin: 20px 0 12px 0;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .intro-text p {
-      margin-bottom: 12px;
-    }
-
-    .intro-text ul {
-      margin-left: 20px;
-      color: #c0c0c0;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin: 32px 0;
-    }
-
-    .stat-card {
-      background: #111;
-      border: 1px solid #1a1a1a;
-      border-radius: 8px;
-      padding: 24px;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 2.4rem;
-      color: #ffc107;
-      font-weight: 700;
-    }
-
-    .stat-label {
-      color: #888;
-      margin-top: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .candidates-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 24px;
-    }
-
-    .candidate-card {
-      background: #111;
-      border: 1px solid #1a1a1a;
-      border-radius: 8px;
-      padding: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .candidate-card:hover {
-      border-color: #ffc107;
-      background: #0f0f0f;
-      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.1);
-    }
-
-    .candidate-name {
-      font-size: 1.1rem;
-      color: #ffc107;
-      margin-bottom: 12px;
-      font-weight: 600;
-    }
-
-    .candidate-info {
-      font-size: 0.85rem;
-      color: #aaa;
-      line-height: 1.7;
-    }
-
-    .message-success {
-      background: rgba(0, 137, 123, 0.1);
-      border: 1px solid rgba(0, 137, 123, 0.3);
-      color: #00897b;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .message-error {
-      background: rgba(211, 47, 47, 0.1);
-      border: 1px solid rgba(211, 47, 47, 0.3);
-      color: #d32f2f;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    /* ===== RESPONSIVO ===== */
-    @media (max-width: 1024px) {
-      .header {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
-      }
-
-      .content {
-        padding: 32px 24px;
-      }
-
-      .section-title {
-        font-size: 1.6rem;
-      }
-
-      .candidates-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
-
-      .register-container {
-        padding: 32px;
-      }
-
-      .initial-content {
-        padding: 32px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .header {
-        padding: 16px;
-      }
-
-      .header h1 {
-        font-size: 1.1rem;
-      }
-
-      .header p {
-        font-size: 0.8rem;
-      }
-
-      .disclaimer {
-        font-size: 0.7rem;
-        padding: 6px 10px;
-      }
-
-      .nav-container {
-        padding: 0 16px;
-      }
-
-      .nav button {
-        padding: 10px 10px;
-        font-size: 0.75rem;
-      }
-
-      .content {
-        padding: 24px 16px;
-      }
-
-      .section-title {
-        font-size: 1.4rem;
-      }
-
-      .section-subtitle {
-        font-size: 0.9rem;
-      }
-
-      .candidates-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .form-group input,
-      .form-group select,
-      .form-group textarea {
-        font-size: 16px;
-      }
-
-      .register-container {
-        padding: 24px;
-        max-width: 100%;
-        border-radius: 8px;
-      }
-
-      .initial-content {
-        padding: 24px;
-        border-radius: 12px;
-      }
-
-      .initial-content h1 {
-        font-size: 1.8rem;
-      }
-
-      .device-buttons {
-        grid-template-columns: 1fr;
-      }
-
-      .register-container h2 {
-        font-size: 1.3rem;
-      }
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #0a0a0a;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #333;
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #444;
+    
+    /* Disclaimer banner */
+    .disclaimer-banner {
+      background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+      border-top: 1px solid #d4af37;
+      border-bottom: 1px solid #d4af37;
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body><!-- MODAL INICIAL - DISPOSITIVO -->
-  <div id="deviceModal" class="initial-modal">
-   <div class="initial-content">
-    <h1>BRRPG</h1>
-    <p style="margin-bottom: 16px;">🗳️ Sistema Eleitoral TSE</p>
-    <p>Como você está acessando?</p>
-    <div class="device-buttons"><button class="device-btn" onclick="selectDevice('pc')"> <span class="device-btn-icon">🖥️</span> PC </button> <button class="device-btn" onclick="selectDevice('tablet')"> <span class="device-btn-icon">📱</span> Tablet </button> <button class="device-btn" onclick="selectDevice('mobile')"> <span class="device-btn-icon">📲</span> Celular </button>
+ <body class="h-full bg-black text-gray-100 font-body">
+  <div id="app" class="h-full flex flex-col overflow-hidden"><!-- Disclaimer Banner -->
+   <div class="disclaimer-banner py-2 px-4 text-center text-xs md:text-sm"><span class="text-amber-400 font-semibold">⚠️ SIMULAÇÃO NARRATIVA DE RPG</span> <span class="text-gray-400 ml-2">Este é um ambiente fictício para fins de entretenimento. Sem vínculo com eleições ou pessoas reais.</span>
+   </div><!-- Header -->
+   <header class="bg-gradient-to-b from-neutral-900 to-black border-b border-neutral-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 md:py-4">
+     <div class="flex items-center justify-between"><!-- Logo -->
+      <div class="flex items-center gap-3 md:gap-4">
+       <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center border-2 border-amber-500 glow-gold">
+        <svg viewbox="0 0 24 24" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.5L18.5 7 12 9.5 5.5 7 12 4.5zM4 8.5l7 3.5v7.5l-7-3.5V8.5zm9 11V12l7-3.5v7.5l-7 3.5z" />
+        </svg>
+       </div>
+       <div>
+        <h1 id="site-title" class="font-display text-lg md:text-2xl font-bold text-amber-400">BRRPG</h1>
+        <p class="text-xs md:text-sm text-gray-400">Comissão Eleitoral / TSE (RPG)</p>
+        <p class="text-xs text-gray-500 hidden md:block">Brasil Alternativo • 1982</p>
+       </div>
+      </div><!-- User Section -->
+      <div class="flex items-center gap-2 md:gap-4">
+       <div id="user-info" class="hidden md:flex items-center gap-2 text-sm text-gray-400"><span id="user-display"></span>
+       </div><button id="login-btn" onclick="showLoginModal()" class="px-3 py-1.5 md:px-4 md:py-2 bg-amber-600 hover:bg-amber-500 rounded text-sm font-semibold transition-colors"> Entrar </button> <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg></button>
+      </div>
+     </div><!-- Desktop Navigation -->
+     <nav class="hidden md:flex mt-4 gap-1 overflow-x-auto pb-1"><button onclick="showTab('inicio')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="inicio">Início</button> <button onclick="showTab('contexto')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="contexto">Contexto Histórico</button> <button onclick="showTab('cadastro')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="cadastro">Cadastro</button> <button onclick="showTab('formularios')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="formularios">Formulários</button> <button onclick="showTab('campanhas')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="campanhas">Campanhas</button> <button onclick="showTab('urna')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="urna">Urna Eletrônica</button> <button onclick="showTab('apuracao')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="apuracao">Apuração</button> <button onclick="showTab('endossos')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="endossos">Endossos</button> <button onclick="showTab('partidos')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="partidos">Partidos</button> <button onclick="showTab('noticias')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="noticias">Notícias</button> <button onclick="showTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap text-amber-500" data-tab="admin">⚙️ Admin</button>
+     </nav>
     </div>
-    <p style="color: #666; font-size: 0.85rem; margin-top: 24px;">Isso ajuda a otimizar a interface</p>
-   </div>
-  </div><!-- MODAL DE CADASTRO -->
-  <div id="registerModal" class="register-modal hidden">
-   <div class="register-container">
-    <h2>Bem-vindo ao BRRPG</h2>
-    <p class="subtitle">Crie sua conta para participar</p>
-    <div class="tab-buttons"><button class="tab-btn active" onclick="switchRegisterTab('candidato')"> 📋 Candidato </button> <button class="tab-btn" onclick="switchRegisterTab('eleitor')"> 🗳️ Eleitor/Civil </button>
-    </div><!-- FORMULÁRIO CANDIDATO -->
-    <form id="form-candidato" class="form-section active" onsubmit="submitCandidato(event)">
-     <div class="form-group"><label>Nome Completo *</label> <input type="text" id="cand-nome" required>
+   </header><!-- Mobile Menu -->
+   <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 w-64 bg-neutral-900 border-r border-neutral-800 z-50 md:hidden overflow-y-auto">
+    <div class="p-4">
+     <div class="flex justify-between items-center mb-6"><span class="font-display text-amber-400 font-bold">Menu</span> <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
      </div>
-     <div class="form-row">
-      <div class="form-group"><label>CPF *</label> <input type="text" id="cand-cpf" placeholder="000.000.000-00" required>
-      </div>
-      <div class="form-group"><label>Email *</label> <input type="email" id="cand-email" required>
-      </div>
-     </div>
-     <div class="form-row">
-      <div class="form-group"><label>Senha *</label> <input type="password" id="cand-senha" required>
-      </div>
-      <div class="form-group"><label>Confirmar Senha *</label> <input type="password" id="cand-senha-conf" required>
-      </div>
-     </div>
-     <div class="form-row">
-      <div class="form-group"><label>Cargo *</label> <select id="cand-cargo" required> <option value="">Selecione</option> <option value="presidente">Presidente</option> <option value="vice">Vice-Presidente</option> <option value="governador">Governador</option> <option value="deputado">Deputado</option> </select>
-      </div>
-      <div class="form-group"><label>Estado (se Governador)</label> <select id="cand-estado"> <option value="">Nacional</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
-      </div>
-     </div>
-     <div class="form-row">
-      <div class="form-group"><label>Número TSE *</label> <input type="text" id="cand-numero" placeholder="ex: 15" required>
-      </div>
-      <div class="form-group"><label>Partido *</label> <input type="text" id="cand-partido" placeholder="PMDB, PDS, PT..." required>
-      </div>
-     </div>
-     <div class="form-group"><label>Slogan *</label> <input type="text" id="cand-slogan" required>
-     </div>
-     <div class="form-group"><label>Plataforma Política *</label> <textarea id="cand-plataforma" maxlength="1000" required></textarea> <small style="color: #888;">Máx 1000 caracteres</small>
-     </div>
-     <div class="form-buttons"><button type="button" class="btn-secondary" onclick="closeRegisterModal()">Cancelar</button> <button type="submit" class="btn-primary">Registrar Candidato</button>
-     </div>
-    </form><!-- FORMULÁRIO ELEITOR -->
-    <form id="form-eleitor" class="form-section" onsubmit="submitEleitor(event)">
-     <div class="form-group"><label>Nome Completo *</label> <input type="text" id="elei-nome" required>
-     </div>
-     <div class="form-row">
-      <div class="form-group"><label>CPF *</label> <input type="text" id="elei-cpf" placeholder="000.000.000-00" required>
-      </div>
-      <div class="form-group"><label>Email *</label> <input type="email" id="elei-email" required>
-      </div>
-     </div>
-     <div class="form-row">
-      <div class="form-group"><label>Senha *</label> <input type="password" id="elei-senha" required>
-      </div>
-      <div class="form-group"><label>Confirmar Senha *</label> <input type="password" id="elei-senha-conf" required>
-      </div>
-     </div>
-     <div class="form-row">
-      <div class="form-group"><label>Título de Eleitor</label> <input type="text" id="elei-titulo" placeholder="Opcional">
-      </div>
-      <div class="form-group"><label>Estado de Residência *</label> <select id="elei-estado" required> <option value="">Selecione</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> <option value="outro">Outro Estado</option> </select>
-      </div>
-     </div>
-     <div class="form-buttons"><button type="button" class="btn-secondary" onclick="closeRegisterModal()">Cancelar</button> <button type="submit" class="btn-primary">Registrar como Eleitor</button>
-     </div>
-    </form>
-    <div id="register-message"></div>
-   </div>
-  </div>
-  <div id="app"><!-- HEADER -->
-   <div class="header">
-    <div class="header-content">
-     <h1>BRRPG — TSE</h1>
-     <p>Sistema de Eleições Brasil Alternativo 1982</p>
+     <nav class="flex flex-col gap-1"><button onclick="showTab('inicio'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🏛️ Início</button> <button onclick="showTab('contexto'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📜 Contexto Histórico</button> <button onclick="showTab('cadastro'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📝 Cadastro</button> <button onclick="showTab('formularios'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📋 Formulários</button> <button onclick="showTab('campanhas'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📢 Campanhas</button> <button onclick="showTab('urna'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🗳️ Urna Eletrônica</button> <button onclick="showTab('apuracao'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📊 Apuração</button> <button onclick="showTab('endossos'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🤝 Endossos</button> <button onclick="showTab('partidos'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🎌 Partidos</button> <button onclick="showTab('noticias'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📰 Notícias</button> <button onclick="showTab('admin'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors text-amber-500">⚙️ Administração</button>
+     </nav>
     </div>
-    <div class="disclaimer">
-     ⚠️ Simulação Narrativa
+   </div><!-- Mobile Menu Overlay -->
+   <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div><!-- Main Content -->
+   <main class="flex-1 overflow-y-auto"><!-- Tab: Início -->
+    <div id="tab-inicio" class="tab-content">
+     <div class="max-w-7xl mx-auto px-4 py-8"><!-- Hero Section -->
+      <div class="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 border border-neutral-700">
+       <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212,175,55,0.1) 10px, rgba(212,175,55,0.1) 20px);"></div>
+       </div>
+       <div class="relative p-6 md:p-12 text-center">
+        <div class="inline-block px-4 py-1 bg-amber-900/50 rounded-full text-amber-400 text-sm mb-4 border border-amber-700">
+         🎭 Simulação Narrativa de RPG
+        </div>
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4 text-white">Tribunal Superior Eleitoral</h2>
+        <p class="text-xl md:text-2xl text-amber-400 mb-2">República Federativa do Brasil</p>
+        <p class="text-lg text-gray-400 mb-6">Realidade Alternativa • Anno Domini 1982</p>
+        <div class="max-w-2xl mx-auto text-gray-300 mb-8">
+         <p>Bem-vindo ao sistema eleitoral do universo BRRPG. Aqui, jogadores e narradores podem simular campanhas políticas, eleições e seus impactos narrativos em um Brasil que nunca existiu.</p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-4"><button onclick="showTab('cadastro')" class="px-6 py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors"> 📝 Fazer Cadastro </button> <button onclick="showTab('contexto')" class="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg font-semibold transition-colors"> 📜 Conhecer o Universo </button>
+        </div>
+       </div>
+      </div><!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+        <div class="text-3xl md:text-4xl font-bold text-amber-400" id="stat-candidates">
+         0
+        </div>
+        <div class="text-sm text-gray-400">
+         Candidatos
+        </div>
+       </div>
+       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+        <div class="text-3xl md:text-4xl font-bold text-green-400" id="stat-parties">
+         0
+        </div>
+        <div class="text-sm text-gray-400">
+         Partidos
+        </div>
+       </div>
+       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+        <div class="text-3xl md:text-4xl font-bold text-blue-400">
+         6
+        </div>
+        <div class="text-sm text-gray-400">
+         Estados
+        </div>
+       </div>
+       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+        <div class="text-3xl md:text-4xl font-bold text-purple-400" id="stat-news">
+         0
+        </div>
+        <div class="text-sm text-gray-400">
+         Notícias
+        </div>
+       </div>
+      </div><!-- Estados do RPG -->
+      <div class="mb-8">
+       <h3 class="font-display text-2xl font-bold mb-4 text-amber-400">Estados do Universo BRRPG</h3>
+       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+         <div class="text-2xl mb-2">
+          🌴
+         </div>
+         <div class="font-semibold">
+          Espírito Santo
+         </div>
+         <div class="text-xs text-gray-500">
+          ES
+         </div>
+        </div>
+        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+         <div class="text-2xl mb-2">
+          🦜
+         </div>
+         <div class="font-semibold">
+          Mato Grosso do Sul
+         </div>
+         <div class="text-xs text-gray-500">
+          MS
+         </div>
+        </div>
+        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+         <div class="text-2xl mb-2">
+          🏙️
+         </div>
+         <div class="font-semibold">
+          São Paulo
+         </div>
+         <div class="text-xs text-gray-500">
+          SP
+         </div>
+        </div>
+        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+         <div class="text-2xl mb-2">
+          ⛰️
+         </div>
+         <div class="font-semibold">
+          Minas Gerais
+         </div>
+         <div class="text-xs text-gray-500">
+          MG
+         </div>
+        </div>
+        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+         <div class="text-2xl mb-2">
+          🎭
+         </div>
+         <div class="font-semibold">
+          Pernambuco
+         </div>
+         <div class="text-xs text-gray-500">
+          PE
+         </div>
+        </div>
+        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+         <div class="text-2xl mb-2">
+          🌲
+         </div>
+         <div class="font-semibold">
+          Paraná
+         </div>
+         <div class="text-xs text-gray-500">
+          PR
+         </div>
+        </div>
+       </div>
+      </div><!-- Info Cards -->
+      <div class="grid md:grid-cols-2 gap-6">
+       <div class="bg-neutral-900 rounded-xl p-6 border border-neutral-800">
+        <h4 class="font-display text-xl font-bold mb-3 text-amber-400">🗳️ Eleições Simuladas</h4>
+        <ul class="space-y-2 text-gray-300 text-sm">
+         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span><strong>Executivo Federal:</strong> Presidente e Vice-Presidente (sem limite de candidatos)</span></li>
+         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span><strong>Executivo Estadual:</strong> Governadores dos 6 estados do RPG</span></li>
+         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span>Campanhas com eventos por município e região</span></li>
+         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span>Sistema de endossos entre candidatos e eleitos</span></li>
+        </ul>
+       </div>
+       <div class="bg-neutral-900 rounded-xl p-6 border border-neutral-800">
+        <h4 class="font-display text-xl font-bold mb-3 text-amber-400">🤖 IA Narrativa Integrada</h4>
+        <ul class="space-y-2 text-gray-300 text-sm">
+         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Análise automática de formulários de candidatura</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Narração de eventos de campanha</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Cálculo de impacto em NPCs e jogadores</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Geração de resultados eleitorais narrativos</span></li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Contexto Histórico -->
+    <div id="tab-contexto" class="tab-content hidden">
+     <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl md:text-4xl font-bold text-amber-400 mb-2">Contexto Histórico</h2>
+       <p class="text-gray-400">O Brasil Alternativo do Universo BRRPG</p>
+      </div>
+      <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
+       <div class="bg-gradient-to-r from-amber-900/30 to-neutral-900 p-6 border-b border-neutral-800">
+        <h3 class="font-display text-2xl font-bold text-white">📜 Linha do Tempo Alternativa</h3>
+        <p class="text-amber-400">Uma história que nunca aconteceu</p>
+       </div>
+       <div class="p-6 space-y-8"><!-- Timeline -->
+        <div class="relative border-l-2 border-amber-600 pl-6 space-y-8">
+         <div class="relative">
+          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <div class="text-amber-400 font-bold text-lg">
+            1889 — A Grande Cisão
+           </div>
+           <p class="text-gray-300 mt-2">Neste universo alternativo, a proclamação da República acontece de forma diferente. Uma aliança entre diferentes facções militares e civis cria uma federação com características únicas, onde os estados possuem maior autonomia desde o início.</p>
+          </div>
+         </div>
+         <div class="relative">
+          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <div class="text-amber-400 font-bold text-lg">
+            1922 — O Pacto dos Governadores
+           </div>
+           <p class="text-gray-300 mt-2">Os estados do Brasil Alternativo firmam um acordo que estabelece um sistema eleitoral próprio, com comarcas eleitorais e um Tribunal Superior Eleitoral com poderes expandidos para garantir a integridade do processo democrático.</p>
+          </div>
+         </div>
+         <div class="relative">
+          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <div class="text-amber-400 font-bold text-lg">
+            1945 — A Nova Ordem
+           </div>
+           <p class="text-gray-300 mt-2">Após os eventos da Segunda Guerra Mundial, o Brasil Alternativo emerge como uma potência regional com um sistema multipartidário vibrante. Novos partidos surgem representando diferentes visões para o futuro da nação.</p>
+          </div>
+         </div>
+         <div class="relative">
+          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <div class="text-amber-400 font-bold text-lg">
+            1964 — A Crise Evitada
+           </div>
+           <p class="text-gray-300 mt-2">Diferente da nossa realidade, neste universo uma série de acordos políticos evita a ruptura institucional. O país mantém sua democracia, mas com tensões constantes entre diferentes grupos de poder.</p>
+          </div>
+         </div>
+         <div class="relative">
+          <div class="absolute -left-8 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+          <div class="bg-neutral-800 rounded-lg p-4 border border-green-900">
+           <div class="text-green-400 font-bold text-lg">
+            1982 — Momento Atual
+           </div>
+           <p class="text-gray-300 mt-2">O Brasil Alternativo vive um momento de intensa disputa política. As eleições de 1982 prometem ser as mais disputadas da história, com candidatos de todas as vertentes ideológicas competindo pelo poder nos níveis federal e estadual.</p>
+          </div>
+         </div>
+        </div><!-- Características do Universo -->
+        <div class="mt-8">
+         <h4 class="font-display text-xl font-bold text-amber-400 mb-4">🌎 Características do Universo</h4>
+         <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <h5 class="font-semibold text-white mb-2">Sistema Político</h5>
+           <p class="text-gray-400 text-sm">República Federativa com forte autonomia estadual. O Presidente é eleito por voto direto, assim como os governadores. O sistema permite coligações amplas e não há limite de candidatos.</p>
+          </div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <h5 class="font-semibold text-white mb-2">Comarcas Eleitorais</h5>
+           <p class="text-gray-400 text-sm">Os estados são divididos em comarcas para fins eleitorais, cada uma com suas características demográficas e políticas que influenciam os resultados das urnas.</p>
+          </div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <h5 class="font-semibold text-white mb-2">Religião e Sociedade</h5>
+           <p class="text-gray-400 text-sm">O Brasil Alternativo possui doutrinas religiosas próprias que exercem influência na política. Os candidatos podem declarar sua filiação para impacto em determinados grupos de NPCs.</p>
+          </div>
+          <div class="bg-neutral-800 rounded-lg p-4">
+           <h5 class="font-semibold text-white mb-2">NPCs e Jogadores</h5>
+           <p class="text-gray-400 text-sm">O eleitorado é composto por NPCs controlados pela narrativa e personagens de jogadores. Eventos de campanha e posicionamentos afetam ambos os grupos de formas diferentes.</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Cadastro -->
+    <div id="tab-cadastro" class="tab-content hidden">
+     <div class="max-w-xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Cadastro</h2>
+       <p class="text-gray-400">Registre-se no sistema eleitoral do BRRPG</p>
+      </div>
+      <div class="bg-neutral-900 rounded-2xl border border-neutral-800 p-6">
+       <form id="register-form" onsubmit="handleRegister(event)" class="space-y-6">
+        <div><label class="block text-sm font-medium text-gray-300 mb-2">Nome Completo *</label> <input type="text" id="reg-fullname" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Digite seu nome completo">
+        </div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-2">Nome de Usuário *</label> <input type="text" id="reg-username" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Escolha um nome de usuário">
+        </div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-2">Senha *</label> <input type="password" id="reg-password" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Digite sua senha" minlength="6">
+        </div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-2">Comarca (Estado) *</label> <select id="reg-comarca" required class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Selecione sua comarca</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
+        </div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-2">Seção Eleitoral *</label> <input type="number" id="reg-secao" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Ex: 1, 2, 3..." min="1">
+         <p class="text-xs text-gray-500 mt-1">A seção é o número sequencial da urna no seu estado (1ª seção, 2ª seção, etc.)</p>
+        </div>
+        <div class="bg-neutral-800 rounded-lg p-4"><label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="reg-is-candidate" onchange="toggleCandidateFields()" class="w-5 h-5 rounded bg-neutral-700 border-neutral-600 text-amber-600 focus:ring-amber-500"> <span class="text-gray-300 font-medium">Sou candidato</span> </label>
+        </div>
+        <div id="candidate-fields" class="hidden space-y-4 border-t border-neutral-700 pt-4">
+         <div><label class="block text-sm font-medium text-gray-300 mb-2">Cargo Pretendido *</label> <select id="reg-office" class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Selecione o cargo</option> <option value="presidente">Presidente da República</option> <option value="governador">Governador de Estado</option> </select>
+         </div>
+         <div id="state-field" class="hidden"><label class="block text-sm font-medium text-gray-300 mb-2">Estado *</label> <select id="reg-state" class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Selecione o estado</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
+         </div>
+        </div><button type="submit" id="register-btn" class="w-full py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"> <span>Criar Cadastro</span> </button>
+       </form>
+       <div id="register-success" class="hidden text-center py-8">
+        <div class="text-5xl mb-4">
+         ✅
+        </div>
+        <h3 class="text-xl font-bold text-green-400 mb-2">Cadastro Realizado!</h3>
+        <p class="text-gray-400 mb-4">Você já pode acessar o sistema.</p><button onclick="showTab('inicio')" class="px-6 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg transition-colors"> Ir para Início </button>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Formulários -->
+    <div id="tab-formularios" class="tab-content hidden">
+     <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Formulários Eleitorais</h2>
+       <p class="text-gray-400">Registro de Candidatura — Eleições 1982</p>
+      </div>
+      <div id="form-access-denied" class="bg-neutral-900 rounded-2xl border border-red-900 p-8 text-center">
+       <div class="text-5xl mb-4">
+        🔒
+       </div>
+       <h3 class="text-xl font-bold text-red-400 mb-2">Acesso Restrito</h3>
+       <p class="text-gray-400 mb-4">Você precisa estar cadastrado como candidato para acessar os formulários.</p><button onclick="showTab('cadastro')" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors"> Fazer Cadastro </button>
+      </div>
+      <div id="candidate-form-container" class="hidden">
+       <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
+        <div class="bg-gradient-to-r from-amber-900/30 to-neutral-900 p-6 border-b border-neutral-800">
+         <h3 class="font-display text-xl font-bold text-white">📋 Formulário de Candidatura</h3>
+         <p id="form-office-display" class="text-amber-400"></p>
+        </div>
+        <form id="candidacy-form" onsubmit="handleCandidacySubmit(event)" class="p-6 space-y-6"><!-- Dados Básicos -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">📌 Dados do Candidato</h4>
+          <div class="grid md:grid-cols-2 gap-4">
+           <div><label class="block text-sm text-gray-400 mb-1">Nome de Urna</label> <input type="text" id="form-ballot-name" required class="form-input w-full px-3 py-2 rounded" placeholder="Como aparecerá na urna">
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">URL da Foto</label> <input type="url" id="form-photo" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">Partido</label> <select id="form-party" class="form-input w-full px-3 py-2 rounded"> <option value="">Selecione um partido</option> </select>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">Coligação</label> <input type="text" id="form-coalition" class="form-input w-full px-3 py-2 rounded" placeholder="Nome da coligação">
+           </div>
+          </div>
+         </div><!-- Vice/Suplente -->
+         <div id="vice-section" class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">👥 Vice-Candidato</h4>
+          <div class="grid md:grid-cols-2 gap-4">
+           <div><label class="block text-sm text-gray-400 mb-1">Nome do Vice</label> <input type="text" id="form-vice-name" class="form-input w-full px-3 py-2 rounded" placeholder="Nome completo do vice">
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">URL da Foto do Vice</label> <input type="url" id="form-vice-photo" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+           </div>
+          </div>
+         </div><!-- Campanha -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">📢 Campanha</h4>
+          <div><label class="block text-sm text-gray-400 mb-1">Slogan de Campanha</label> <input type="text" id="form-slogan" required class="form-input w-full px-3 py-2 rounded" placeholder="Seu slogan principal">
+          </div>
+          <div class="mt-4"><label class="block text-sm text-gray-400 mb-1">Links de Viagens de Campanha (URLs separadas por vírgula)</label> <textarea id="form-travels" class="form-input w-full px-3 py-2 rounded h-20" placeholder="https://link1.com, https://link2.com"></textarea>
+          </div>
+         </div><!-- Públicos-alvo -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">🎯 Públicos-Alvo (máx. 5)</h4>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2"><label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="trabalhadores"> <span class="text-sm">Trabalhadores</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="empresarios"> <span class="text-sm">Empresários</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="rurais"> <span class="text-sm">Rurais</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="jovens"> <span class="text-sm">Jovens</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="religiosos"> <span class="text-sm">Religiosos</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="militares"> <span class="text-sm">Militares</span> </label>
+          </div>
+         </div><!-- Questionário Político -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">🏛️ Questionário Político</h4>
+          <div class="space-y-4">
+           <div><label class="block text-sm text-gray-400 mb-1">1. Qual sua posição sobre a autonomia dos estados?</label> <textarea id="q-political-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">2. Como pretende lidar com a oposição política?</label> <textarea id="q-political-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">3. Qual sua visão sobre reforma eleitoral?</label> <textarea id="q-political-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+          </div>
+         </div><!-- Questionário Econômico -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">�� Questionário Econômico</h4>
+          <div class="space-y-4">
+           <div><label class="block text-sm text-gray-400 mb-1">1. Quais suas propostas para combater a inflação?</label> <textarea id="q-economic-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">2. Qual sua posição sobre privatizações?</label> <textarea id="q-economic-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">3. Como pretende gerar empregos?</label> <textarea id="q-economic-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+          </div>
+         </div><!-- Questionário Social -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">👥 Questionário Social</h4>
+          <div class="space-y-4">
+           <div><label class="block text-sm text-gray-400 mb-1">1. Quais suas propostas para educação?</label> <textarea id="q-social-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">2. Como pretende melhorar a saúde pública?</label> <textarea id="q-social-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+           <div><label class="block text-sm text-gray-400 mb-1">3. Qual sua posição sobre reforma agrária?</label> <textarea id="q-social-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+           </div>
+          </div>
+         </div><!-- Perguntas Estaduais -->
+         <div id="state-questions" class="hidden border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">🗺️ Perguntas Específicas do Estado</h4>
+          <div id="state-questions-content" class="space-y-4"></div>
+         </div><!-- Religião -->
+         <div class="border-b border-neutral-700 pb-6">
+          <h4 class="font-semibold text-white mb-4">⛪ Religião e Doutrina (Opcional)</h4>
+          <p class="text-xs text-gray-500 mb-3">Influencia NPCs religiosos no universo do jogo</p><select id="form-religion" class="form-input w-full px-3 py-2 rounded"> <option value="">Prefiro não declarar</option> <option value="catolicismo-tradicional">Catolicismo Tradicional</option> <option value="catolicismo-progressista">Catolicismo Progressista</option> <option value="protestantismo-historico">Protestantismo Histórico</option> <option value="pentecostalismo">Pentecostalismo</option> <option value="espiritismo-kardecista">Espiritismo Kardecista</option> <option value="religioes-afro">Religiões de Matriz Africana</option> <option value="judaismo">Judaísmo</option> <option value="agnosticismo">Agnosticismo</option> <option value="ateismo">Ateísmo</option> </select>
+         </div><!-- Contador de caracteres -->
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="flex justify-between items-center"><span class="text-sm text-gray-400">Total de caracteres:</span> <span id="char-counter" class="font-mono text-amber-400">0 / 7000</span>
+          </div>
+          <div class="w-full bg-neutral-700 rounded-full h-2 mt-2">
+           <div id="char-bar" class="bg-amber-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+          </div>
+         </div><button type="submit" id="submit-candidacy-btn" class="w-full py-3 bg-green-600 hover:bg-green-500 rounded-lg font-semibold transition-colors"> ✅ Registrar Candidatura </button>
+        </form>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Campanhas -->
+    <div id="tab-campanhas" class="tab-content hidden">
+     <div class="max-w-5xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Campanhas Eleitorais</h2>
+       <p class="text-gray-400">Eventos e atividades de campanha dos candidatos</p>
+      </div><!-- Criar Evento -->
+      <div id="create-event-section" class="hidden mb-8">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-semibold text-white mb-4">📢 Criar Evento de Campanha</h3>
+        <form id="event-form" onsubmit="handleEventSubmit(event)" class="space-y-4">
+         <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm text-gray-400 mb-1">Título do Evento</label> <input type="text" id="event-title" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: Comício em São Paulo">
+          </div>
+          <div><label class="block text-sm text-gray-400 mb-1">Município/Região</label> <input type="text" id="event-location" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: São Paulo - Centro">
+          </div>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Descrição do Evento</label> <textarea id="event-description" required class="form-input w-full px-3 py-2 rounded h-24" placeholder="Descreva o evento..."></textarea>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">URL de Anexo (opcional)</label> <input type="url" id="event-attachment" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+         </div><button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Publicar Evento </button>
+        </form>
+       </div>
+      </div><!-- Lista de Eventos -->
+      <div id="events-list" class="space-y-4">
+       <div class="text-center py-12 text-gray-500">
+        <div class="text-4xl mb-2">
+         📭
+        </div>
+        <p>Nenhum evento de campanha registrado ainda.</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Urna Eletrônica -->
+    <div id="tab-urna" class="tab-content hidden">
+     <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Urna Eletrônica</h2>
+       <p class="text-gray-400">Simulação de Votação — Eleições 1982</p>
+       <div class="inline-block mt-2 px-3 py-1 bg-amber-900/30 rounded-full text-amber-400 text-sm">
+        🎭 Simulação Narrativa
+       </div>
+      </div><!-- Urna Container -->
+      <div class="urna-container rounded-2xl p-6 md:p-8 max-w-2xl mx-auto"><!-- Tela da Urna -->
+       <div class="bg-neutral-950 rounded-lg border-4 border-neutral-700 p-4 md:p-6 mb-6"><!-- Cabeçalho -->
+        <div class="flex justify-between items-center mb-4 text-xs text-gray-500"><span>JUSTIÇA ELEITORAL (RPG)</span> <span id="urna-date">15/11/1982</span>
+        </div><!-- Cargo sendo votado -->
+        <div id="urna-cargo" class="text-center mb-4">
+         <div class="text-lg font-bold text-green-400">
+          PRESIDENTE
+         </div>
+         <div class="text-sm text-gray-400">
+          Digite o número do candidato
+         </div>
+        </div><!-- Display do número -->
+        <div class="flex justify-center gap-2 mb-6">
+         <div class="urna-digit w-16 h-20 md:w-20 md:h-24 bg-neutral-900 border-2 border-neutral-700 rounded flex items-center justify-center text-4xl md:text-5xl font-mono text-green-400" id="digit-1">
+          _
+         </div>
+         <div class="urna-digit w-16 h-20 md:w-20 md:h-24 bg-neutral-900 border-2 border-neutral-700 rounded flex items-center justify-center text-4xl md:text-5xl font-mono text-green-400" id="digit-2">
+          _
+         </div>
+        </div><!-- Área do candidato -->
+        <div id="urna-candidate-display" class="hidden">
+         <div class="flex gap-4 bg-neutral-900 rounded-lg p-4">
+          <div id="urna-photo" class="w-24 h-32 md:w-32 md:h-40 bg-neutral-800 rounded flex items-center justify-center text-4xl">
+           👤
+          </div>
+          <div class="flex-1">
+           <div class="text-xs text-gray-500 mb-1">
+            Nome
+           </div>
+           <div id="urna-name" class="text-xl font-bold text-white mb-2">
+            ---
+           </div>
+           <div class="text-xs text-gray-500 mb-1">
+            Partido
+           </div>
+           <div id="urna-party" class="text-amber-400 mb-2">
+            ---
+           </div>
+           <div id="urna-vice-section" class="hidden">
+            <div class="text-xs text-gray-500 mb-1">
+             Vice
+            </div>
+            <div id="urna-vice" class="text-gray-300">
+             ---
+            </div>
+           </div>
+          </div>
+         </div>
+        </div><!-- Mensagem de voto -->
+        <div id="urna-message" class="text-center text-xl font-bold text-green-400 hidden py-8">
+         VOTO CONFIRMADO
+        </div>
+       </div><!-- Teclado da Urna -->
+       <div class="grid grid-cols-3 gap-2 md:gap-3 max-w-xs mx-auto mb-4"><button onclick="urnaDigit(1)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">1</button> <button onclick="urnaDigit(2)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">2</button> <button onclick="urnaDigit(3)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">3</button> <button onclick="urnaDigit(4)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">4</button> <button onclick="urnaDigit(5)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white"><span class="tactile-dot"></span>5</button> <button onclick="urnaDigit(6)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">6</button> <button onclick="urnaDigit(7)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">7</button> <button onclick="urnaDigit(8)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">8</button> <button onclick="urnaDigit(9)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">9</button>
+        <div></div><button onclick="urnaDigit(0)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">0</button>
+        <div></div>
+       </div><!-- Botões de ação -->
+       <div class="flex justify-center gap-3"><button onclick="urnaBranco()" class="urna-key urna-key-branco px-4 md:px-6 py-3 rounded-lg font-bold text-sm">BRANCO</button> <button onclick="urnaCorrige()" class="urna-key urna-key-corrige px-4 md:px-6 py-3 rounded-lg font-bold text-sm text-white">CORRIGE</button> <button onclick="urnaConfirma()" class="urna-key urna-key-confirma px-4 md:px-6 py-3 rounded-lg font-bold text-sm text-white">CONFIRMA</button>
+       </div>
+      </div><!-- Seletor de Comarca -->
+      <div class="mt-8 bg-neutral-900 rounded-xl border border-neutral-800 p-6 max-w-2xl mx-auto">
+       <h3 class="font-semibold text-white mb-4">🗺️ Selecionar Comarca (para cargos estaduais)</h3><select id="comarca-selector" onchange="updateComarca()" class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Nacional (para Presidente)</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
+      </div>
+     </div>
+    </div><!-- Tab: Apuração -->
+    <div id="tab-apuracao" class="tab-content hidden">
+     <div class="max-w-6xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Apuração</h2>
+       <p class="text-gray-400">Resultados das Eleições 1982 (Narrativo)</p>
+      </div><!-- Tabs de Apuração -->
+      <div class="flex flex-wrap gap-2 mb-6"><button onclick="showApuracaoTab('federal')" class="apuracao-tab px-4 py-2 bg-amber-600 rounded-lg font-semibold" data-tab="federal">Executivo Nacional</button> <button onclick="showApuracaoTab('estadual')" class="apuracao-tab px-4 py-2 bg-neutral-700 rounded-lg font-semibold" data-tab="estadual">Executivo Estadual</button> <button onclick="showApuracaoTab('legislativo')" class="apuracao-tab px-4 py-2 bg-neutral-700 rounded-lg font-semibold" data-tab="legislativo">Legislativo Nacional</button>
+      </div><!-- Conteúdo Federal -->
+      <div id="apuracao-federal" class="apuracao-content">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-display text-xl font-bold text-white mb-6">🏛️ Presidente da República</h3>
+        <div id="federal-results" class="space-y-4">
+         <div class="text-center py-8 text-gray-500">
+          <div class="text-4xl mb-2">
+           📊
+          </div>
+          <p>Aguardando início da apuração...</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Conteúdo Estadual -->
+      <div id="apuracao-estadual" class="apuracao-content hidden">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-display text-xl font-bold text-white mb-4">🗺️ Governadores</h3>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="state-results">
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="font-semibold text-amber-400 mb-2">
+           🌴 Espírito Santo
+          </div>
+          <div class="text-gray-500 text-sm">
+           Aguardando apura����ão...
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="font-semibold text-amber-400 mb-2">
+           🦜 Mato Grosso do Sul
+          </div>
+          <div class="text-gray-500 text-sm">
+           Aguardando apuração...
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="font-semibold text-amber-400 mb-2">
+           🏙️ São Paulo
+          </div>
+          <div class="text-gray-500 text-sm">
+           Aguardando apuração...
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="font-semibold text-amber-400 mb-2">
+           ⛰️ Minas Gerais
+          </div>
+          <div class="text-gray-500 text-sm">
+           Aguardando apuração...
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="font-semibold text-amber-400 mb-2">
+           🎭 Pernambuco
+          </div>
+          <div class="text-gray-500 text-sm">
+           Aguardando apuração...
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="font-semibold text-amber-400 mb-2">
+           🌲 Paraná
+          </div>
+          <div class="text-gray-500 text-sm">
+           Aguardando apuração...
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- Conteúdo Legislativo -->
+      <div id="apuracao-legislativo" class="apuracao-content hidden">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-display text-xl font-bold text-white mb-4">🏛️ Legislativo Nacional</h3>
+        <div class="text-center py-8 text-gray-500">
+         <div class="text-4xl mb-2">
+          🏗️
+         </div>
+         <p>Sistema legislativo em desenvolvimento...</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Endossos -->
+    <div id="tab-endossos" class="tab-content hidden">
+     <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Endossos</h2>
+       <p class="text-gray-400">Declarações de apoio entre candidatos e eleitos</p>
+      </div><!-- Formulário de Endosso -->
+      <div id="endorsement-form-container" class="hidden mb-8">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-semibold text-white mb-4">🤝 Declarar Apoio</h3>
+        <form id="endorsement-form" onsubmit="handleEndorsement(event)" class="space-y-4">
+         <div><label class="block text-sm text-gray-400 mb-1">Candidato a apoiar</label> <select id="endorse-candidate" class="form-input w-full px-3 py-2 rounded"> <option value="">Selecione um candidato</option> </select>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Mensagem de apoio</label> <textarea id="endorse-message" class="form-input w-full px-3 py-2 rounded h-24" placeholder="Por que você apoia este candidato?"></textarea>
+         </div><button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 rounded font-semibold transition-colors"> Publicar Endosso </button>
+        </form>
+       </div>
+      </div><!-- Lista de Endossos -->
+      <div id="endorsements-list" class="space-y-4">
+       <div class="text-center py-12 text-gray-500">
+        <div class="text-4xl mb-2">
+         🤝
+        </div>
+        <p>Nenhum endosso registrado ainda.</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Partidos -->
+    <div id="tab-partidos" class="tab-content hidden">
+     <div class="max-w-5xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Partidos Políticos</h2>
+       <p class="text-gray-400">Agremiações do Universo BRRPG</p>
+      </div><!-- Criar Partido (Admin) -->
+      <div id="create-party-section" class="hidden mb-8">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-semibold text-white mb-4">🎌 Registrar Novo Partido</h3>
+        <form id="party-form" onsubmit="handlePartySubmit(event)" class="space-y-4">
+         <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm text-gray-400 mb-1">Nome do Partido</label> <input type="text" id="party-name" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: Partido Social Democrático">
+          </div>
+          <div><label class="block text-sm text-gray-400 mb-1">Sigla</label> <input type="text" id="party-acronym" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: PSD" maxlength="10">
+          </div>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Cor do Partido (hex)</label>
+          <div class="flex gap-2"><input type="color" id="party-color" value="#d4af37" class="h-10 w-20 rounded cursor-pointer"> <input type="text" id="party-color-text" class="form-input flex-1 px-3 py-2 rounded" value="#d4af37">
+          </div>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Descrição</label> <textarea id="party-description" class="form-input w-full px-3 py-2 rounded h-24" placeholder="Ideologia e posicionamento do partido..."></textarea>
+         </div><button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Registrar Partido </button>
+        </form>
+       </div>
+      </div><!-- Lista de Partidos -->
+      <div id="parties-list" class="grid md:grid-cols-2 gap-4">
+       <div class="text-center py-12 text-gray-500 col-span-2">
+        <div class="text-4xl mb-2">
+         🎌
+        </div>
+        <p>Nenhum partido registrado ainda.</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Notícias -->
+    <div id="tab-noticias" class="tab-content hidden">
+     <div class="max-w-5xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Notícias</h2>
+       <p class="text-gray-400">Portal de Notícias do Universo BRRPG</p>
+      </div><!-- Criar Notícia -->
+      <div id="create-news-section" class="hidden mb-8">
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h3 class="font-semibold text-white mb-4">📰 Publicar Notícia</h3>
+        <form id="news-form" onsubmit="handleNewsSubmit(event)" class="space-y-4">
+         <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm text-gray-400 mb-1">Manchete</label> <input type="text" id="news-title" required class="form-input w-full px-3 py-2 rounded" placeholder="Título da notícia">
+          </div>
+          <div><label class="block text-sm text-gray-400 mb-1">Canal</label> <select id="news-channel" class="form-input w-full px-3 py-2 rounded"> <option value="Gazeta Nacional">Gazeta Nacional</option> <option value="Diário do Povo">Diário do Povo</option> <option value="Correio Republicano">Correio Republicano</option> <option value="Voz do Interior">Voz do Interior</option> </select>
+          </div>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Conteúdo (máx. 4000 caracteres)</label> <textarea id="news-content" required class="form-input w-full px-3 py-2 rounded h-40" maxlength="4000" placeholder="Corpo da notícia..."></textarea>
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">URL da Imagem (opcional)</label> <input type="url" id="news-image" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+         </div><button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded font-semibold transition-colors"> Publicar Notícia </button>
+        </form>
+       </div>
+      </div><!-- Lista de Notícias -->
+      <div id="news-list" class="space-y-6">
+       <div class="text-center py-12 text-gray-500">
+        <div class="text-4xl mb-2">
+         📰
+        </div>
+        <p>Nenhuma notícia publicada ainda.</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tab: Admin -->
+    <div id="tab-admin" class="tab-content hidden">
+     <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="mb-8 text-center">
+       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Administração</h2>
+       <p class="text-gray-400">Painel de Controle do Sistema Eleitoral</p>
+      </div><!-- Login Admin -->
+      <div id="admin-login" class="bg-neutral-900 rounded-xl border border-neutral-800 p-8 max-w-md mx-auto">
+       <div class="text-center mb-6">
+        <div class="text-4xl mb-2">
+         🔐
+        </div>
+        <h3 class="font-semibold text-white">Acesso Restrito</h3>
+        <p class="text-sm text-gray-500">Área exclusiva para administradores</p>
+       </div>
+       <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div><label class="block text-sm text-gray-400 mb-1">Usuário</label> <input type="text" id="admin-user" class="form-input w-full px-3 py-2 rounded" placeholder="admin">
+        </div>
+        <div><label class="block text-sm text-gray-400 mb-1">Senha</label> <input type="password" id="admin-pass" class="form-input w-full px-3 py-2 rounded" placeholder="••••••••">
+        </div><button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Entrar </button>
+        <p class="text-xs text-gray-500 text-center">Demo: admin / admin123</p>
+       </form>
+      </div><!-- Painel Admin -->
+      <div id="admin-panel" class="hidden space-y-6">
+       <div class="flex justify-between items-center">
+        <h3 class="font-display text-xl font-bold text-white">⚙️ Painel de Controle</h3><button onclick="logoutAdmin()" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded text-sm font-semibold transition-colors"> Sair </button>
+       </div><!-- Configurações de Campanha -->
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h4 class="font-semibold text-amber-400 mb-4">📅 Períodos Eleitorais</h4>
+        <div class="grid md:grid-cols-2 gap-4">
+         <div><label class="block text-sm text-gray-400 mb-1">Início das Campanhas</label> <input type="date" id="campaign-start" class="form-input w-full px-3 py-2 rounded">
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Dia da Votação</label> <input type="date" id="election-day" class="form-input w-full px-3 py-2 rounded">
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Segundo Turno (se houver)</label> <input type="date" id="runoff-day" class="form-input w-full px-3 py-2 rounded">
+         </div>
+         <div><label class="block text-sm text-gray-400 mb-1">Encerramento</label> <input type="date" id="election-end" class="form-input w-full px-3 py-2 rounded">
+         </div>
+        </div><button onclick="saveElectionDates()" class="mt-4 px-4 py-2 bg-green-600 hover:bg-green-500 rounded font-semibold transition-colors"> Salvar Datas </button>
+       </div><!-- Ações Rápidas -->
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h4 class="font-semibold text-amber-400 mb-4">⚡ Ações Rápidas</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><button onclick="startApuracao()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors"> 📊 Iniciar Apuração </button> <button onclick="resetVotes()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors"> 🔄 Resetar Votos </button> <button onclick="generateNPCs()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors"> 👥 Gerar NPCs </button> <button onclick="newSeason()" class="p-3 bg-red-900 hover:bg-red-800 rounded-lg text-sm transition-colors"> 🆕 Nova Temporada </button>
+        </div>
+       </div><!-- Estatísticas -->
+       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+        <h4 class="font-semibold text-amber-400 mb-4">📈 Estatísticas do Sistema</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="text-2xl font-bold text-white" id="admin-stat-users">
+           0
+          </div>
+          <div class="text-xs text-gray-400">
+           Usuários
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="text-2xl font-bold text-white" id="admin-stat-candidates">
+           0
+          </div>
+          <div class="text-xs text-gray-400">
+           Candidatos
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="text-2xl font-bold text-white" id="admin-stat-votes">
+           0
+          </div>
+          <div class="text-xs text-gray-400">
+           Votos
+          </div>
+         </div>
+         <div class="bg-neutral-800 rounded-lg p-4">
+          <div class="text-2xl font-bold text-white" id="admin-stat-events">
+           0
+          </div>
+          <div class="text-xs text-gray-400">
+           Eventos
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
     </div>
-   </div><!-- NAVEGAÇÃO -->
-   <div class="nav-container">
-    <ul class="nav">
-     <li><button onclick="showPage('home')" class="nav-btn active">Início</button></li>
-     <li><button onclick="showPage('historia')" class="nav-btn">História</button></li>
-     <li><button onclick="showPage('candidatos')" class="nav-btn">Candidatos</button></li>
-     <li><button onclick="showPage('apuracao')" class="nav-btn">Apuração</button></li>
-     <li><button onclick="showPage('noticias')" class="nav-btn">Notícias</button></li>
-     <li><button onclick="openRegisterModal()" class="nav-btn" style="color: #ffc107; font-weight: 700;">Entrar / Cadastro</button></li>
-    </ul>
-   </div><!-- CONTEÚDO -->
-   <div class="content"><!-- HOME -->
-    <div id="home" class="page active">
-     <h2 class="section-title">Bem-vindo ao BRRPG</h2>
-     <p class="section-subtitle">Sistema Central de Eleições — Brasil Alternativo 1982</p>
-     <div class="intro-text">
-      <p><strong>🗳️ Participar de Eleições Federais e Estaduais</strong></p>
-      <p style="margin-top: 12px;">Registre-se como Candidato ou Eleitor e participe da democracia brasileira simulada. Escolha entre ser uma figura política com plataforma própria ou um cidadão comum que vota.</p>
-      <h3>Como Funciona?</h3>
-      <ul style="margin-top: 12px;">
-       <li><strong>Candidatos:</strong> Criam plataforma política, recebem votos e disputam eleições</li>
-       <li><strong>Eleitores:</strong> Votam em candidatos e acompanham resultados</li>
-       <li><strong>Apuração:</strong> Resultados são divulgados em tempo real</li>
-       <li><strong>Histórico:</strong> Acompanhe campanhas e eventos políticos</li>
-      </ul>
-      <h3>Estados Disponíveis</h3>
-      <p style="margin-top: 12px;">🏛️ Espírito Santo • 🏛️ Mato Grosso do Sul • 🏛️ São Paulo • 🏛️ Minas Gerais • 🏛️ Pernambuco • 🏛️ Paraná</p>
-     </div>
-     <div class="stats-grid">
-      <div class="stat-card">
-       <div class="stat-number" id="stat-candidatos">
-        0
-       </div>
-       <div class="stat-label">
-        Candidatos Registrados
-       </div>
-      </div>
-      <div class="stat-card">
-       <div class="stat-number" id="stat-eleitores">
-        0
-       </div>
-       <div class="stat-label">
-        Eleitores Registrados
-       </div>
-      </div>
-      <div class="stat-card">
-       <div class="stat-number" id="stat-votos">
-        0
-       </div>
-       <div class="stat-label">
-        Votos Computados
-       </div>
-      </div>
-      <div class="stat-card">
-       <div class="stat-number" id="stat-noticias">
-        0
-       </div>
-       <div class="stat-label">
-        Notícias Publicadas
-       </div>
-      </div>
-     </div><button class="btn-primary" onclick="openRegisterModal()" style="margin-top: 32px; max-width: 300px;">🚀 Comece Agora</button>
-    </div><!-- HISTÓRIA -->
-    <div id="historia" class="page">
-     <h2 class="section-title">Brasil Alternativo 1982</h2>
-     <p class="section-subtitle">Contexto histórico do universo BRRPG</p>
-     <div class="intro-text">
-      <h3>A Democracia Contínua</h3>
-      <p>Em nossa linha do tempo alternativa, a crise de 1964 não resultou em ditadura militar. A instituição militar manteve a democracia, permitindo eleições contínuas e transição constitucional.</p>
-      <h3>1982 — Ano de Mudanças</h3>
-      <p>O Brasil vota para escolher governadores, deputados e, indiretamente, o presidente. A democracia se consolida com maior liberdade a cada eleição. A discussão sobre semipresidencialismo ganha força nas elites políticas.</p>
-      <h3>Regiões em Foco</h3>
-      <p><strong>São Paulo:</strong> Polo econômico com influência sindical forte. | <strong>Minas Gerais:</strong> Tradição política e oligarquias locais. | <strong>Pernambuco:</strong> Nordeste combativo, clamor por reformas.</p>
-      <p style="margin-top: 12px;"><strong>Paraná:</strong> Sul desenvolvido, conservadorismo liberal. | <strong>Espírito Santo:</strong> Transição agrária e modernização. | <strong>Mato Grosso do Sul:</strong> Expansão agrícola e voto rural.</p>
-     </div>
-    </div><!-- CANDIDATOS -->
-    <div id="candidatos" class="page">
-     <h2 class="section-title">Candidatos Registrados</h2>
-     <p class="section-subtitle">Conheça quem está concorrendo</p>
-     <div id="lista-candidatos" class="candidates-grid"></div>
-     <div id="msg-candidatos" style="color: #888; padding: 20px; text-align: center;">
-      Nenhum candidato registrado ainda. Seja o primeiro!
-     </div>
-    </div><!-- APURAÇÃO -->
-    <div id="apuracao" class="page">
-     <h2 class="section-title">Apuração de Resultados</h2>
-     <p class="section-subtitle">Acompanhe os resultados em tempo real</p>
-     <div style="background: #111; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; margin-top: 24px;">
-      <p style="color: #888; text-align: center;">📊 Apuração em andamento...</p>
-      <p style="color: #666; text-align: center; font-size: 0.9rem; margin-top: 12px;">Os votos serão contabilizados conforme os eleitores votam</p>
-     </div>
-    </div><!-- NOTÍCIAS -->
-    <div id="noticias" class="page">
-     <h2 class="section-title">Portal de Notícias</h2>
-     <p class="section-subtitle">Últimas notícias do universo BRRPG</p>
-     <div id="lista-noticias"></div>
-     <div id="msg-noticias" style="color: #888; padding: 20px; text-align: center;">
-      Nenhuma notícia publicada ainda.
-     </div>
+   </main><!-- Footer -->
+   <footer class="bg-neutral-900 border-t border-neutral-800 py-4 px-4">
+    <div class="max-w-7xl mx-auto text-center text-xs text-gray-500">
+     <p class="mb-1">🎭 <strong>BRRPG - Comissão Eleitoral / TSE (RPG)</strong> — Simulação Narrativa de RPG</p>
+     <p>Este é um ambiente 100% fictício para fins de entretenimento. Não possui qualquer vínculo com eleições reais, órgãos governamentais ou pessoas reais.</p>
+     <p class="mt-1 text-gray-600">Brasil Alternativo • Anno Domini 1982</p>
     </div>
-   </div>
+   </footer><!-- Login Modal -->
+   <div id="login-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-neutral-900 rounded-2xl border border-neutral-700 p-6 max-w-sm w-full">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="font-display text-xl font-bold text-amber-400">Entrar</h3><button onclick="closeLoginModal()" class="text-gray-400 hover:text-white">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+      <div><label class="block text-sm text-gray-400 mb-1">Nome de Usuário</label> <input type="text" id="login-username" required class="form-input w-full px-3 py-2 rounded">
+      </div>
+      <div><label class="block text-sm text-gray-400 mb-1">Senha</label> <input type="password" id="login-password" required class="form-input w-full px-3 py-2 rounded">
+      </div><button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Entrar </button>
+     </form>
+     <p class="text-xs text-gray-500 text-center mt-4">Não tem cadastro? <button onclick="closeLoginModal(); showTab('cadastro');" class="text-amber-400 hover:underline">Registre-se</button></p>
+    </div>
+   </div><!-- Toast Container -->
+   <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
   </div>
   <script>
-    let currentDevice = localStorage.getItem('brrpg_device') || null;
-    let currentUser = localStorage.getItem('brrpg_user') || null;
-    let users = {
-      candidatos: [],
-      eleitores: []
+    // ============================================
+    // BRRPG Electoral System - Main Application
+    // ============================================
+    
+    const defaultConfig = {
+      site_title: 'BRRPG - Comissão Eleitoral'
     };
-
-    window.elementSdk.init({
-      defaultConfig: {},
-      onConfigChange: async (config) => {},
-      mapToCapabilities: (config) => ({
-        recolorables: [],
-        borderables: [],
-        fontEditable: undefined,
-        fontSizeable: undefined
-      }),
-      mapToEditPanelValues: (config) => new Map()
-    });
-
-    async function initializeDataSDK() {
-      const dataHandler = {
-        onDataChanged(data) {
-          users.candidatos = data.filter(d => d.type === 'candidato') || [];
-          users.eleitores = data.filter(d => d.type === 'eleitor') || [];
-          updateAllUI();
+    
+    let config = { ...defaultConfig };
+    let allData = [];
+    let currentUser = null;
+    let isAdmin = false;
+    let urnaDigits = ['_', '_'];
+    let urnaPosition = 0;
+    
+    // State questions per state
+    const stateQuestions = {
+      ES: [
+        'Quais suas propostas para o desenvolvimento do Porto de Vitória?',
+        'Como pretende lidar com a expansão urbana na Grande Vitória?'
+      ],
+      MS: [
+        'Qual sua posição sobre a expansão da fronteira agrícola?',
+        'Como pretende desenvolver a infraestrutura do novo estado?'
+      ],
+      SP: [
+        'Quais suas propostas para o transporte metropolitano?',
+        'Como pretende lidar com a poluição industrial?'
+      ],
+      MG: [
+        'Qual sua posição sobre a mineração em áreas de preservação?',
+        'Como pretende desenvolver o interior do estado?'
+      ],
+      PE: [
+        'Quais suas propostas para combater a seca no sertão?',
+        'Como pretende desenvolver o polo industrial de Suape?'
+      ],
+      PR: [
+        'Qual sua posição sobre a reforma agrária no oeste paranaense?',
+        'Como pretende desenvolver o turismo nas Cataratas?'
+      ]
+    };
+    
+    // Initialize SDKs
+    async function initApp() {
+      // Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...defaultConfig, ...newConfig };
+            document.getElementById('site-title').textContent = config.site_title || defaultConfig.site_title;
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['site_title', cfg.site_title || defaultConfig.site_title]
+          ])
+        });
+      }
+      
+      // Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init({
+          onDataChanged: (data) => {
+            allData = data;
+            updateStats();
+            updatePartyList();
+            updateCandidateSelectors();
+            updateNewsList();
+            updateEventsList();
+            updateEndorsementsList();
+            checkUserSession();
+          }
+        });
+        if (!result.isOk) {
+          console.error('Failed to init data SDK');
         }
+      }
+      
+      showTab('inicio');
+    }
+    
+    // Tab Navigation
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('bg-amber-600', 'text-white'));
+      document.querySelectorAll('.mobile-tab-btn').forEach(el => el.classList.remove('bg-amber-600'));
+      
+      const tabContent = document.getElementById(`tab-${tabName}`);
+      if (tabContent) {
+        tabContent.classList.remove('hidden');
+      }
+      
+      document.querySelectorAll(`.tab-btn[data-tab="${tabName}"]`).forEach(el => {
+        el.classList.add('bg-amber-600', 'text-white');
+      });
+      
+      // Special handling for tabs
+      if (tabName === 'formularios') {
+        checkFormAccess();
+      }
+      if (tabName === 'campanhas') {
+        checkCampaignAccess();
+      }
+      if (tabName === 'endossos') {
+        checkEndorsementAccess();
+      }
+      if (tabName === 'partidos') {
+        checkPartyAccess();
+      }
+      if (tabName === 'noticias') {
+        checkNewsAccess();
+      }
+    }
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const overlay = document.getElementById('mobile-overlay');
+      menu.classList.toggle('open');
+      overlay.classList.toggle('hidden');
+    }
+    
+    // Toast notifications
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-green-600',
+        error: 'bg-red-600',
+        info: 'bg-blue-600',
+        warning: 'bg-amber-600'
       };
-
-      const result = await window.dataSdk.init(dataHandler);
+      toast.className = `${colors[type]} px-4 py-3 rounded-lg shadow-lg text-white text-sm animate-pulse`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
-
-    function selectDevice(device) {
-      currentDevice = device;
-      localStorage.setItem('brrpg_device', device);
-      document.getElementById('deviceModal').classList.add('hidden');
-      openRegisterModal();
+    
+    // User Management
+    function showLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
     }
-
-    function openRegisterModal() {
-      document.getElementById('registerModal').classList.remove('hidden');
+    
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
     }
-
-    function closeRegisterModal() {
-      document.getElementById('registerModal').classList.add('hidden');
-      document.getElementById('register-message').innerHTML = '';
-    }
-
-    function switchRegisterTab(tab) {
-      document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-      document.getElementById('form-' + tab).classList.add('active');
-
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-    }
-
-    async function submitCandidato(e) {
+    
+    function handleLogin(e) {
       e.preventDefault();
-
-      if (document.getElementById('cand-senha').value !== document.getElementById('cand-senha-conf').value) {
-        showMessage('Senhas não conferem', 'error');
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+      const user = allData.find(d => d.type === 'user' && d.username === username && d.password === password);
+      
+      if (user) {
+        currentUser = user;
+        localStorage.setItem('brrpg_user', username);
+        updateUserDisplay();
+        closeLoginModal();
+        showToast('Login realizado com sucesso!', 'success');
+      } else {
+        showToast('Usuário ou senha incorretos', 'error');
+      }
+    }
+    
+    function checkUserSession() {
+      const savedUser = localStorage.getItem('brrpg_user');
+      if (savedUser) {
+        const user = allData.find(d => d.type === 'user' && d.username === savedUser);
+        if (user) {
+          currentUser = user;
+          updateUserDisplay();
+        }
+      }
+    }
+    
+    function updateUserDisplay() {
+      const userInfo = document.getElementById('user-info');
+      const userDisplay = document.getElementById('user-display');
+      const loginBtn = document.getElementById('login-btn');
+      
+      if (currentUser) {
+        userInfo.classList.remove('hidden');
+        userDisplay.textContent = `👤 ${currentUser.fullName}`;
+        loginBtn.textContent = 'Sair';
+        loginBtn.onclick = logout;
+      } else {
+        userInfo.classList.add('hidden');
+        loginBtn.textContent = 'Entrar';
+        loginBtn.onclick = showLoginModal;
+      }
+    }
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('brrpg_user');
+      updateUserDisplay();
+      showToast('Você saiu do sistema', 'info');
+    }
+    
+    // Registration
+    function toggleCandidateFields() {
+      const isCandidate = document.getElementById('reg-is-candidate').checked;
+      const candidateFields = document.getElementById('candidate-fields');
+      candidateFields.classList.toggle('hidden', !isCandidate);
+      
+      document.getElementById('reg-office').addEventListener('change', function() {
+        const stateField = document.getElementById('state-field');
+        stateField.classList.toggle('hidden', this.value !== 'governador');
+      });
+    }
+    
+    async function handleRegister(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Limite de registros atingido', 'error');
         return;
       }
-
-      const candidato = {
-        type: 'candidato',
-        id: 'cand_' + Date.now(),
-        nome_completo: document.getElementById('cand-nome').value,
-        cpf: document.getElementById('cand-cpf').value,
-        email: document.getElementById('cand-email').value,
-        senha: document.getElementById('cand-senha').value,
-        cargo: document.getElementById('cand-cargo').value,
-        estado: document.getElementById('cand-estado').value,
-        numero: document.getElementById('cand-numero').value,
-        partido: document.getElementById('cand-partido').value,
-        slogan: document.getElementById('cand-slogan').value,
-        plataforma: document.getElementById('cand-plataforma').value,
-        data_criacao: new Date().toISOString()
-      };
-
-      const result = await window.dataSdk.create(candidato);
       
-      if (result.isOk) {
-        showMessage('✅ Candidatura registrada com sucesso!', 'success');
-        setTimeout(() => {
-          closeRegisterModal();
-          document.getElementById('form-candidato').reset();
-        }, 2000);
-      } else {
-        showMessage('Erro ao registrar candidatura', 'error');
-      }
-    }
-
-    async function submitEleitor(e) {
-      e.preventDefault();
-
-      if (document.getElementById('elei-senha').value !== document.getElementById('elei-senha-conf').value) {
-        showMessage('Senhas não conferem', 'error');
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const comarca = document.getElementById('reg-comarca').value;
+      const secao = parseInt(document.getElementById('reg-secao').value);
+      const isCandidate = document.getElementById('reg-is-candidate').checked;
+      const office = isCandidate ? document.getElementById('reg-office').value : '';
+      const state = isCandidate && office === 'governador' ? document.getElementById('reg-state').value : '';
+      
+      // Check if username exists
+      if (allData.some(d => d.type === 'user' && d.username === username)) {
+        showToast('Nome de usuário já existe', 'error');
         return;
       }
-
-      const eleitor = {
-        type: 'eleitor',
-        id: 'elei_' + Date.now(),
-        nome_completo: document.getElementById('elei-nome').value,
-        cpf: document.getElementById('elei-cpf').value,
-        email: document.getElementById('elei-email').value,
-        senha: document.getElementById('elei-senha').value,
-        titulo_eleitor: document.getElementById('elei-titulo').value,
-        estado: document.getElementById('elei-estado').value,
-        data_criacao: new Date().toISOString()
-      };
-
-      const result = await window.dataSdk.create(eleitor);
+      
+      const btn = document.getElementById('register-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin">⏳</span> Registrando...';
+      
+      const result = await window.dataSdk.create({
+        type: 'user',
+        fullName,
+        username,
+        password,
+        comarca,
+        secao,
+        isCandidate,
+        office,
+        state,
+        party: '',
+        slogan: '',
+        photoUrl: '',
+        viceCandidate: '',
+        coalition: '',
+        campaignEvents: '',
+        endorsements: '',
+        formResponses: '',
+        votes: 0,
+        votedAt: '',
+        voteNumber: '',
+        colegio: '',
+        createdAt: new Date().toISOString(),
+        newsTitle: '',
+        newsContent: '',
+        newsChannel: '',
+        partyName: '',
+        partyAcronym: '',
+        partyColor: '',
+        partyDescription: ''
+      });
+      
+      btn.disabled = false;
+      btn.innerHTML = '<span>Criar Cadastro</span>';
       
       if (result.isOk) {
-        showMessage('✅ Eleitor registrado com sucesso!', 'success');
-        setTimeout(() => {
-          closeRegisterModal();
-          document.getElementById('form-eleitor').reset();
-        }, 2000);
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('register-success').classList.remove('hidden');
+        showToast('Cadastro realizado com sucesso!', 'success');
       } else {
-        showMessage('Erro ao registrar eleitor', 'error');
+        showToast('Erro ao criar cadastro', 'error');
       }
     }
-
-    function showMessage(msg, type) {
-      const container = document.getElementById('register-message');
-      const className = type === 'success' ? 'message-success' : 'message-error';
-      container.innerHTML = `<div class="${className}">${msg}</div>`;
-    }
-
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-    }
-
-    function updateAllUI() {
-      updateStats();
-      updateCandidatosList();
-      updateNoticiasList();
-    }
-
-    function updateStats() {
-      document.getElementById('stat-candidatos').textContent = users.candidatos.length;
-      document.getElementById('stat-eleitores').textContent = users.eleitores.length;
-      document.getElementById('stat-votos').textContent = Math.floor(users.eleitores.length * 0.7);
-      document.getElementById('stat-noticias').textContent = Math.floor(Math.random() * 10);
-    }
-
-    function updateCandidatosList() {
-      const container = document.getElementById('lista-candidatos');
-      const msg = document.getElementById('msg-candidatos');
-
-      if (users.candidatos.length === 0) {
-        container.innerHTML = '';
-        msg.style.display = 'block';
+    
+    // Form Access
+    function checkFormAccess() {
+      const accessDenied = document.getElementById('form-access-denied');
+      const formContainer = document.getElementById('candidate-form-container');
+      
+      if (currentUser && currentUser.isCandidate) {
+        accessDenied.classList.add('hidden');
+        formContainer.classList.remove('hidden');
+        setupCandidateForm();
       } else {
-        msg.style.display = 'none';
-        container.innerHTML = users.candidatos.map(c => `
-          <div class="candidate-card">
-            <div class="candidate-name">${c.nome_completo}</div>
-            <div class="candidate-info">
-              <strong>Cargo:</strong> ${c.cargo}<br>
-              <strong>Número:</strong> ${c.numero}<br>
-              <strong>Partido:</strong> ${c.partido}<br>
-              <strong>Slogan:</strong> "${c.slogan}"<br>
-              <strong>Estado:</strong> ${c.estado || 'Nacional'}
+        accessDenied.classList.remove('hidden');
+        formContainer.classList.add('hidden');
+      }
+    }
+    
+    function setupCandidateForm() {
+      const officeDisplay = document.getElementById('form-office-display');
+      const viceSection = document.getElementById('vice-section');
+      const stateQuestionSection = document.getElementById('state-questions');
+      
+      if (currentUser.office === 'presidente') {
+        officeDisplay.textContent = 'Candidatura: Presidente da República';
+        viceSection.querySelector('h4').textContent = '👥 Vice-Presidente';
+      } else {
+        officeDisplay.textContent = `Candidatura: Governador - ${getStateName(currentUser.state)}`;
+        viceSection.querySelector('h4').textContent = '👥 Vice-Governador';
+        
+        // Show state-specific questions
+        if (stateQuestions[currentUser.state]) {
+          stateQuestionSection.classList.remove('hidden');
+          const content = document.getElementById('state-questions-content');
+          content.innerHTML = stateQuestions[currentUser.state].map((q, i) => `
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">${i + 1}. ${q}</label>
+              <textarea class="state-question form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+            </div>
+          `).join('');
+        }
+      }
+      
+      // Populate party selector
+      const partySelect = document.getElementById('form-party');
+      const parties = allData.filter(d => d.type === 'party');
+      partySelect.innerHTML = '<option value="">Selecione um partido</option>' +
+        parties.map(p => `<option value="${p.partyAcronym}">${p.partyAcronym} - ${p.partyName}</option>`).join('');
+      
+      // Character counter
+      setupCharacterCounter();
+    }
+    
+    function setupCharacterCounter() {
+      const form = document.getElementById('candidacy-form');
+      const counter = document.getElementById('char-counter');
+      const bar = document.getElementById('char-bar');
+      
+      form.addEventListener('input', () => {
+        let total = 0;
+        form.querySelectorAll('input[type="text"], textarea').forEach(el => {
+          total += el.value.length;
+        });
+        counter.textContent = `${total} / 7000`;
+        const percent = Math.min((total / 7000) * 100, 100);
+        bar.style.width = `${percent}%`;
+        bar.className = `h-2 rounded-full transition-all ${percent > 90 ? 'bg-red-500' : percent > 70 ? 'bg-amber-500' : 'bg-amber-600'}`;
+      });
+    }
+    
+    async function handleCandidacySubmit(e) {
+      e.preventDefault();
+      
+      const formResponses = {
+        ballotName: document.getElementById('form-ballot-name').value,
+        photo: document.getElementById('form-photo').value,
+        party: document.getElementById('form-party').value,
+        coalition: document.getElementById('form-coalition').value,
+        viceName: document.getElementById('form-vice-name').value,
+        vicePhoto: document.getElementById('form-vice-photo').value,
+        slogan: document.getElementById('form-slogan').value,
+        travels: document.getElementById('form-travels').value,
+        targets: Array.from(document.querySelectorAll('.target-audience:checked')).map(el => el.value),
+        political: [
+          document.getElementById('q-political-1').value,
+          document.getElementById('q-political-2').value,
+          document.getElementById('q-political-3').value
+        ],
+        economic: [
+          document.getElementById('q-economic-1').value,
+          document.getElementById('q-economic-2').value,
+          document.getElementById('q-economic-3').value
+        ],
+        social: [
+          document.getElementById('q-social-1').value,
+          document.getElementById('q-social-2').value,
+          document.getElementById('q-social-3').value
+        ],
+        stateQuestions: Array.from(document.querySelectorAll('.state-question')).map(el => el.value),
+        religion: document.getElementById('form-religion').value
+      };
+      
+      const btn = document.getElementById('submit-candidacy-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Registrando...';
+      
+      const result = await window.dataSdk.update({
+        ...currentUser,
+        party: formResponses.party,
+        slogan: formResponses.slogan,
+        photoUrl: formResponses.photo,
+        viceCandidate: formResponses.viceName,
+        coalition: formResponses.coalition,
+        formResponses: JSON.stringify(formResponses)
+      });
+      
+      btn.disabled = false;
+      btn.textContent = '✅ Registrar Candidatura';
+      
+      if (result.isOk) {
+        showToast('Candidatura registrada com sucesso!', 'success');
+      } else {
+        showToast('Erro ao registrar candidatura', 'error');
+      }
+    }
+    
+    // Campaign Events
+    function checkCampaignAccess() {
+      const createSection = document.getElementById('create-event-section');
+      if (currentUser && currentUser.isCandidate) {
+        createSection.classList.remove('hidden');
+      } else {
+        createSection.classList.add('hidden');
+      }
+    }
+    
+    async function handleEventSubmit(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Limite de registros atingido', 'error');
+        return;
+      }
+      
+      const title = document.getElementById('event-title').value;
+      const location = document.getElementById('event-location').value;
+      const description = document.getElementById('event-description').value;
+      const attachment = document.getElementById('event-attachment').value;
+      
+      const result = await window.dataSdk.create({
+        type: 'event',
+        fullName: currentUser.fullName,
+        username: currentUser.username,
+        isCandidate: true,
+        office: currentUser.office,
+        state: currentUser.state,
+        party: currentUser.party,
+        slogan: '',
+        photoUrl: '',
+        viceCandidate: '',
+        coalition: '',
+        campaignEvents: JSON.stringify({ title, location, description, attachment }),
+        endorsements: '',
+        formResponses: '',
+        votes: 0,
+        createdAt: new Date().toISOString(),
+        newsTitle: '',
+        newsContent: '',
+        newsChannel: '',
+        partyName: '',
+        partyAcronym: '',
+        partyColor: '',
+        partyDescription: ''
+      });
+      
+      if (result.isOk) {
+        showToast('Evento publicado!', 'success');
+        document.getElementById('event-form').reset();
+      } else {
+        showToast('Erro ao publicar evento', 'error');
+      }
+    }
+    
+    function updateEventsList() {
+      const list = document.getElementById('events-list');
+      const events = allData.filter(d => d.type === 'event');
+      
+      if (events.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <div class="text-4xl mb-2">📭</div>
+            <p>Nenhum evento de campanha registrado ainda.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = events.map(event => {
+        const data = JSON.parse(event.campaignEvents || '{}');
+        return `
+          <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h4 class="font-semibold text-white text-lg">${data.title || 'Evento'}</h4>
+                <p class="text-amber-400 text-sm">📍 ${data.location || 'Local não informado'}</p>
+              </div>
+              <span class="text-xs text-gray-500">${new Date(event.createdAt).toLocaleDateString('pt-BR')}</span>
+            </div>
+            <p class="text-gray-300 mb-3">${data.description || ''}</p>
+            <div class="flex items-center gap-2 text-sm text-gray-400">
+              <span>👤 ${event.fullName}</span>
+              <span>•</span>
+              <span>${event.party || 'Sem partido'}</span>
+            </div>
+            ${data.attachment ? `<a href="${data.attachment}" target="_blank" rel="noopener noreferrer" class="inline-block mt-3 text-blue-400 hover:underline text-sm">📎 Ver anexo</a>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Urna Eletrônica
+    function urnaDigit(num) {
+      if (urnaPosition < 2) {
+        urnaDigits[urnaPosition] = num.toString();
+        document.getElementById(`digit-${urnaPosition + 1}`).textContent = num;
+        urnaPosition++;
+        
+        if (urnaPosition === 2) {
+          lookupCandidate();
+        }
+      }
+      playUrnaSound();
+    }
+    
+    function lookupCandidate() {
+      const number = urnaDigits.join('');
+      // For demo, find any candidate
+      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate);
+      
+      if (candidates.length > 0) {
+        const candidate = candidates[parseInt(number) % candidates.length] || candidates[0];
+        showCandidateOnUrna(candidate);
+      } else {
+        document.getElementById('urna-candidate-display').classList.remove('hidden');
+        document.getElementById('urna-name').textContent = 'CANDIDATO NÃO ENCONTRADO';
+        document.getElementById('urna-party').textContent = 'Número inválido';
+      }
+    }
+    
+    function showCandidateOnUrna(candidate) {
+      const display = document.getElementById('urna-candidate-display');
+      display.classList.remove('hidden');
+      
+      document.getElementById('urna-name').textContent = candidate.fullName.toUpperCase();
+      document.getElementById('urna-party').textContent = candidate.party || 'Independente';
+      
+      if (candidate.photoUrl) {
+        document.getElementById('urna-photo').innerHTML = `<img src="${candidate.photoUrl}" class="w-full h-full object-cover rounded" alt="${candidate.fullName}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='👤';">`;
+      }
+      
+      if (candidate.viceCandidate) {
+        document.getElementById('urna-vice-section').classList.remove('hidden');
+        document.getElementById('urna-vice').textContent = candidate.viceCandidate;
+      }
+    }
+    
+    function urnaBranco() {
+      document.getElementById('urna-candidate-display').classList.add('hidden');
+      document.getElementById('urna-message').textContent = 'VOTO EM BRANCO';
+      document.getElementById('urna-message').classList.remove('hidden');
+      playUrnaSound();
+    }
+    
+    function urnaCorrige() {
+      urnaDigits = ['_', '_'];
+      urnaPosition = 0;
+      document.getElementById('digit-1').textContent = '_';
+      document.getElementById('digit-2').textContent = '_';
+      document.getElementById('urna-candidate-display').classList.add('hidden');
+      document.getElementById('urna-message').classList.add('hidden');
+      document.getElementById('urna-vice-section').classList.add('hidden');
+      playUrnaSound();
+    }
+    
+    async function urnaConfirma() {
+      if (!currentUser) {
+        showToast('Você precisa estar logado para votar', 'error');
+        return;
+      }
+      
+      if (currentUser.votedAt) {
+        showToast('Você já votou nesta eleição', 'warning');
+        return;
+      }
+      
+      document.getElementById('urna-candidate-display').classList.add('hidden');
+      document.getElementById('urna-message').textContent = 'VOTO CONFIRMADO';
+      document.getElementById('urna-message').classList.remove('hidden');
+      document.getElementById('urna-message').classList.add('text-green-400');
+      
+      playUrnaSound();
+      
+      const voteNumber = urnaDigits.join('');
+      const voteTime = new Date().toISOString();
+      
+      // Update user with vote info
+      const result = await window.dataSdk.update({
+        ...currentUser,
+        votedAt: voteTime,
+        voteNumber: voteNumber,
+        votes: (currentUser.votes || 0) + 1
+      });
+      
+      if (result.isOk) {
+        // Show certificate after 1.5 seconds
+        setTimeout(() => {
+          showVoteCertificate();
+        }, 1500);
+      }
+      
+      // Reset urna after 2 seconds
+      setTimeout(() => {
+        urnaCorrige();
+        document.getElementById('urna-message').classList.remove('text-green-400');
+      }, 2000);
+    }
+    
+    function showVoteCertificate() {
+      const colegios = {
+        PR: ['Colégio Eleitoral Rui Barbosa', 'Colégio Eleitoral Visconde de Guarapuava', 'Colégio Eleitoral Dom Pedro II'],
+        ES: ['Colégio Eleitoral Jerônimo Monteiro', 'Colégio Eleitoral Vitória Central', 'Colégio Eleitoral São Mateus'],
+        SP: ['Colégio Eleitoral Campos Salles', 'Colégio Eleitoral 9 de Julho', 'Colégio Eleitoral Júlio Prestes'],
+        MG: ['Colégio Eleitoral Tiradentes', 'Colégio Eleitoral Afonso Pena', 'Colégio Eleitoral Ouro Preto'],
+        MS: ['Colégio Eleitoral Rondon', 'Colégio Eleitoral Campo Grande Central', 'Colégio Eleitoral Pantanal'],
+        PE: ['Colégio Eleitoral Joaquim Nabuco', 'Colégio Eleitoral Frei Caneca', 'Colégio Eleitoral Recife Central']
+      };
+      
+      const userColegios = colegios[currentUser.comarca] || ['Colégio Eleitoral Central'];
+      const randomColegio = userColegios[Math.floor(Math.random() * userColegios.length)];
+      
+      const voteDate = new Date(currentUser.votedAt);
+      
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 overflow-y-auto';
+      modal.innerHTML = `
+        <div class="bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 rounded-2xl border-4 border-amber-600 max-w-3xl w-full p-8 md:p-12 shadow-2xl my-8">
+          <!-- Selo Oficial -->
+          <div class="flex justify-center mb-6">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center border-4 border-amber-500 glow-gold">
+              <svg viewBox="0 0 24 24" class="w-12 h-12 text-white" fill="currentColor">
+                <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.5L18.5 7 12 9.5 5.5 7 12 4.5zM4 8.5l7 3.5v7.5l-7-3.5V8.5zm9 11V12l7-3.5v7.5l-7 3.5z"/>
+              </svg>
             </div>
           </div>
-        `).join('');
+          
+          <!-- Cabeçalho -->
+          <div class="text-center mb-8">
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-amber-400 mb-2">
+              Certificado Digital de Votação
+            </h2>
+            <p class="text-sm text-gray-400">República Federativa do Brasil — Realidade Alternativa</p>
+            <p class="text-xs text-amber-500 mt-1">Tribunal Superior Eleitoral (RPG) — Anno Domini 1982</p>
+          </div>
+          
+          <!-- Corpo do Certificado -->
+          <div class="bg-neutral-950/50 rounded-xl p-6 md:p-8 border border-amber-900/30 mb-6">
+            <p class="text-gray-300 leading-relaxed text-sm md:text-base text-justify">
+              <strong class="text-white">Certificamos que</strong> a pessoa <strong class="text-amber-400">${currentUser.fullName}</strong>, 
+              regularmente cadastrada no sistema fictício de simulação eleitoral, residente na Comarca de 
+              <strong class="text-amber-400">${getStateName(currentUser.comarca)}</strong>, participou do processo de votação 
+              e exerceu seu direito de voto na <strong class="text-amber-400">Seção Eleitoral ${currentUser.secao}</strong>, 
+              autuada pelo <strong class="text-amber-400">${randomColegio}</strong>, conforme registro eletrônico da urna virtual.
+            </p>
+            
+            <p class="text-gray-300 leading-relaxed text-sm md:text-base text-justify mt-4">
+              A votação foi realizada de forma individual, sigilosa e validada, dentro dos parâmetros institucionais do sistema, 
+              para fins educacionais e de simulação. Este certificado atesta exclusivamente a participação do eleitor no pleito 
+              simulado, com data, horário e identificação da seção correspondente, <strong class="text-red-400">não possuindo 
+              valor jurídico real</strong>.
+            </p>
+          </div>
+          
+          <!-- Dados da Votação -->
+          <div class="grid md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-neutral-900 rounded-lg p-4 border border-amber-900/30">
+              <div class="text-xs text-gray-500 mb-1">Data e Horário</div>
+              <div class="text-white font-semibold">${voteDate.toLocaleDateString('pt-BR')} às ${voteDate.toLocaleTimeString('pt-BR')}</div>
+            </div>
+            <div class="bg-neutral-900 rounded-lg p-4 border border-amber-900/30">
+              <div class="text-xs text-gray-500 mb-1">Comarca</div>
+              <div class="text-white font-semibold">${getStateName(currentUser.comarca)}</div>
+            </div>
+            <div class="bg-neutral-900 rounded-lg p-4 border border-amber-900/30">
+              <div class="text-xs text-gray-500 mb-1">Seção Eleitoral</div>
+              <div class="text-white font-semibold">Seção ${currentUser.secao}</div>
+            </div>
+            <div class="bg-neutral-900 rounded-lg p-4 border border-amber-900/30">
+              <div class="text-xs text-gray-500 mb-1">Colégio Eleitoral</div>
+              <div class="text-white font-semibold text-sm">${randomColegio}</div>
+            </div>
+          </div>
+          
+          <!-- Disclaimer -->
+          <div class="bg-red-950/30 border border-red-900 rounded-lg p-4 mb-6">
+            <p class="text-red-400 text-xs text-center">
+              ⚠️ DOCUMENTO DE SIMULAÇÃO NARRATIVA — SEM VALIDADE JURÍDICA REAL
+            </p>
+          </div>
+          
+          <!-- Assinatura Digital -->
+          <div class="text-center border-t border-neutral-700 pt-6">
+            <p class="text-sm text-gray-400 mb-1">Assinado digitalmente por:</p>
+            <p class="text-amber-400 font-semibold">Tribunal Superior Eleitoral (RPG)</p>
+            <p class="text-xs text-gray-500 mt-2 font-mono">Hash: ${generateHash()}</p>
+          </div>
+          
+          <!-- Botão Fechar -->
+          <button onclick="this.closest('.fixed').remove()" class="w-full mt-6 py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors">
+            ✅ Concluir
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    }
+    
+    function generateHash() {
+      const chars = '0123456789ABCDEF';
+      let hash = '';
+      for (let i = 0; i < 64; i++) {
+        hash += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return hash;
+    }
+    
+    function playUrnaSound() {
+      // Visual feedback instead of audio
+      const urnaContainer = document.querySelector('.urna-container');
+      urnaContainer.classList.add('glow-green');
+      setTimeout(() => urnaContainer.classList.remove('glow-green'), 100);
+    }
+    
+    function updateComarca() {
+      const comarca = document.getElementById('comarca-selector').value;
+      const cargoEl = document.getElementById('urna-cargo');
+      
+      if (comarca) {
+        cargoEl.innerHTML = `
+          <div class="text-lg font-bold text-green-400">GOVERNADOR</div>
+          <div class="text-sm text-gray-400">${getStateName(comarca)}</div>
+        `;
+      } else {
+        cargoEl.innerHTML = `
+          <div class="text-lg font-bold text-green-400">PRESIDENTE</div>
+          <div class="text-sm text-gray-400">Digite o número do candidato</div>
+        `;
       }
     }
-
-    function updateNoticiasList() {
-      const container = document.getElementById('lista-noticias');
-      const msg = document.getElementById('msg-noticias');
-      msg.style.display = users.candidatos.length > 0 ? 'none' : 'block';
+    
+    // Apuração
+    function showApuracaoTab(tab) {
+      document.querySelectorAll('.apuracao-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.apuracao-tab').forEach(el => {
+        el.classList.remove('bg-amber-600');
+        el.classList.add('bg-neutral-700');
+      });
+      
+      document.getElementById(`apuracao-${tab}`).classList.remove('hidden');
+      document.querySelector(`.apuracao-tab[data-tab="${tab}"]`).classList.add('bg-amber-600');
+      document.querySelector(`.apuracao-tab[data-tab="${tab}"]`).classList.remove('bg-neutral-700');
     }
-
-    // Inicializar
-    if (!currentDevice) {
-      document.getElementById('deviceModal').classList.remove('hidden');
-    } else {
-      document.getElementById('deviceModal').classList.add('hidden');
+    
+    // Endossos
+    function checkEndorsementAccess() {
+      const formContainer = document.getElementById('endorsement-form-container');
+      if (currentUser && currentUser.isCandidate) {
+        formContainer.classList.remove('hidden');
+        populateCandidateSelector();
+      } else {
+        formContainer.classList.add('hidden');
+      }
     }
-
-    initializeDataSDK();
+    
+    function populateCandidateSelector() {
+      const select = document.getElementById('endorse-candidate');
+      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate && d.username !== currentUser?.username);
+      
+      select.innerHTML = '<option value="">Selecione um candidato</option>' +
+        candidates.map(c => `<option value="${c.username}">${c.fullName} (${c.party || 'Ind.'})</option>`).join('');
+    }
+    
+    async function handleEndorsement(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Limite de registros atingido', 'error');
+        return;
+      }
+      
+      const targetUsername = document.getElementById('endorse-candidate').value;
+      const message = document.getElementById('endorse-message').value;
+      
+      const result = await window.dataSdk.create({
+        type: 'endorsement',
+        fullName: currentUser.fullName,
+        username: currentUser.username,
+        isCandidate: true,
+        office: currentUser.office,
+        state: currentUser.state,
+        party: currentUser.party,
+        slogan: '',
+        photoUrl: '',
+        viceCandidate: '',
+        coalition: '',
+        campaignEvents: '',
+        endorsements: JSON.stringify({ target: targetUsername, message }),
+        formResponses: '',
+        votes: 0,
+        createdAt: new Date().toISOString(),
+        newsTitle: '',
+        newsContent: '',
+        newsChannel: '',
+        partyName: '',
+        partyAcronym: '',
+        partyColor: '',
+        partyDescription: ''
+      });
+      
+      if (result.isOk) {
+        showToast('Endosso publicado!', 'success');
+        document.getElementById('endorsement-form').reset();
+      } else {
+        showToast('Erro ao publicar endosso', 'error');
+      }
+    }
+    
+    function updateEndorsementsList() {
+      const list = document.getElementById('endorsements-list');
+      const endorsements = allData.filter(d => d.type === 'endorsement');
+      
+      if (endorsements.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <div class="text-4xl mb-2">🤝</div>
+            <p>Nenhum endosso registrado ainda.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = endorsements.map(end => {
+        const data = JSON.parse(end.endorsements || '{}');
+        const target = allData.find(d => d.type === 'user' && d.username === data.target);
+        return `
+          <div class="bg-neutral-900 rounded-xl border border-green-900 p-6">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">🤝</span>
+              <span class="font-semibold text-white">${end.fullName}</span>
+              <span class="text-gray-500">apoia</span>
+              <span class="font-semibold text-green-400">${target?.fullName || 'Candidato'}</span>
+            </div>
+            <p class="text-gray-300">${data.message || ''}</p>
+            <div class="text-xs text-gray-500 mt-2">${new Date(end.createdAt).toLocaleDateString('pt-BR')}</div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Partidos
+    function checkPartyAccess() {
+      const createSection = document.getElementById('create-party-section');
+      if (isAdmin) {
+        createSection.classList.remove('hidden');
+      } else {
+        createSection.classList.add('hidden');
+      }
+    }
+    
+    async function handlePartySubmit(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Limite de registros atingido', 'error');
+        return;
+      }
+      
+      const result = await window.dataSdk.create({
+        type: 'party',
+        fullName: '',
+        username: '',
+        isCandidate: false,
+        office: '',
+        state: '',
+        party: '',
+        slogan: '',
+        photoUrl: '',
+        viceCandidate: '',
+        coalition: '',
+        campaignEvents: '',
+        endorsements: '',
+        formResponses: '',
+        votes: 0,
+        createdAt: new Date().toISOString(),
+        newsTitle: '',
+        newsContent: '',
+        newsChannel: '',
+        partyName: document.getElementById('party-name').value,
+        partyAcronym: document.getElementById('party-acronym').value,
+        partyColor: document.getElementById('party-color').value,
+        partyDescription: document.getElementById('party-description').value
+      });
+      
+      if (result.isOk) {
+        showToast('Partido registrado!', 'success');
+        document.getElementById('party-form').reset();
+      } else {
+        showToast('Erro ao registrar partido', 'error');
+      }
+    }
+    
+    function updatePartyList() {
+      const list = document.getElementById('parties-list');
+      const parties = allData.filter(d => d.type === 'party');
+      
+      if (parties.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 text-gray-500 col-span-2">
+            <div class="text-4xl mb-2">🎌</div>
+            <p>Nenhum partido registrado ainda.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = parties.map(party => `
+        <div class="bg-neutral-900 rounded-xl border-l-4 p-6" style="border-color: ${party.partyColor}">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white" style="background: ${party.partyColor}">
+              ${party.partyAcronym.substring(0, 2)}
+            </div>
+            <div>
+              <h4 class="font-semibold text-white">${party.partyName}</h4>
+              <span class="text-sm" style="color: ${party.partyColor}">${party.partyAcronym}</span>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm">${party.partyDescription || 'Sem descrição'}</p>
+        </div>
+      `).join('');
+    }
+    
+    // Notícias
+    function checkNewsAccess() {
+      const createSection = document.getElementById('create-news-section');
+      if (isAdmin || (currentUser && currentUser.isCandidate)) {
+        createSection.classList.remove('hidden');
+      } else {
+        createSection.classList.add('hidden');
+      }
+    }
+    
+    async function handleNewsSubmit(e) {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Limite de registros atingido', 'error');
+        return;
+      }
+      
+      const result = await window.dataSdk.create({
+        type: 'news',
+        fullName: currentUser?.fullName || 'Admin',
+        username: currentUser?.username || 'admin',
+        isCandidate: false,
+        office: '',
+        state: '',
+        party: '',
+        slogan: '',
+        photoUrl: document.getElementById('news-image').value,
+        viceCandidate: '',
+        coalition: '',
+        campaignEvents: '',
+        endorsements: '',
+        formResponses: '',
+        votes: 0,
+        createdAt: new Date().toISOString(),
+        newsTitle: document.getElementById('news-title').value,
+        newsContent: document.getElementById('news-content').value,
+        newsChannel: document.getElementById('news-channel').value,
+        partyName: '',
+        partyAcronym: '',
+        partyColor: '',
+        partyDescription: ''
+      });
+      
+      if (result.isOk) {
+        showToast('Notícia publicada!', 'success');
+        document.getElementById('news-form').reset();
+      } else {
+        showToast('Erro ao publicar notícia', 'error');
+      }
+    }
+    
+    function updateNewsList() {
+      const list = document.getElementById('news-list');
+      const news = allData.filter(d => d.type === 'news').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      if (news.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <div class="text-4xl mb-2">📰</div>
+            <p>Nenhuma notícia publicada ainda.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = news.map(item => `
+        <article class="news-card rounded-xl overflow-hidden">
+          ${item.photoUrl ? `<img src="${item.photoUrl}" class="w-full h-48 object-cover" alt="${item.newsTitle}" loading="lazy" onerror="this.style.display='none';">` : ''}
+          <div class="p-6">
+            <div class="flex items-center gap-2 text-xs text-amber-400 mb-2">
+              <span>📰 ${item.newsChannel}</span>
+              <span>•</span>
+              <span>${new Date(item.createdAt).toLocaleDateString('pt-BR')}</span>
+            </div>
+            <h3 class="font-display text-xl font-bold text-white mb-3">${item.newsTitle}</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">${item.newsContent}</p>
+          </div>
+        </article>
+      `).join('');
+    }
+    
+    // Admin
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('admin-user').value;
+      const pass = document.getElementById('admin-pass').value;
+      
+      if (user === 'admin' && pass === 'admin123') {
+        isAdmin = true;
+        document.getElementById('admin-login').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        updateAdminStats();
+        showToast('Login administrativo realizado!', 'success');
+      } else {
+        showToast('Credenciais inválidas', 'error');
+      }
+    }
+    
+    function logoutAdmin() {
+      isAdmin = false;
+      document.getElementById('admin-login').classList.remove('hidden');
+      document.getElementById('admin-panel').classList.add('hidden');
+      showToast('Logout realizado', 'info');
+    }
+    
+    function updateAdminStats() {
+      const users = allData.filter(d => d.type === 'user');
+      const candidates = users.filter(u => u.isCandidate);
+      const events = allData.filter(d => d.type === 'event');
+      
+      document.getElementById('admin-stat-users').textContent = users.length;
+      document.getElementById('admin-stat-candidates').textContent = candidates.length;
+      document.getElementById('admin-stat-votes').textContent = users.reduce((sum, u) => sum + (u.votes || 0), 0);
+      document.getElementById('admin-stat-events').textContent = events.length;
+    }
+    
+    function saveElectionDates() {
+      showToast('Datas salvas com sucesso!', 'success');
+    }
+    
+    function startApuracao() {
+      showToast('Apuração iniciada!', 'success');
+    }
+    
+    function resetVotes() {
+      showToast('Votos resetados!', 'warning');
+    }
+    
+    function generateNPCs() {
+      showToast('NPCs gerados!', 'success');
+    }
+    
+    function newSeason() {
+      showToast('Nova temporada iniciada!', 'warning');
+    }
+    
+    // Stats
+    function updateStats() {
+      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate);
+      const parties = allData.filter(d => d.type === 'party');
+      const news = allData.filter(d => d.type === 'news');
+      
+      document.getElementById('stat-candidates').textContent = candidates.length;
+      document.getElementById('stat-parties').textContent = parties.length;
+      document.getElementById('stat-news').textContent = news.length;
+    }
+    
+    function updateCandidateSelectors() {
+      populateCandidateSelector();
+    }
+    
+    // Helpers
+    function getStateName(code) {
+      const states = {
+        ES: 'Espírito Santo',
+        MS: 'Mato Grosso do Sul',
+        SP: 'São Paulo',
+        MG: 'Minas Gerais',
+        PE: 'Pernambuco',
+        PR: 'Paraná'
+      };
+      return states[code] || code;
+    }
+    
+    // Party color sync
+    document.getElementById('party-color')?.addEventListener('input', function() {
+      document.getElementById('party-color-text').value = this.value;
+    });
+    
+    document.getElementById('party-color-text')?.addEventListener('input', function() {
+      if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+        document.getElementById('party-color').value = this.value;
+      }
+    });
+    
+    // Initialize
+    initApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8b763df594a16a',t:'MTc3MDIyMTY3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8b9c7cf110a16a',t:'MTc3MDIyMzI0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
