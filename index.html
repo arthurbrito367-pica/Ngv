@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="pt-BR">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRRPG — TSE</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: #0a0a0a;
+      color: #e8e8e8;
+      line-height: 1.6;
+      box-sizing: border-box;
+    }
+
+    #app {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #0a0a0a;
+    }
+
+    /* ===== MODAL DE SELEÇÃO INICIAL ===== */
+    .initial-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeInScale 0.4s ease;
+    }
+
+    .initial-modal.hidden {
+      display: none;
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .initial-content {
+      text-align: center;
+      max-width: 700px;
+      padding: 40px;
+      background: rgba(15, 15, 15, 0.8);
+      border: 1px solid #1a1a1a;
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .initial-content h1 {
+      font-size: 2.8rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffc107, #ffed4e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    .initial-content p {
+      color: #aaa;
+      margin-bottom: 40px;
+      font-size: 1.05rem;
+    }
+
+    .device-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .device-btn {
+      background: #111;
+      border: 2px solid #222;
+      color: #e8e8e8;
+      padding: 24px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .device-btn:hover {
+      border-color: #ffc107;
+      background: #0f0f0f;
+      box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .device-btn-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ===== MODAL DE CADASTRO ===== */
+    .register-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .register-modal.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .register-container {
+      background: #111;
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .register-container h2 {
+      color: #ffc107;
+      margin-bottom: 8px;
+      font-size: 1.6rem;
+    }
+
+    .register-container .subtitle {
+      color: #888;
+      margin-bottom: 32px;
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #e8e8e8;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      color: #e8e8e8;
+      font-family: inherit;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #ffc107;
+      background: #0f0f0f;
+      box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tab-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .tab-btn {
+      padding: 12px;
+      border: 2px solid #222;
+      background: transparent;
+      color: #888;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .tab-btn.active {
+      border-color: #ffc107;
+      color: #ffc107;
+      background: rgba(255, 193, 7, 0.1);
+    }
+
+    .tab-btn:hover {
+      border-color: #ffc107;
+      color: #ffc107;
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+    }
+
+    button.btn-primary {
+      background: #ffc107;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    button.btn-primary:hover {
+      background: #ffcd38;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+    }
+
+    button.btn-primary:active {
+      transform: translateY(0);
+    }
+
+    button.btn-secondary {
+      background: transparent;
+      color: #888;
+      border: 2px solid #222;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    button.btn-secondary:hover {
+      border-color: #888;
+      color: #e8e8e8;
+    }
+
+    .form-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    @media (max-width: 640px) {
+      .form-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: #0a0a0a;
+      border-bottom: 1px solid #1a1a1a;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, #ffc107, #ffed4e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      color: #888;
+      font-weight: 400;
+    }
+
+    .disclaimer {
+      background: rgba(255, 193, 7, 0.05);
+      border: 1px solid rgba(255, 193, 7, 0.15);
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: #ffc107;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* ===== NAVEGAÇÃO ===== */
+    .nav-container {
+      background: #0a0a0a;
+      border-bottom: 1px solid #1a1a1a;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0 24px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav {
+      display: flex;
+      gap: 2px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav button {
+      background: transparent;
+      border: none;
+      color: #888;
+      padding: 12px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .nav button:hover {
+      color: #e8e8e8;
+    }
+
+    .nav button.active {
+      color: #ffc107;
+      border-bottom-color: #ffc107;
+    }
+
+    /* ===== CONTEÚDO ===== */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 32px;
+      background: #0a0a0a;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-subtitle {
+      color: #888;
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .intro-text {
+      background: rgba(255, 193, 7, 0.03);
+      border: 1px solid rgba(255, 193, 7, 0.1);
+      padding: 24px;
+      margin-bottom: 32px;
+      border-radius: 8px;
+      color: #d0d0d0;
+      line-height: 1.7;
+    }
+
+    .intro-text h3 {
+      color: #ffc107;
+      margin: 20px 0 12px 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .intro-text p {
+      margin-bottom: 12px;
+    }
+
+    .intro-text ul {
+      margin-left: 20px;
+      color: #c0c0c0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .stat-card {
+      background: #111;
+      border: 1px solid #1a1a1a;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2.4rem;
+      color: #ffc107;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      color: #888;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .candidates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .candidate-card {
+      background: #111;
+      border: 1px solid #1a1a1a;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .candidate-card:hover {
+      border-color: #ffc107;
+      background: #0f0f0f;
+      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.1);
+    }
+
+    .candidate-name {
+      font-size: 1.1rem;
+      color: #ffc107;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .candidate-info {
+      font-size: 0.85rem;
+      color: #aaa;
+      line-height: 1.7;
+    }
+
+    .message-success {
+      background: rgba(0, 137, 123, 0.1);
+      border: 1px solid rgba(0, 137, 123, 0.3);
+      color: #00897b;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .message-error {
+      background: rgba(211, 47, 47, 0.1);
+      border: 1px solid rgba(211, 47, 47, 0.3);
+      color: #d32f2f;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* ===== RESPONSIVO ===== */
+    @media (max-width: 1024px) {
+      .header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .content {
+        padding: 32px 24px;
+      }
+
+      .section-title {
+        font-size: 1.6rem;
+      }
+
+      .candidates-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+
+      .register-container {
+        padding: 32px;
+      }
+
+      .initial-content {
+        padding: 32px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        padding: 16px;
+      }
+
+      .header h1 {
+        font-size: 1.1rem;
+      }
+
+      .header p {
+        font-size: 0.8rem;
+      }
+
+      .disclaimer {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+      }
+
+      .nav-container {
+        padding: 0 16px;
+      }
+
+      .nav button {
+        padding: 10px 10px;
+        font-size: 0.75rem;
+      }
+
+      .content {
+        padding: 24px 16px;
+      }
+
+      .section-title {
+        font-size: 1.4rem;
+      }
+
+      .section-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .candidates-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        font-size: 16px;
+      }
+
+      .register-container {
+        padding: 24px;
+        max-width: 100%;
+        border-radius: 8px;
+      }
+
+      .initial-content {
+        padding: 24px;
+        border-radius: 12px;
+      }
+
+      .initial-content h1 {
+        font-size: 1.8rem;
+      }
+
+      .device-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .register-container h2 {
+        font-size: 1.3rem;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body><!-- MODAL INICIAL - DISPOSITIVO -->
+  <div id="deviceModal" class="initial-modal">
+   <div class="initial-content">
+    <h1>BRRPG</h1>
+    <p style="margin-bottom: 16px;">🗳️ Sistema Eleitoral TSE</p>
+    <p>Como você está acessando?</p>
+    <div class="device-buttons"><button class="device-btn" onclick="selectDevice('pc')"> <span class="device-btn-icon">🖥️</span> PC </button> <button class="device-btn" onclick="selectDevice('tablet')"> <span class="device-btn-icon">📱</span> Tablet </button> <button class="device-btn" onclick="selectDevice('mobile')"> <span class="device-btn-icon">📲</span> Celular </button>
+    </div>
+    <p style="color: #666; font-size: 0.85rem; margin-top: 24px;">Isso ajuda a otimizar a interface</p>
+   </div>
+  </div><!-- MODAL DE CADASTRO -->
+  <div id="registerModal" class="register-modal hidden">
+   <div class="register-container">
+    <h2>Bem-vindo ao BRRPG</h2>
+    <p class="subtitle">Crie sua conta para participar</p>
+    <div class="tab-buttons"><button class="tab-btn active" onclick="switchRegisterTab('candidato')"> 📋 Candidato </button> <button class="tab-btn" onclick="switchRegisterTab('eleitor')"> 🗳️ Eleitor/Civil </button>
+    </div><!-- FORMULÁRIO CANDIDATO -->
+    <form id="form-candidato" class="form-section active" onsubmit="submitCandidato(event)">
+     <div class="form-group"><label>Nome Completo *</label> <input type="text" id="cand-nome" required>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>CPF *</label> <input type="text" id="cand-cpf" placeholder="000.000.000-00" required>
+      </div>
+      <div class="form-group"><label>Email *</label> <input type="email" id="cand-email" required>
+      </div>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>Senha *</label> <input type="password" id="cand-senha" required>
+      </div>
+      <div class="form-group"><label>Confirmar Senha *</label> <input type="password" id="cand-senha-conf" required>
+      </div>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>Cargo *</label> <select id="cand-cargo" required> <option value="">Selecione</option> <option value="presidente">Presidente</option> <option value="vice">Vice-Presidente</option> <option value="governador">Governador</option> <option value="deputado">Deputado</option> </select>
+      </div>
+      <div class="form-group"><label>Estado (se Governador)</label> <select id="cand-estado"> <option value="">Nacional</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
+      </div>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>Número TSE *</label> <input type="text" id="cand-numero" placeholder="ex: 15" required>
+      </div>
+      <div class="form-group"><label>Partido *</label> <input type="text" id="cand-partido" placeholder="PMDB, PDS, PT..." required>
+      </div>
+     </div>
+     <div class="form-group"><label>Slogan *</label> <input type="text" id="cand-slogan" required>
+     </div>
+     <div class="form-group"><label>Plataforma Política *</label> <textarea id="cand-plataforma" maxlength="1000" required></textarea> <small style="color: #888;">Máx 1000 caracteres</small>
+     </div>
+     <div class="form-buttons"><button type="button" class="btn-secondary" onclick="closeRegisterModal()">Cancelar</button> <button type="submit" class="btn-primary">Registrar Candidato</button>
+     </div>
+    </form><!-- FORMULÁRIO ELEITOR -->
+    <form id="form-eleitor" class="form-section" onsubmit="submitEleitor(event)">
+     <div class="form-group"><label>Nome Completo *</label> <input type="text" id="elei-nome" required>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>CPF *</label> <input type="text" id="elei-cpf" placeholder="000.000.000-00" required>
+      </div>
+      <div class="form-group"><label>Email *</label> <input type="email" id="elei-email" required>
+      </div>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>Senha *</label> <input type="password" id="elei-senha" required>
+      </div>
+      <div class="form-group"><label>Confirmar Senha *</label> <input type="password" id="elei-senha-conf" required>
+      </div>
+     </div>
+     <div class="form-row">
+      <div class="form-group"><label>Título de Eleitor</label> <input type="text" id="elei-titulo" placeholder="Opcional">
+      </div>
+      <div class="form-group"><label>Estado de Residência *</label> <select id="elei-estado" required> <option value="">Selecione</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> <option value="outro">Outro Estado</option> </select>
+      </div>
+     </div>
+     <div class="form-buttons"><button type="button" class="btn-secondary" onclick="closeRegisterModal()">Cancelar</button> <button type="submit" class="btn-primary">Registrar como Eleitor</button>
+     </div>
+    </form>
+    <div id="register-message"></div>
+   </div>
+  </div>
+  <div id="app"><!-- HEADER -->
+   <div class="header">
+    <div class="header-content">
+     <h1>BRRPG — TSE</h1>
+     <p>Sistema de Eleições Brasil Alternativo 1982</p>
+    </div>
+    <div class="disclaimer">
+     ⚠️ Simulação Narrativa
+    </div>
+   </div><!-- NAVEGAÇÃO -->
+   <div class="nav-container">
+    <ul class="nav">
+     <li><button onclick="showPage('home')" class="nav-btn active">Início</button></li>
+     <li><button onclick="showPage('historia')" class="nav-btn">História</button></li>
+     <li><button onclick="showPage('candidatos')" class="nav-btn">Candidatos</button></li>
+     <li><button onclick="showPage('apuracao')" class="nav-btn">Apuração</button></li>
+     <li><button onclick="showPage('noticias')" class="nav-btn">Notícias</button></li>
+     <li><button onclick="openRegisterModal()" class="nav-btn" style="color: #ffc107; font-weight: 700;">Entrar / Cadastro</button></li>
+    </ul>
+   </div><!-- CONTEÚDO -->
+   <div class="content"><!-- HOME -->
+    <div id="home" class="page active">
+     <h2 class="section-title">Bem-vindo ao BRRPG</h2>
+     <p class="section-subtitle">Sistema Central de Eleições — Brasil Alternativo 1982</p>
+     <div class="intro-text">
+      <p><strong>🗳️ Participar de Eleições Federais e Estaduais</strong></p>
+      <p style="margin-top: 12px;">Registre-se como Candidato ou Eleitor e participe da democracia brasileira simulada. Escolha entre ser uma figura política com plataforma própria ou um cidadão comum que vota.</p>
+      <h3>Como Funciona?</h3>
+      <ul style="margin-top: 12px;">
+       <li><strong>Candidatos:</strong> Criam plataforma política, recebem votos e disputam eleições</li>
+       <li><strong>Eleitores:</strong> Votam em candidatos e acompanham resultados</li>
+       <li><strong>Apuração:</strong> Resultados são divulgados em tempo real</li>
+       <li><strong>Histórico:</strong> Acompanhe campanhas e eventos políticos</li>
+      </ul>
+      <h3>Estados Disponíveis</h3>
+      <p style="margin-top: 12px;">🏛️ Espírito Santo • 🏛️ Mato Grosso do Sul • 🏛️ São Paulo • 🏛️ Minas Gerais • 🏛️ Pernambuco • 🏛️ Paraná</p>
+     </div>
+     <div class="stats-grid">
+      <div class="stat-card">
+       <div class="stat-number" id="stat-candidatos">
+        0
+       </div>
+       <div class="stat-label">
+        Candidatos Registrados
+       </div>
+      </div>
+      <div class="stat-card">
+       <div class="stat-number" id="stat-eleitores">
+        0
+       </div>
+       <div class="stat-label">
+        Eleitores Registrados
+       </div>
+      </div>
+      <div class="stat-card">
+       <div class="stat-number" id="stat-votos">
+        0
+       </div>
+       <div class="stat-label">
+        Votos Computados
+       </div>
+      </div>
+      <div class="stat-card">
+       <div class="stat-number" id="stat-noticias">
+        0
+       </div>
+       <div class="stat-label">
+        Notícias Publicadas
+       </div>
+      </div>
+     </div><button class="btn-primary" onclick="openRegisterModal()" style="margin-top: 32px; max-width: 300px;">🚀 Comece Agora</button>
+    </div><!-- HISTÓRIA -->
+    <div id="historia" class="page">
+     <h2 class="section-title">Brasil Alternativo 1982</h2>
+     <p class="section-subtitle">Contexto histórico do universo BRRPG</p>
+     <div class="intro-text">
+      <h3>A Democracia Contínua</h3>
+      <p>Em nossa linha do tempo alternativa, a crise de 1964 não resultou em ditadura militar. A instituição militar manteve a democracia, permitindo eleições contínuas e transição constitucional.</p>
+      <h3>1982 — Ano de Mudanças</h3>
+      <p>O Brasil vota para escolher governadores, deputados e, indiretamente, o presidente. A democracia se consolida com maior liberdade a cada eleição. A discussão sobre semipresidencialismo ganha força nas elites políticas.</p>
+      <h3>Regiões em Foco</h3>
+      <p><strong>São Paulo:</strong> Polo econômico com influência sindical forte. | <strong>Minas Gerais:</strong> Tradição política e oligarquias locais. | <strong>Pernambuco:</strong> Nordeste combativo, clamor por reformas.</p>
+      <p style="margin-top: 12px;"><strong>Paraná:</strong> Sul desenvolvido, conservadorismo liberal. | <strong>Espírito Santo:</strong> Transição agrária e modernização. | <strong>Mato Grosso do Sul:</strong> Expansão agrícola e voto rural.</p>
+     </div>
+    </div><!-- CANDIDATOS -->
+    <div id="candidatos" class="page">
+     <h2 class="section-title">Candidatos Registrados</h2>
+     <p class="section-subtitle">Conheça quem está concorrendo</p>
+     <div id="lista-candidatos" class="candidates-grid"></div>
+     <div id="msg-candidatos" style="color: #888; padding: 20px; text-align: center;">
+      Nenhum candidato registrado ainda. Seja o primeiro!
+     </div>
+    </div><!-- APURAÇÃO -->
+    <div id="apuracao" class="page">
+     <h2 class="section-title">Apuração de Resultados</h2>
+     <p class="section-subtitle">Acompanhe os resultados em tempo real</p>
+     <div style="background: #111; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; margin-top: 24px;">
+      <p style="color: #888; text-align: center;">📊 Apuração em andamento...</p>
+      <p style="color: #666; text-align: center; font-size: 0.9rem; margin-top: 12px;">Os votos serão contabilizados conforme os eleitores votam</p>
+     </div>
+    </div><!-- NOTÍCIAS -->
+    <div id="noticias" class="page">
+     <h2 class="section-title">Portal de Notícias</h2>
+     <p class="section-subtitle">Últimas notícias do universo BRRPG</p>
+     <div id="lista-noticias"></div>
+     <div id="msg-noticias" style="color: #888; padding: 20px; text-align: center;">
+      Nenhuma notícia publicada ainda.
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    let currentDevice = localStorage.getItem('brrpg_device') || null;
+    let currentUser = localStorage.getItem('brrpg_user') || null;
+    let users = {
+      candidatos: [],
+      eleitores: []
+    };
+
+    window.elementSdk.init({
+      defaultConfig: {},
+      onConfigChange: async (config) => {},
+      mapToCapabilities: (config) => ({
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      }),
+      mapToEditPanelValues: (config) => new Map()
+    });
+
+    async function initializeDataSDK() {
+      const dataHandler = {
+        onDataChanged(data) {
+          users.candidatos = data.filter(d => d.type === 'candidato') || [];
+          users.eleitores = data.filter(d => d.type === 'eleitor') || [];
+          updateAllUI();
+        }
+      };
+
+      const result = await window.dataSdk.init(dataHandler);
+    }
+
+    function selectDevice(device) {
+      currentDevice = device;
+      localStorage.setItem('brrpg_device', device);
+      document.getElementById('deviceModal').classList.add('hidden');
+      openRegisterModal();
+    }
+
+    function openRegisterModal() {
+      document.getElementById('registerModal').classList.remove('hidden');
+    }
+
+    function closeRegisterModal() {
+      document.getElementById('registerModal').classList.add('hidden');
+      document.getElementById('register-message').innerHTML = '';
+    }
+
+    function switchRegisterTab(tab) {
+      document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+      document.getElementById('form-' + tab).classList.add('active');
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    async function submitCandidato(e) {
+      e.preventDefault();
+
+      if (document.getElementById('cand-senha').value !== document.getElementById('cand-senha-conf').value) {
+        showMessage('Senhas não conferem', 'error');
+        return;
+      }
+
+      const candidato = {
+        type: 'candidato',
+        id: 'cand_' + Date.now(),
+        nome_completo: document.getElementById('cand-nome').value,
+        cpf: document.getElementById('cand-cpf').value,
+        email: document.getElementById('cand-email').value,
+        senha: document.getElementById('cand-senha').value,
+        cargo: document.getElementById('cand-cargo').value,
+        estado: document.getElementById('cand-estado').value,
+        numero: document.getElementById('cand-numero').value,
+        partido: document.getElementById('cand-partido').value,
+        slogan: document.getElementById('cand-slogan').value,
+        plataforma: document.getElementById('cand-plataforma').value,
+        data_criacao: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(candidato);
+      
+      if (result.isOk) {
+        showMessage('✅ Candidatura registrada com sucesso!', 'success');
+        setTimeout(() => {
+          closeRegisterModal();
+          document.getElementById('form-candidato').reset();
+        }, 2000);
+      } else {
+        showMessage('Erro ao registrar candidatura', 'error');
+      }
+    }
+
+    async function submitEleitor(e) {
+      e.preventDefault();
+
+      if (document.getElementById('elei-senha').value !== document.getElementById('elei-senha-conf').value) {
+        showMessage('Senhas não conferem', 'error');
+        return;
+      }
+
+      const eleitor = {
+        type: 'eleitor',
+        id: 'elei_' + Date.now(),
+        nome_completo: document.getElementById('elei-nome').value,
+        cpf: document.getElementById('elei-cpf').value,
+        email: document.getElementById('elei-email').value,
+        senha: document.getElementById('elei-senha').value,
+        titulo_eleitor: document.getElementById('elei-titulo').value,
+        estado: document.getElementById('elei-estado').value,
+        data_criacao: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(eleitor);
+      
+      if (result.isOk) {
+        showMessage('✅ Eleitor registrado com sucesso!', 'success');
+        setTimeout(() => {
+          closeRegisterModal();
+          document.getElementById('form-eleitor').reset();
+        }, 2000);
+      } else {
+        showMessage('Erro ao registrar eleitor', 'error');
+      }
+    }
+
+    function showMessage(msg, type) {
+      const container = document.getElementById('register-message');
+      const className = type === 'success' ? 'message-success' : 'message-error';
+      container.innerHTML = `<div class="${className}">${msg}</div>`;
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function updateAllUI() {
+      updateStats();
+      updateCandidatosList();
+      updateNoticiasList();
+    }
+
+    function updateStats() {
+      document.getElementById('stat-candidatos').textContent = users.candidatos.length;
+      document.getElementById('stat-eleitores').textContent = users.eleitores.length;
+      document.getElementById('stat-votos').textContent = Math.floor(users.eleitores.length * 0.7);
+      document.getElementById('stat-noticias').textContent = Math.floor(Math.random() * 10);
+    }
+
+    function updateCandidatosList() {
+      const container = document.getElementById('lista-candidatos');
+      const msg = document.getElementById('msg-candidatos');
+
+      if (users.candidatos.length === 0) {
+        container.innerHTML = '';
+        msg.style.display = 'block';
+      } else {
+        msg.style.display = 'none';
+        container.innerHTML = users.candidatos.map(c => `
+          <div class="candidate-card">
+            <div class="candidate-name">${c.nome_completo}</div>
+            <div class="candidate-info">
+              <strong>Cargo:</strong> ${c.cargo}<br>
+              <strong>Número:</strong> ${c.numero}<br>
+              <strong>Partido:</strong> ${c.partido}<br>
+              <strong>Slogan:</strong> "${c.slogan}"<br>
+              <strong>Estado:</strong> ${c.estado || 'Nacional'}
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function updateNoticiasList() {
+      const container = document.getElementById('lista-noticias');
+      const msg = document.getElementById('msg-noticias');
+      msg.style.display = users.candidatos.length > 0 ? 'none' : 'block';
+    }
+
+    // Inicializar
+    if (!currentDevice) {
+      document.getElementById('deviceModal').classList.remove('hidden');
+    } else {
+      document.getElementById('deviceModal').classList.add('hidden');
+    }
+
+    initializeDataSDK();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8b763df594a16a',t:'MTc3MDIyMTY3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
