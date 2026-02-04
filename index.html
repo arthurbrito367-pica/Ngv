@@ -1,13 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR" class="h-full">
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BRRPG - Comissão Eleitoral / TSE (RPG)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Source+Sans+Pro:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
@@ -112,826 +112,1138 @@
       border-bottom: 1px solid #d4af37;
     }
   </style>
-  <style>@view-transition { navigation: auto; }</style>
- </head>
- <body class="h-full bg-black text-gray-100 font-body">
-  <div id="app" class="h-full flex flex-col overflow-hidden"><!-- Disclaimer Banner -->
-   <div class="disclaimer-banner py-2 px-4 text-center text-xs md:text-sm"><span class="text-amber-400 font-semibold">⚠️ SIMULAÇÃO NARRATIVA DE RPG</span> <span class="text-gray-400 ml-2">Este é um ambiente fictício para fins de entretenimento. Sem vínculo com eleições ou pessoas reais.</span>
-   </div><!-- Header -->
-   <header class="bg-gradient-to-b from-neutral-900 to-black border-b border-neutral-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 md:py-4">
-     <div class="flex items-center justify-between"><!-- Logo -->
-      <div class="flex items-center gap-3 md:gap-4">
-       <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center border-2 border-amber-500 glow-gold">
-        <svg viewbox="0 0 24 24" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.5L18.5 7 12 9.5 5.5 7 12 4.5zM4 8.5l7 3.5v7.5l-7-3.5V8.5zm9 11V12l7-3.5v7.5l-7 3.5z" />
-        </svg>
-       </div>
-       <div>
-        <h1 id="site-title" class="font-display text-lg md:text-2xl font-bold text-amber-400">BRRPG</h1>
-        <p class="text-xs md:text-sm text-gray-400">Comissão Eleitoral / TSE (RPG)</p>
-        <p class="text-xs text-gray-500 hidden md:block">Brasil Alternativo • 1982</p>
-       </div>
-      </div><!-- User Section -->
-      <div class="flex items-center gap-2 md:gap-4">
-       <div id="user-info" class="hidden md:flex items-center gap-2 text-sm text-gray-400"><span id="user-display"></span>
-       </div><button id="login-btn" onclick="showLoginModal()" class="px-3 py-1.5 md:px-4 md:py-2 bg-amber-600 hover:bg-amber-500 rounded text-sm font-semibold transition-colors"> Entrar </button> <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-400 hover:text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg></button>
-      </div>
-     </div><!-- Desktop Navigation -->
-     <nav class="hidden md:flex mt-4 gap-1 overflow-x-auto pb-1"><button onclick="showTab('inicio')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="inicio">Início</button> <button onclick="showTab('contexto')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="contexto">Contexto Histórico</button> <button onclick="showTab('cadastro')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="cadastro">Cadastro</button> <button onclick="showTab('formularios')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="formularios">Formulários</button> <button onclick="showTab('campanhas')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="campanhas">Campanhas</button> <button onclick="showTab('urna')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="urna">Urna Eletrônica</button> <button onclick="showTab('apuracao')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="apuracao">Apuração</button> <button onclick="showTab('endossos')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="endossos">Endossos</button> <button onclick="showTab('partidos')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="partidos">Partidos</button> <button onclick="showTab('noticias')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="noticias">Notícias</button> <button onclick="showTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap text-amber-500" data-tab="admin">⚙️ Admin</button>
-     </nav>
+</head>
+<body class="h-full bg-black text-gray-100 font-body">
+  <div id="app" class="h-full flex flex-col overflow-hidden">
+    
+    <!-- Disclaimer Banner -->
+    <div class="disclaimer-banner py-2 px-4 text-center text-xs md:text-sm">
+      <span class="text-amber-400 font-semibold">⚠️ SIMULAÇÃO NARRATIVA DE RPG</span>
+      <span class="text-gray-400 ml-2">Este é um ambiente fictício para fins de entretenimento. Sem vínculo com eleições ou pessoas reais.</span>
     </div>
-   </header><!-- Mobile Menu -->
-   <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 w-64 bg-neutral-900 border-r border-neutral-800 z-50 md:hidden overflow-y-auto">
-    <div class="p-4">
-     <div class="flex justify-between items-center mb-6"><span class="font-display text-amber-400 font-bold">Menu</span> <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-       </svg></button>
-     </div>
-     <nav class="flex flex-col gap-1"><button onclick="showTab('inicio'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🏛️ Início</button> <button onclick="showTab('contexto'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📜 Contexto Histórico</button> <button onclick="showTab('cadastro'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📝 Cadastro</button> <button onclick="showTab('formularios'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📋 Formulários</button> <button onclick="showTab('campanhas'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📢 Campanhas</button> <button onclick="showTab('urna'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🗳️ Urna Eletrônica</button> <button onclick="showTab('apuracao'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📊 Apuração</button> <button onclick="showTab('endossos'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🤝 Endossos</button> <button onclick="showTab('partidos'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🎌 Partidos</button> <button onclick="showTab('noticias'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📰 Notícias</button> <button onclick="showTab('admin'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors text-amber-500">⚙️ Administração</button>
-     </nav>
-    </div>
-   </div><!-- Mobile Menu Overlay -->
-   <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div><!-- Main Content -->
-   <main class="flex-1 overflow-y-auto"><!-- Tab: Início -->
-    <div id="tab-inicio" class="tab-content">
-     <div class="max-w-7xl mx-auto px-4 py-8"><!-- Hero Section -->
-      <div class="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 border border-neutral-700">
-       <div class="absolute inset-0 opacity-10">
-        <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212,175,55,0.1) 10px, rgba(212,175,55,0.1) 20px);"></div>
-       </div>
-       <div class="relative p-6 md:p-12 text-center">
-        <div class="inline-block px-4 py-1 bg-amber-900/50 rounded-full text-amber-400 text-sm mb-4 border border-amber-700">
-         🎭 Simulação Narrativa de RPG
-        </div>
-        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4 text-white">Tribunal Superior Eleitoral</h2>
-        <p class="text-xl md:text-2xl text-amber-400 mb-2">República Federativa do Brasil</p>
-        <p class="text-lg text-gray-400 mb-6">Realidade Alternativa • Anno Domini 1982</p>
-        <div class="max-w-2xl mx-auto text-gray-300 mb-8">
-         <p>Bem-vindo ao sistema eleitoral do universo BRRPG. Aqui, jogadores e narradores podem simular campanhas políticas, eleições e seus impactos narrativos em um Brasil que nunca existiu.</p>
-        </div>
-        <div class="flex flex-wrap justify-center gap-4"><button onclick="showTab('cadastro')" class="px-6 py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors"> 📝 Fazer Cadastro </button> <button onclick="showTab('contexto')" class="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg font-semibold transition-colors"> 📜 Conhecer o Universo </button>
-        </div>
-       </div>
-      </div><!-- Stats Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
-        <div class="text-3xl md:text-4xl font-bold text-amber-400" id="stat-candidates">
-         0
-        </div>
-        <div class="text-sm text-gray-400">
-         Candidatos
-        </div>
-       </div>
-       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
-        <div class="text-3xl md:text-4xl font-bold text-green-400" id="stat-parties">
-         0
-        </div>
-        <div class="text-sm text-gray-400">
-         Partidos
-        </div>
-       </div>
-       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
-        <div class="text-3xl md:text-4xl font-bold text-blue-400">
-         6
-        </div>
-        <div class="text-sm text-gray-400">
-         Estados
-        </div>
-       </div>
-       <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
-        <div class="text-3xl md:text-4xl font-bold text-purple-400" id="stat-news">
-         0
-        </div>
-        <div class="text-sm text-gray-400">
-         Notícias
-        </div>
-       </div>
-      </div><!-- Estados do RPG -->
-      <div class="mb-8">
-       <h3 class="font-display text-2xl font-bold mb-4 text-amber-400">Estados do Universo BRRPG</h3>
-       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
-         <div class="text-2xl mb-2">
-          🌴
-         </div>
-         <div class="font-semibold">
-          Espírito Santo
-         </div>
-         <div class="text-xs text-gray-500">
-          ES
-         </div>
-        </div>
-        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
-         <div class="text-2xl mb-2">
-          🦜
-         </div>
-         <div class="font-semibold">
-          Mato Grosso do Sul
-         </div>
-         <div class="text-xs text-gray-500">
-          MS
-         </div>
-        </div>
-        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
-         <div class="text-2xl mb-2">
-          🏙️
-         </div>
-         <div class="font-semibold">
-          São Paulo
-         </div>
-         <div class="text-xs text-gray-500">
-          SP
-         </div>
-        </div>
-        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
-         <div class="text-2xl mb-2">
-          ⛰️
-         </div>
-         <div class="font-semibold">
-          Minas Gerais
-         </div>
-         <div class="text-xs text-gray-500">
-          MG
-         </div>
-        </div>
-        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
-         <div class="text-2xl mb-2">
-          🎭
-         </div>
-         <div class="font-semibold">
-          Pernambuco
-         </div>
-         <div class="text-xs text-gray-500">
-          PE
-         </div>
-        </div>
-        <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
-         <div class="text-2xl mb-2">
-          🌲
-         </div>
-         <div class="font-semibold">
-          Paraná
-         </div>
-         <div class="text-xs text-gray-500">
-          PR
-         </div>
-        </div>
-       </div>
-      </div><!-- Info Cards -->
-      <div class="grid md:grid-cols-2 gap-6">
-       <div class="bg-neutral-900 rounded-xl p-6 border border-neutral-800">
-        <h4 class="font-display text-xl font-bold mb-3 text-amber-400">🗳️ Eleições Simuladas</h4>
-        <ul class="space-y-2 text-gray-300 text-sm">
-         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span><strong>Executivo Federal:</strong> Presidente e Vice-Presidente (sem limite de candidatos)</span></li>
-         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span><strong>Executivo Estadual:</strong> Governadores dos 6 estados do RPG</span></li>
-         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span>Campanhas com eventos por município e região</span></li>
-         <li class="flex items-start gap-2"><span class="text-amber-400">▸</span> <span>Sistema de endossos entre candidatos e eleitos</span></li>
-        </ul>
-       </div>
-       <div class="bg-neutral-900 rounded-xl p-6 border border-neutral-800">
-        <h4 class="font-display text-xl font-bold mb-3 text-amber-400">🤖 IA Narrativa Integrada</h4>
-        <ul class="space-y-2 text-gray-300 text-sm">
-         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Análise automática de formul����rios de candidatura</span></li>
-         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Narração de eventos de campanha</span></li>
-         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Cálculo de impacto em NPCs e jogadores</span></li>
-         <li class="flex items-start gap-2"><span class="text-green-400">▸</span> <span>Geração de resultados eleitorais narrativos</span></li>
-        </ul>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Contexto Histórico -->
-    <div id="tab-contexto" class="tab-content hidden">
-     <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl md:text-4xl font-bold text-amber-400 mb-2">Contexto Histórico</h2>
-       <p class="text-gray-400">O Brasil Alternativo do Universo BRRPG</p>
-      </div>
-      <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
-       <div class="bg-gradient-to-r from-amber-900/30 to-neutral-900 p-6 border-b border-neutral-800">
-        <h3 class="font-display text-2xl font-bold text-white">📜 Linha do Tempo Alternativa</h3>
-        <p class="text-amber-400">Uma história que nunca aconteceu</p>
-       </div>
-       <div class="p-6 space-y-8"><!-- Timeline -->
-        <div class="relative border-l-2 border-amber-600 pl-6 space-y-8">
-         <div class="relative">
-          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <div class="text-amber-400 font-bold text-lg">
-            1889 — A Grande Cisão
-           </div>
-           <p class="text-gray-300 mt-2">Neste universo alternativo, a proclamação da República acontece de forma diferente. Uma aliança entre diferentes facções militares e civis cria uma federação com características únicas, onde os estados possuem maior autonomia desde o início.</p>
-          </div>
-         </div>
-         <div class="relative">
-          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <div class="text-amber-400 font-bold text-lg">
-            1922 — O Pacto dos Governadores
-           </div>
-           <p class="text-gray-300 mt-2">Os estados do Brasil Alternativo firmam um acordo que estabelece um sistema eleitoral próprio, com comarcas eleitorais e um Tribunal Superior Eleitoral com poderes expandidos para garantir a integridade do processo democrático.</p>
-          </div>
-         </div>
-         <div class="relative">
-          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <div class="text-amber-400 font-bold text-lg">
-            1945 — A Nova Ordem
-           </div>
-           <p class="text-gray-300 mt-2">Após os eventos da Segunda Guerra Mundial, o Brasil Alternativo emerge como uma potência regional com um sistema multipartidário vibrante. Novos partidos surgem representando diferentes visões para o futuro da nação.</p>
-          </div>
-         </div>
-         <div class="relative">
-          <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <div class="text-amber-400 font-bold text-lg">
-            1964 — A Crise Evitada
-           </div>
-           <p class="text-gray-300 mt-2">Diferente da nossa realidade, neste universo uma série de acordos políticos evita a ruptura institucional. O país mantém sua democracia, mas com tensões constantes entre diferentes grupos de poder.</p>
-          </div>
-         </div>
-         <div class="relative">
-          <div class="absolute -left-8 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-          <div class="bg-neutral-800 rounded-lg p-4 border border-green-900">
-           <div class="text-green-400 font-bold text-lg">
-            1982 — Momento Atual
-           </div>
-           <p class="text-gray-300 mt-2">O Brasil Alternativo vive um momento de intensa disputa política. As eleições de 1982 prometem ser as mais disputadas da história, com candidatos de todas as vertentes ideológicas competindo pelo poder nos níveis federal e estadual.</p>
-          </div>
-         </div>
-        </div><!-- Características do Universo -->
-        <div class="mt-8">
-         <h4 class="font-display text-xl font-bold text-amber-400 mb-4">��� Características do Universo</h4>
-         <div class="grid md:grid-cols-2 gap-4">
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <h5 class="font-semibold text-white mb-2">Sistema Político</h5>
-           <p class="text-gray-400 text-sm">República Federativa com forte autonomia estadual. O Presidente é eleito por voto direto, assim como os governadores. O sistema permite coligações amplas e não há limite de candidatos.</p>
-          </div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <h5 class="font-semibold text-white mb-2">Comarcas Eleitorais</h5>
-           <p class="text-gray-400 text-sm">Os estados são divididos em comarcas para fins eleitorais, cada uma com suas características demográficas e políticas que influenciam os resultados das urnas.</p>
-          </div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <h5 class="font-semibold text-white mb-2">Religião e Sociedade</h5>
-           <p class="text-gray-400 text-sm">O Brasil Alternativo possui doutrinas religiosas próprias que exercem influência na política. Os candidatos podem declarar sua filiação para impacto em determinados grupos de NPCs.</p>
-          </div>
-          <div class="bg-neutral-800 rounded-lg p-4">
-           <h5 class="font-semibold text-white mb-2">NPCs e Jogadores</h5>
-           <p class="text-gray-400 text-sm">O eleitorado é composto por NPCs controlados pela narrativa e personagens de jogadores. Eventos de campanha e posicionamentos afetam ambos os grupos de formas diferentes.</p>
-          </div>
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Cadastro -->
-    <div id="tab-cadastro" class="tab-content hidden">
-     <div class="max-w-xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Cadastro</h2>
-       <p class="text-gray-400">Registre-se no sistema eleitoral do BRRPG</p>
-      </div>
-      <div class="bg-neutral-900 rounded-2xl border border-neutral-800 p-6">
-       <form id="register-form" onsubmit="handleRegister(event)" class="space-y-6">
-        <div class="w-full"><label class="block text-sm font-medium text-gray-300 mb-2">Nome Completo *</label> <input type="text" id="reg-fullname" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Digite seu nome completo" dir="ltr">
-        </div>
-        <div class="w-full"><label class="block text-sm font-medium text-gray-300 mb-2">Nome de Usuário *</label> <input type="text" id="reg-username" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Escolha um nome de usuário" dir="ltr">
-        </div>
-        <div class="w-full"><label class="block text-sm font-medium text-gray-300 mb-2">Senha *</label> <input type="password" id="reg-password" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Digite sua senha" minlength="6" dir="ltr">
-        </div>
-        <div class="w-full"><label class="block text-sm font-medium text-gray-300 mb-2">Comarca (Estado) *</label> <select id="reg-comarca" required class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Selecione sua comarca</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
-        </div>
-        <div class="w-full"><label class="block text-sm font-medium text-gray-300 mb-2">Seção Eleitoral *</label> <input type="number" id="reg-secao" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Ex: 1, 2, 3..." min="1" dir="ltr">
-         <p class="text-xs text-gray-500 mt-1">A seção é o número sequencial da urna no seu estado (1ª seção, 2ª seção, etc.)</p>
-        </div>
-        <div class="bg-neutral-800 rounded-lg p-4"><label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="reg-is-candidate" onchange="toggleCandidateFields()" class="w-5 h-5 rounded bg-neutral-700 border-neutral-600 text-amber-600 focus:ring-amber-500"> <span class="text-gray-300 font-medium">Sou candidato</span> </label>
-        </div>
-        <div id="candidate-fields" class="hidden space-y-4 border-t border-neutral-700 pt-4">
-         <div><label class="block text-sm font-medium text-gray-300 mb-2">Cargo Pretendido *</label> <select id="reg-office" class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Selecione o cargo</option> <option value="presidente">Presidente da República</option> <option value="governador">Governador de Estado</option> </select>
-         </div>
-         <div id="state-field" class="hidden"><label class="block text-sm font-medium text-gray-300 mb-2">Estado *</label> <select id="reg-state" class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Selecione o estado</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
-         </div>
-        </div><button type="submit" id="register-btn" class="w-full py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"> <span>Criar Cadastro</span> </button>
-       </form>
-       <div id="register-success" class="hidden text-center py-8">
-        <div class="text-5xl mb-4">
-         ✅
-        </div>
-        <h3 class="text-xl font-bold text-green-400 mb-2">Cadastro Realizado!</h3>
-        <p class="text-gray-400 mb-4">Você já pode acessar o sistema.</p><button onclick="showTab('inicio')" class="px-6 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg transition-colors"> Ir para Início </button>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Formulários -->
-    <div id="tab-formularios" class="tab-content hidden">
-     <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Formulários Eleitorais</h2>
-       <p class="text-gray-400">Registro de Candidatura — Eleições 1982</p>
-      </div>
-      <div id="form-access-denied" class="bg-neutral-900 rounded-2xl border border-red-900 p-8 text-center">
-       <div class="text-5xl mb-4">
-        🔒
-       </div>
-       <h3 class="text-xl font-bold text-red-400 mb-2">Acesso Restrito</h3>
-       <p class="text-gray-400 mb-4">Você precisa estar cadastrado como candidato para acessar os formulários.</p><button onclick="showTab('cadastro')" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors"> Fazer Cadastro </button>
-      </div>
-      <div id="candidate-form-container" class="hidden">
-       <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
-        <div class="bg-gradient-to-r from-amber-900/30 to-neutral-900 p-6 border-b border-neutral-800">
-         <h3 class="font-display text-xl font-bold text-white">📋 Formulário de Candidatura</h3>
-         <p id="form-office-display" class="text-amber-400"></p>
-        </div>
-        <form id="candidacy-form" onsubmit="handleCandidacySubmit(event)" class="p-6 space-y-6"><!-- Dados Básicos -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">📌 Dados do Candidato</h4>
-          <div class="grid md:grid-cols-2 gap-4">
-           <div><label class="block text-sm text-gray-400 mb-1">Nome de Urna</label> <input type="text" id="form-ballot-name" required class="form-input w-full px-3 py-2 rounded" placeholder="Como aparecerá na urna">
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">URL da Foto</label> <input type="url" id="form-photo" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">Partido</label> <select id="form-party" class="form-input w-full px-3 py-2 rounded"> <option value="">Selecione um partido</option> </select>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">Coligação</label> <input type="text" id="form-coalition" class="form-input w-full px-3 py-2 rounded" placeholder="Nome da coligação">
-           </div>
-          </div>
-         </div><!-- Vice/Suplente -->
-         <div id="vice-section" class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">👥 Vice-Candidato</h4>
-          <div class="grid md:grid-cols-2 gap-4">
-           <div><label class="block text-sm text-gray-400 mb-1">Nome do Vice</label> <input type="text" id="form-vice-name" class="form-input w-full px-3 py-2 rounded" placeholder="Nome completo do vice">
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">URL da Foto do Vice</label> <input type="url" id="form-vice-photo" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
-           </div>
-          </div>
-         </div><!-- Campanha -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">📢 Campanha</h4>
-          <div><label class="block text-sm text-gray-400 mb-1">Slogan de Campanha</label> <input type="text" id="form-slogan" required class="form-input w-full px-3 py-2 rounded" placeholder="Seu slogan principal">
-          </div>
-          <div class="mt-4"><label class="block text-sm text-gray-400 mb-1">Links de Viagens de Campanha (URLs separadas por vírgula)</label> <textarea id="form-travels" class="form-input w-full px-3 py-2 rounded h-20" placeholder="https://link1.com, https://link2.com"></textarea>
-          </div>
-         </div><!-- Públicos-alvo -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">🎯 Públicos-Alvo (máx. 5)</h4>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-2"><label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="trabalhadores"> <span class="text-sm">Trabalhadores</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="empresarios"> <span class="text-sm">Empresários</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="rurais"> <span class="text-sm">Rurais</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="jovens"> <span class="text-sm">Jovens</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="religiosos"> <span class="text-sm">Religiosos</span> </label> <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700"> <input type="checkbox" class="target-audience" value="militares"> <span class="text-sm">Militares</span> </label>
-          </div>
-         </div><!-- Questionário Político -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">🏛️ Questionário Político</h4>
-          <div class="space-y-4">
-           <div><label class="block text-sm text-gray-400 mb-1">1. Qual sua posição sobre a autonomia dos estados?</label> <textarea id="q-political-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">2. Como pretende lidar com a oposição política?</label> <textarea id="q-political-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">3. Qual sua visão sobre reforma eleitoral?</label> <textarea id="q-political-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-          </div>
-         </div><!-- Questionário Econômico -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">��� Questionário Econômico</h4>
-          <div class="space-y-4">
-           <div><label class="block text-sm text-gray-400 mb-1">1. Quais suas propostas para combater a inflação?</label> <textarea id="q-economic-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">2. Qual sua posição sobre privatizações?</label> <textarea id="q-economic-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">3. Como pretende gerar empregos?</label> <textarea id="q-economic-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-          </div>
-         </div><!-- Questionário Social -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">👥 Questionário Social</h4>
-          <div class="space-y-4">
-           <div><label class="block text-sm text-gray-400 mb-1">1. Quais suas propostas para educação?</label> <textarea id="q-social-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">2. Como pretende melhorar a saúde pública?</label> <textarea id="q-social-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-           <div><label class="block text-sm text-gray-400 mb-1">3. Qual sua posição sobre reforma agrária?</label> <textarea id="q-social-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
-           </div>
-          </div>
-         </div><!-- Perguntas Estaduais -->
-         <div id="state-questions" class="hidden border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">🗺️ Perguntas Específicas do Estado</h4>
-          <div id="state-questions-content" class="space-y-4"></div>
-         </div><!-- Religião -->
-         <div class="border-b border-neutral-700 pb-6">
-          <h4 class="font-semibold text-white mb-4">⛪ Religião e Doutrina (Opcional)</h4>
-          <p class="text-xs text-gray-500 mb-3">Influencia NPCs religiosos no universo do jogo</p><select id="form-religion" class="form-input w-full px-3 py-2 rounded"> <option value="">Prefiro não declarar</option> <option value="catolicismo-tradicional">Catolicismo Tradicional</option> <option value="catolicismo-progressista">Catolicismo Progressista</option> <option value="protestantismo-historico">Protestantismo Histórico</option> <option value="pentecostalismo">Pentecostalismo</option> <option value="espiritismo-kardecista">Espiritismo Kardecista</option> <option value="religioes-afro">Religiões de Matriz Africana</option> <option value="judaismo">Judaísmo</option> <option value="agnosticismo">Agnosticismo</option> <option value="ateismo">Ateísmo</option> </select>
-         </div><!-- Contador de caracteres -->
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="flex justify-between items-center"><span class="text-sm text-gray-400">Total de caracteres:</span> <span id="char-counter" class="font-mono text-amber-400">0 / 7000</span>
-          </div>
-          <div class="w-full bg-neutral-700 rounded-full h-2 mt-2">
-           <div id="char-bar" class="bg-amber-600 h-2 rounded-full transition-all" style="width: 0%"></div>
-          </div>
-         </div><button type="submit" id="submit-candidacy-btn" class="w-full py-3 bg-green-600 hover:bg-green-500 rounded-lg font-semibold transition-colors"> ✅ Registrar Candidatura </button>
-        </form>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Campanhas -->
-    <div id="tab-campanhas" class="tab-content hidden">
-     <div class="max-w-5xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Campanhas Eleitorais</h2>
-       <p class="text-gray-400">Eventos e atividades de campanha dos candidatos</p>
-      </div><!-- Criar Evento -->
-      <div id="create-event-section" class="hidden mb-8">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-semibold text-white mb-4">📢 Criar Evento de Campanha</h3>
-        <form id="event-form" onsubmit="handleEventSubmit(event)" class="space-y-4">
-         <div class="grid md:grid-cols-2 gap-4">
-          <div><label class="block text-sm text-gray-400 mb-1">Título do Evento</label> <input type="text" id="event-title" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: Comício em São Paulo">
-          </div>
-          <div><label class="block text-sm text-gray-400 mb-1">Município/Região</label> <input type="text" id="event-location" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: São Paulo - Centro">
-          </div>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Descrição do Evento</label> <textarea id="event-description" required class="form-input w-full px-3 py-2 rounded h-24" placeholder="Descreva o evento..."></textarea>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">URL de Anexo (opcional)</label> <input type="url" id="event-attachment" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
-         </div><button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Publicar Evento </button>
-        </form>
-       </div>
-      </div><!-- Lista de Eventos -->
-      <div id="events-list" class="space-y-4">
-       <div class="text-center py-12 text-gray-500">
-        <div class="text-4xl mb-2">
-         📭
-        </div>
-        <p>Nenhum evento de campanha registrado ainda.</p>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Urna Eletrônica -->
-    <div id="tab-urna" class="tab-content hidden">
-     <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Urna Eletrônica</h2>
-       <p class="text-gray-400">Simulação de Votação — Eleições 1982</p>
-       <div class="inline-block mt-2 px-3 py-1 bg-amber-900/30 rounded-full text-amber-400 text-sm">
-        🎭 Simulação Narrativa
-       </div>
-      </div><!-- Urna Container -->
-      <div class="urna-container rounded-2xl p-6 md:p-8 max-w-2xl mx-auto"><!-- Tela da Urna -->
-       <div class="bg-neutral-950 rounded-lg border-4 border-neutral-700 p-4 md:p-6 mb-6"><!-- Cabeçalho -->
-        <div class="flex justify-between items-center mb-4 text-xs text-gray-500"><span>JUSTIÇA ELEITORAL (RPG)</span> <span id="urna-date">15/11/1982</span>
-        </div><!-- Cargo sendo votado -->
-        <div id="urna-cargo" class="text-center mb-4">
-         <div class="text-lg font-bold text-green-400">
-          PRESIDENTE
-         </div>
-         <div class="text-sm text-gray-400">
-          Digite o número do candidato
-         </div>
-        </div><!-- Display do número -->
-        <div class="flex justify-center gap-2 mb-6">
-         <div class="urna-digit w-16 h-20 md:w-20 md:h-24 bg-neutral-900 border-2 border-neutral-700 rounded flex items-center justify-center text-4xl md:text-5xl font-mono text-green-400" id="digit-1">
-          _
-         </div>
-         <div class="urna-digit w-16 h-20 md:w-20 md:h-24 bg-neutral-900 border-2 border-neutral-700 rounded flex items-center justify-center text-4xl md:text-5xl font-mono text-green-400" id="digit-2">
-          _
-         </div>
-        </div><!-- Área do candidato -->
-        <div id="urna-candidate-display" class="hidden">
-         <div class="flex gap-4 bg-neutral-900 rounded-lg p-4">
-          <div id="urna-photo" class="w-24 h-32 md:w-32 md:h-40 bg-neutral-800 rounded flex items-center justify-center text-4xl">
-           👤
-          </div>
-          <div class="flex-1">
-           <div class="text-xs text-gray-500 mb-1">
-            Nome
-           </div>
-           <div id="urna-name" class="text-xl font-bold text-white mb-2">
-            ---
-           </div>
-           <div class="text-xs text-gray-500 mb-1">
-            Partido
-           </div>
-           <div id="urna-party" class="text-amber-400 mb-2">
-            ---
-           </div>
-           <div id="urna-vice-section" class="hidden">
-            <div class="text-xs text-gray-500 mb-1">
-             Vice
+    
+    <!-- Header -->
+    <header class="bg-gradient-to-b from-neutral-900 to-black border-b border-neutral-800 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-3 md:py-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center gap-3 md:gap-4">
+            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center border-2 border-amber-500 glow-gold">
+              <svg viewBox="0 0 24 24" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
+                <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.5L18.5 7 12 9.5 5.5 7 12 4.5zM4 8.5l7 3.5v7.5l-7-3.5V8.5zm9 11V12l7-3.5v7.5l-7 3.5z"/>
+              </svg>
             </div>
-            <div id="urna-vice" class="text-gray-300">
-             ---
+            <div>
+              <h1 id="site-title" class="font-display text-lg md:text-2xl font-bold text-amber-400">BRRPG</h1>
+              <p class="text-xs md:text-sm text-gray-400">Comissão Eleitoral / TSE (RPG)</p>
+              <p class="text-xs text-gray-500 hidden md:block">Brasil Alternativo • 1982</p>
             </div>
-           </div>
           </div>
-         </div>
-        </div><!-- Mensagem de voto -->
-        <div id="urna-message" class="text-center text-xl font-bold text-green-400 hidden py-8">
-         VOTO CONFIRMADO
+          
+          <!-- User Section -->
+          <div class="flex items-center gap-2 md:gap-4">
+            <div id="user-info" class="hidden md:flex items-center gap-2 text-sm text-gray-400">
+              <span id="user-display"></span>
+            </div>
+            <button id="login-btn" onclick="showLoginModal()" class="px-3 py-1.5 md:px-4 md:py-2 bg-amber-600 hover:bg-amber-500 rounded text-sm font-semibold transition-colors">
+              Entrar
+            </button>
+            <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-400 hover:text-white">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+            </button>
+          </div>
         </div>
-       </div><!-- Teclado da Urna -->
-       <div class="grid grid-cols-3 gap-2 md:gap-3 max-w-xs mx-auto mb-4"><button onclick="urnaDigit(1)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">1</button> <button onclick="urnaDigit(2)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">2</button> <button onclick="urnaDigit(3)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">3</button> <button onclick="urnaDigit(4)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">4</button> <button onclick="urnaDigit(5)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white"><span class="tactile-dot"></span>5</button> <button onclick="urnaDigit(6)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">6</button> <button onclick="urnaDigit(7)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">7</button> <button onclick="urnaDigit(8)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">8</button> <button onclick="urnaDigit(9)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">9</button>
-        <div></div><button onclick="urnaDigit(0)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">0</button>
-        <div></div>
-       </div><!-- Botões de ação -->
-       <div class="flex justify-center gap-3"><button onclick="urnaBranco()" class="urna-key urna-key-branco px-4 md:px-6 py-3 rounded-lg font-bold text-sm">BRANCO</button> <button onclick="urnaCorrige()" class="urna-key urna-key-corrige px-4 md:px-6 py-3 rounded-lg font-bold text-sm text-white">CORRIGE</button> <button onclick="urnaConfirma()" class="urna-key urna-key-confirma px-4 md:px-6 py-3 rounded-lg font-bold text-sm text-white">CONFIRMA</button>
-       </div>
-      </div><!-- Seletor de Comarca -->
-      <div class="mt-8 bg-neutral-900 rounded-xl border border-neutral-800 p-6 max-w-2xl mx-auto">
-       <h3 class="font-semibold text-white mb-4">🗺️ Selecionar Comarca (para cargos estaduais)</h3><select id="comarca-selector" onchange="updateComarca()" class="form-input w-full px-4 py-3 rounded-lg"> <option value="">Nacional (para Presidente)</option> <option value="ES">Espírito Santo</option> <option value="MS">Mato Grosso do Sul</option> <option value="SP">São Paulo</option> <option value="MG">Minas Gerais</option> <option value="PE">Pernambuco</option> <option value="PR">Paraná</option> </select>
+        
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex mt-4 gap-1 overflow-x-auto pb-1">
+          <button onclick="showTab('inicio')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="inicio">Início</button>
+          <button onclick="showTab('contexto')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="contexto">Contexto Histórico</button>
+          <button onclick="showTab('cadastro')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="cadastro">Cadastro</button>
+          <button onclick="showTab('formularios')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="formularios">Formulários</button>
+          <button onclick="showTab('campanhas')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="campanhas">Campanhas</button>
+          <button onclick="showTab('urna')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="urna">Urna Eletrônica</button>
+          <button onclick="showTab('apuracao')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="apuracao">Apuração</button>
+          <button onclick="showTab('endossos')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="endossos">Endossos</button>
+          <button onclick="showTab('partidos')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="partidos">Partidos</button>
+          <button onclick="showTab('noticias')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap" data-tab="noticias">Notícias</button>
+          <button onclick="showTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-t hover:bg-neutral-800 transition-colors whitespace-nowrap text-amber-500" data-tab="admin">⚙️ Admin</button>
+        </nav>
       </div>
-     </div>
-    </div><!-- Tab: Apuração -->
-    <div id="tab-apuracao" class="tab-content hidden">
-     <div class="max-w-6xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Apuração</h2>
-       <p class="text-gray-400">Resultados das Eleições 1982 (Narrativo)</p>
-      </div><!-- Tabs de Apuração -->
-      <div class="flex flex-wrap gap-2 mb-6"><button onclick="showApuracaoTab('federal')" class="apuracao-tab px-4 py-2 bg-amber-600 rounded-lg font-semibold" data-tab="federal">Executivo Nacional</button> <button onclick="showApuracaoTab('estadual')" class="apuracao-tab px-4 py-2 bg-neutral-700 rounded-lg font-semibold" data-tab="estadual">Executivo Estadual</button> <button onclick="showApuracaoTab('legislativo')" class="apuracao-tab px-4 py-2 bg-neutral-700 rounded-lg font-semibold" data-tab="legislativo">Legislativo Nacional</button>
-      </div><!-- Conteúdo Federal -->
-      <div id="apuracao-federal" class="apuracao-content">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-display text-xl font-bold text-white mb-6">🏛️ Presidente da República</h3>
-        <div id="federal-results" class="space-y-4">
-         <div class="text-center py-8 text-gray-500">
-          <div class="text-4xl mb-2">
-           📊
-          </div>
-          <p>Aguardando início da apuração...</p>
-         </div>
+    </header>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 w-64 bg-neutral-900 border-r border-neutral-800 z-50 md:hidden overflow-y-auto">
+      <div class="p-4">
+        <div class="flex justify-between items-center mb-6">
+          <span class="font-display text-amber-400 font-bold">Menu</span>
+          <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
-       </div>
-      </div><!-- Conteúdo Estadual -->
-      <div id="apuracao-estadual" class="apuracao-content hidden">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-display text-xl font-bold text-white mb-4">🗺️ Governadores</h3>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="state-results">
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="font-semibold text-amber-400 mb-2">
-           🌴 Espírito Santo
-          </div>
-          <div class="text-gray-500 text-sm">
-           Aguardando apura����ão...
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="font-semibold text-amber-400 mb-2">
-           🦜 Mato Grosso do Sul
-          </div>
-          <div class="text-gray-500 text-sm">
-           Aguardando apuração...
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="font-semibold text-amber-400 mb-2">
-           🏙️ São Paulo
-          </div>
-          <div class="text-gray-500 text-sm">
-           Aguardando apuração...
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="font-semibold text-amber-400 mb-2">
-           ⛰️ Minas Gerais
-          </div>
-          <div class="text-gray-500 text-sm">
-           Aguardando apuração...
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="font-semibold text-amber-400 mb-2">
-           ���� Pernambuco
-          </div>
-          <div class="text-gray-500 text-sm">
-           Aguardando apuração...
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="font-semibold text-amber-400 mb-2">
-           🌲 Paraná
-          </div>
-          <div class="text-gray-500 text-sm">
-           Aguardando apuração...
-          </div>
-         </div>
-        </div>
-       </div>
-      </div><!-- Conteúdo Legislativo -->
-      <div id="apuracao-legislativo" class="apuracao-content hidden">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-display text-xl font-bold text-white mb-4">🏛️ Legislativo Nacional</h3>
-        <div class="text-center py-8 text-gray-500">
-         <div class="text-4xl mb-2">
-          ��️
-         </div>
-         <p>Sistema legislativo em desenvolvimento...</p>
-        </div>
-       </div>
+        <nav class="flex flex-col gap-1">
+          <button onclick="showTab('inicio'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🏛️ Início</button>
+          <button onclick="showTab('contexto'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📜 Contexto Histórico</button>
+          <button onclick="showTab('cadastro'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📝 Cadastro</button>
+          <button onclick="showTab('formularios'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📋 Formulários</button>
+          <button onclick="showTab('campanhas'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📢 Campanhas</button>
+          <button onclick="showTab('urna'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🗳️ Urna Eletrônica</button>
+          <button onclick="showTab('apuracao'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📊 Apuração</button>
+          <button onclick="showTab('endossos'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🤝 Endossos</button>
+          <button onclick="showTab('partidos'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">🎌 Partidos</button>
+          <button onclick="showTab('noticias'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors">📰 Notícias</button>
+          <button onclick="showTab('admin'); toggleMobileMenu();" class="mobile-tab-btn text-left px-4 py-3 rounded hover:bg-neutral-800 transition-colors text-amber-500">⚙️ Administração</button>
+        </nav>
       </div>
-     </div>
-    </div><!-- Tab: Endossos -->
-    <div id="tab-endossos" class="tab-content hidden">
-     <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Endossos</h2>
-       <p class="text-gray-400">Declarações de apoio entre candidatos e eleitos</p>
-      </div><!-- Formulário de Endosso -->
-      <div id="endorsement-form-container" class="hidden mb-8">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-semibold text-white mb-4">🤝 Declarar Apoio</h3>
-        <form id="endorsement-form" onsubmit="handleEndorsement(event)" class="space-y-4">
-         <div><label class="block text-sm text-gray-400 mb-1">Candidato a apoiar</label> <select id="endorse-candidate" class="form-input w-full px-3 py-2 rounded"> <option value="">Selecione um candidato</option> </select>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Mensagem de apoio</label> <textarea id="endorse-message" class="form-input w-full px-3 py-2 rounded h-24" placeholder="Por que você apoia este candidato?"></textarea>
-         </div><button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 rounded font-semibold transition-colors"> Publicar Endosso </button>
-        </form>
-       </div>
-      </div><!-- Lista de Endossos -->
-      <div id="endorsements-list" class="space-y-4">
-       <div class="text-center py-12 text-gray-500">
-        <div class="text-4xl mb-2">
-         🤝
-        </div>
-        <p>Nenhum endosso registrado ainda.</p>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Partidos -->
-    <div id="tab-partidos" class="tab-content hidden">
-     <div class="max-w-5xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Partidos Políticos</h2>
-       <p class="text-gray-400">Agremiações do Universo BRRPG</p>
-      </div><!-- Criar Partido (Admin) -->
-      <div id="create-party-section" class="hidden mb-8">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-semibold text-white mb-4">🎌 Registrar Novo Partido</h3>
-        <form id="party-form" onsubmit="handlePartySubmit(event)" class="space-y-4">
-         <div class="grid md:grid-cols-2 gap-4">
-          <div><label class="block text-sm text-gray-400 mb-1">Nome do Partido</label> <input type="text" id="party-name" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: Partido Social Democrático">
-          </div>
-          <div><label class="block text-sm text-gray-400 mb-1">Sigla</label> <input type="text" id="party-acronym" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: PSD" maxlength="10">
-          </div>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Cor do Partido (hex)</label>
-          <div class="flex gap-2"><input type="color" id="party-color" value="#d4af37" class="h-10 w-20 rounded cursor-pointer"> <input type="text" id="party-color-text" class="form-input flex-1 px-3 py-2 rounded" value="#d4af37">
-          </div>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Descrição</label> <textarea id="party-description" class="form-input w-full px-3 py-2 rounded h-24" placeholder="Ideologia e posicionamento do partido..."></textarea>
-         </div><button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Registrar Partido </button>
-        </form>
-       </div>
-      </div><!-- Lista de Partidos -->
-      <div id="parties-list" class="grid md:grid-cols-2 gap-4">
-       <div class="text-center py-12 text-gray-500 col-span-2">
-        <div class="text-4xl mb-2">
-         🎌
-        </div>
-        <p>Nenhum partido registrado ainda.</p>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Notícias -->
-    <div id="tab-noticias" class="tab-content hidden">
-     <div class="max-w-5xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Notícias</h2>
-       <p class="text-gray-400">Portal de Notícias do Universo BRRPG</p>
-      </div><!-- Criar Notícia -->
-      <div id="create-news-section" class="hidden mb-8">
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h3 class="font-semibold text-white mb-4">📰 Publicar Notícia</h3>
-        <form id="news-form" onsubmit="handleNewsSubmit(event)" class="space-y-4">
-         <div class="grid md:grid-cols-2 gap-4">
-          <div><label class="block text-sm text-gray-400 mb-1">Manchete</label> <input type="text" id="news-title" required class="form-input w-full px-3 py-2 rounded" placeholder="Título da notícia">
-          </div>
-          <div><label class="block text-sm text-gray-400 mb-1">Canal</label> <select id="news-channel" class="form-input w-full px-3 py-2 rounded"> <option value="Gazeta Nacional">Gazeta Nacional</option> <option value="Diário do Povo">Diário do Povo</option> <option value="Correio Republicano">Correio Republicano</option> <option value="Voz do Interior">Voz do Interior</option> </select>
-          </div>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Conteúdo (máx. 4000 caracteres)</label> <textarea id="news-content" required class="form-input w-full px-3 py-2 rounded h-40" maxlength="4000" placeholder="Corpo da notícia..."></textarea>
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">URL da Imagem (opcional)</label> <input type="url" id="news-image" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
-         </div><button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded font-semibold transition-colors"> Publicar Notícia </button>
-        </form>
-       </div>
-      </div><!-- Lista de Notícias -->
-      <div id="news-list" class="space-y-6">
-       <div class="text-center py-12 text-gray-500">
-        <div class="text-4xl mb-2">
-         📰
-        </div>
-        <p>Nenhuma notícia publicada ainda.</p>
-       </div>
-      </div>
-     </div>
-    </div><!-- Tab: Admin -->
-    <div id="tab-admin" class="tab-content hidden">
-     <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8 text-center">
-       <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Administração</h2>
-       <p class="text-gray-400">Painel de Controle do Sistema Eleitoral</p>
-      </div><!-- Login Admin -->
-      <div id="admin-login" class="bg-neutral-900 rounded-xl border border-neutral-800 p-8 max-w-md mx-auto">
-       <div class="text-center mb-6">
-        <div class="text-4xl mb-2">
-         🔐
-        </div>
-        <h3 class="font-semibold text-white">Acesso Restrito</h3>
-        <p class="text-sm text-gray-500">Área exclusiva para administradores</p>
-       </div>
-       <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
-        <div><label class="block text-sm text-gray-400 mb-1">Usuário</label> <input type="text" id="admin-user" class="form-input w-full px-3 py-2 rounded" placeholder="admin">
-        </div>
-        <div><label class="block text-sm text-gray-400 mb-1">Senha</label> <input type="password" id="admin-pass" class="form-input w-full px-3 py-2 rounded" placeholder="••••••••">
-        </div><button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Entrar </button>
-        <p class="text-xs text-gray-500 text-center">Demo: admin / admin123</p>
-       </form>
-      </div><!-- Painel Admin -->
-      <div id="admin-panel" class="hidden space-y-6">
-       <div class="flex justify-between items-center">
-        <h3 class="font-display text-xl font-bold text-white">⚙️ Painel de Controle</h3><button onclick="logoutAdmin()" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded text-sm font-semibold transition-colors"> Sair </button>
-       </div><!-- Configurações de Campanha -->
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h4 class="font-semibold text-amber-400 mb-4">📅 Períodos Eleitorais</h4>
-        <div class="grid md:grid-cols-2 gap-4">
-         <div><label class="block text-sm text-gray-400 mb-1">Início das Campanhas</label> <input type="date" id="campaign-start" class="form-input w-full px-3 py-2 rounded">
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Dia da Votação</label> <input type="date" id="election-day" class="form-input w-full px-3 py-2 rounded">
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Segundo Turno (se houver)</label> <input type="date" id="runoff-day" class="form-input w-full px-3 py-2 rounded">
-         </div>
-         <div><label class="block text-sm text-gray-400 mb-1">Encerramento</label> <input type="date" id="election-end" class="form-input w-full px-3 py-2 rounded">
-         </div>
-        </div><button onclick="saveElectionDates()" class="mt-4 px-4 py-2 bg-green-600 hover:bg-green-500 rounded font-semibold transition-colors"> Salvar Datas </button>
-       </div><!-- Ações Rápidas -->
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h4 class="font-semibold text-amber-400 mb-4">⚡ Ações Rápidas</h4>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><button onclick="startApuracao()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors"> 📊 Iniciar Apuração </button> <button onclick="resetVotes()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors"> 🔄 Resetar Votos </button> <button onclick="generateNPCs()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors"> 👥 Gerar NPCs </button> <button onclick="newSeason()" class="p-3 bg-red-900 hover:bg-red-800 rounded-lg text-sm transition-colors"> 🆕 Nova Temporada </button>
-        </div>
-       </div><!-- Estatísticas -->
-       <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
-        <h4 class="font-semibold text-amber-400 mb-4">📈 Estatísticas do Sistema</h4>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="text-2xl font-bold text-white" id="admin-stat-users">
-           0
-          </div>
-          <div class="text-xs text-gray-400">
-           Usuários
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="text-2xl font-bold text-white" id="admin-stat-candidates">
-           0
-          </div>
-          <div class="text-xs text-gray-400">
-           Candidatos
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="text-2xl font-bold text-white" id="admin-stat-votes">
-           0
-          </div>
-          <div class="text-xs text-gray-400">
-           Votos
-          </div>
-         </div>
-         <div class="bg-neutral-800 rounded-lg p-4">
-          <div class="text-2xl font-bold text-white" id="admin-stat-events">
-           0
-          </div>
-          <div class="text-xs text-gray-400">
-           Eventos
-          </div>
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
     </div>
-   </main><!-- Footer -->
-   <footer class="bg-neutral-900 border-t border-neutral-800 py-4 px-4">
-    <div class="max-w-7xl mx-auto text-center text-xs text-gray-500">
-     <p class="mb-1">🎭 <strong>BRRPG - Comissão Eleitoral / TSE (RPG)</strong> — Simulação Narrativa de RPG</p>
-     <p>Este é um ambiente 100% fictício para fins de entretenimento. Não possui qualquer vínculo com eleições reais, órgãos governamentais ou pessoas reais.</p>
-     <p class="mt-1 text-gray-600">Brasil Alternativo • Anno Domini 1982</p>
-    </div>
-   </footer><!-- Login Modal -->
-   <div id="login-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-neutral-900 rounded-2xl border border-neutral-700 p-6 max-w-sm w-full">
-     <div class="flex justify-between items-center mb-4">
-      <h3 class="font-display text-xl font-bold text-amber-400">Entrar</h3><button onclick="closeLoginModal()" class="text-gray-400 hover:text-white">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-       </svg></button>
-     </div>
-     <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-      <div><label class="block text-sm text-gray-400 mb-1">Nome de Usuário</label> <input type="text" id="login-username" required class="form-input w-full px-3 py-2 rounded">
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      
+      <!-- Tab: Início -->
+      <div id="tab-inicio" class="tab-content">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+          <!-- Hero Section -->
+          <div class="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 border border-neutral-700">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212,175,55,0.1) 10px, rgba(212,175,55,0.1) 20px);"></div>
+            </div>
+            <div class="relative p-6 md:p-12 text-center">
+              <div class="inline-block px-4 py-1 bg-amber-900/50 rounded-full text-amber-400 text-sm mb-4 border border-amber-700">
+                🎭 Simulação Narrativa de RPG
+              </div>
+              <h2 class="font-display text-3xl md:text-5xl font-bold mb-4 text-white">
+                Tribunal Superior Eleitoral
+              </h2>
+              <p class="text-xl md:text-2xl text-amber-400 mb-2">República Federativa do Brasil</p>
+              <p class="text-lg text-gray-400 mb-6">Realidade Alternativa • Anno Domini 1982</p>
+              <div class="max-w-2xl mx-auto text-gray-300 mb-8">
+                <p>Bem-vindo ao sistema eleitoral do universo BRRPG. Aqui, jogadores e narradores podem simular campanhas políticas, eleições e seus impactos narrativos em um Brasil que nunca existiu.</p>
+              </div>
+              <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="showTab('cadastro')" class="px-6 py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors">
+                  📝 Fazer Cadastro
+                </button>
+                <button onclick="showTab('contexto')" class="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg font-semibold transition-colors">
+                  📜 Conhecer o Universo
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+              <div class="text-3xl md:text-4xl font-bold text-amber-400" id="stat-candidates">0</div>
+              <div class="text-sm text-gray-400">Candidatos</div>
+            </div>
+            <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+              <div class="text-3xl md:text-4xl font-bold text-green-400" id="stat-parties">0</div>
+              <div class="text-sm text-gray-400">Partidos</div>
+            </div>
+            <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+              <div class="text-3xl md:text-4xl font-bold text-blue-400">6</div>
+              <div class="text-sm text-gray-400">Estados</div>
+            </div>
+            <div class="bg-neutral-900 rounded-xl p-4 md:p-6 border border-neutral-800 text-center">
+              <div class="text-3xl md:text-4xl font-bold text-purple-400" id="stat-news">0</div>
+              <div class="text-sm text-gray-400">Notícias</div>
+            </div>
+          </div>
+          
+          <!-- Estados do RPG -->
+          <div class="mb-8">
+            <h3 class="font-display text-2xl font-bold mb-4 text-amber-400">Estados do Universo BRRPG</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+                <div class="text-2xl mb-2">🌴</div>
+                <div class="font-semibold">Espírito Santo</div>
+                <div class="text-xs text-gray-500">ES</div>
+              </div>
+              <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+                <div class="text-2xl mb-2">🦜</div>
+                <div class="font-semibold">Mato Grosso do Sul</div>
+                <div class="text-xs text-gray-500">MS</div>
+              </div>
+              <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+                <div class="text-2xl mb-2">🏙️</div>
+                <div class="font-semibold">São Paulo</div>
+                <div class="text-xs text-gray-500">SP</div>
+              </div>
+              <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+                <div class="text-2xl mb-2">⛰️</div>
+                <div class="font-semibold">Minas Gerais</div>
+                <div class="text-xs text-gray-500">MG</div>
+              </div>
+              <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+                <div class="text-2xl mb-2">🎭</div>
+                <div class="font-semibold">Pernambuco</div>
+                <div class="text-xs text-gray-500">PE</div>
+              </div>
+              <div class="bg-neutral-900 rounded-lg p-4 border border-neutral-800 hover:border-amber-600 transition-colors text-center">
+                <div class="text-2xl mb-2">🌲</div>
+                <div class="font-semibold">Paraná</div>
+                <div class="text-xs text-gray-500">PR</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Info Cards -->
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-neutral-900 rounded-xl p-6 border border-neutral-800">
+              <h4 class="font-display text-xl font-bold mb-3 text-amber-400">🗳️ Eleições Simuladas</h4>
+              <ul class="space-y-2 text-gray-300 text-sm">
+                <li class="flex items-start gap-2">
+                  <span class="text-amber-400">▸</span>
+                  <span><strong>Executivo Federal:</strong> Presidente e Vice-Presidente (sem limite de candidatos)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-amber-400">▸</span>
+                  <span><strong>Executivo Estadual:</strong> Governadores dos 6 estados do RPG</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-amber-400">▸</span>
+                  <span>Campanhas com eventos por município e região</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-amber-400">▸</span>
+                  <span>Sistema de endossos entre candidatos e eleitos</span>
+                </li>
+              </ul>
+            </div>
+            <div class="bg-neutral-900 rounded-xl p-6 border border-neutral-800">
+              <h4 class="font-display text-xl font-bold mb-3 text-amber-400">🤖 IA Narrativa Integrada</h4>
+              <ul class="space-y-2 text-gray-300 text-sm">
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400">▸</span>
+                  <span>Análise automática de formul����rios de candidatura</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400">▸</span>
+                  <span>Narração de eventos de campanha</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400">▸</span>
+                  <span>Cálculo de impacto em NPCs e jogadores</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400">▸</span>
+                  <span>Geração de resultados eleitorais narrativos</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-      <div><label class="block text-sm text-gray-400 mb-1">Senha</label> <input type="password" id="login-password" required class="form-input w-full px-3 py-2 rounded">
-      </div><button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors"> Entrar </button>
-     </form>
-     <p class="text-xs text-gray-500 text-center mt-4">Não tem cadastro? <button onclick="closeLoginModal(); showTab('cadastro');" class="text-amber-400 hover:underline">Registre-se</button></p>
+      
+      <!-- Tab: Contexto Histórico -->
+      <div id="tab-contexto" class="tab-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-amber-400 mb-2">Contexto Histórico</h2>
+            <p class="text-gray-400">O Brasil Alternativo do Universo BRRPG</p>
+          </div>
+          
+          <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
+            <div class="bg-gradient-to-r from-amber-900/30 to-neutral-900 p-6 border-b border-neutral-800">
+              <h3 class="font-display text-2xl font-bold text-white">📜 Linha do Tempo Alternativa</h3>
+              <p class="text-amber-400">Uma história que nunca aconteceu</p>
+            </div>
+            
+            <div class="p-6 space-y-8">
+              <!-- Timeline -->
+              <div class="relative border-l-2 border-amber-600 pl-6 space-y-8">
+                <div class="relative">
+                  <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <div class="text-amber-400 font-bold text-lg">1889 — A Grande Cisão</div>
+                    <p class="text-gray-300 mt-2">Neste universo alternativo, a proclamação da República acontece de forma diferente. Uma aliança entre diferentes facções militares e civis cria uma federação com características únicas, onde os estados possuem maior autonomia desde o início.</p>
+                  </div>
+                </div>
+                
+                <div class="relative">
+                  <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <div class="text-amber-400 font-bold text-lg">1922 — O Pacto dos Governadores</div>
+                    <p class="text-gray-300 mt-2">Os estados do Brasil Alternativo firmam um acordo que estabelece um sistema eleitoral próprio, com comarcas eleitorais e um Tribunal Superior Eleitoral com poderes expandidos para garantir a integridade do processo democrático.</p>
+                  </div>
+                </div>
+                
+                <div class="relative">
+                  <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <div class="text-amber-400 font-bold text-lg">1945 — A Nova Ordem</div>
+                    <p class="text-gray-300 mt-2">Após os eventos da Segunda Guerra Mundial, o Brasil Alternativo emerge como uma potência regional com um sistema multipartidário vibrante. Novos partidos surgem representando diferentes visões para o futuro da nação.</p>
+                  </div>
+                </div>
+                
+                <div class="relative">
+                  <div class="absolute -left-8 w-4 h-4 bg-amber-600 rounded-full"></div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <div class="text-amber-400 font-bold text-lg">1964 — A Crise Evitada</div>
+                    <p class="text-gray-300 mt-2">Diferente da nossa realidade, neste universo uma série de acordos políticos evita a ruptura institucional. O país mantém sua democracia, mas com tensões constantes entre diferentes grupos de poder.</p>
+                  </div>
+                </div>
+                
+                <div class="relative">
+                  <div class="absolute -left-8 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                  <div class="bg-neutral-800 rounded-lg p-4 border border-green-900">
+                    <div class="text-green-400 font-bold text-lg">1982 — Momento Atual</div>
+                    <p class="text-gray-300 mt-2">O Brasil Alternativo vive um momento de intensa disputa política. As eleições de 1982 prometem ser as mais disputadas da história, com candidatos de todas as vertentes ideológicas competindo pelo poder nos níveis federal e estadual.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Características do Universo -->
+              <div class="mt-8">
+                <h4 class="font-display text-xl font-bold text-amber-400 mb-4">��� Características do Universo</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <h5 class="font-semibold text-white mb-2">Sistema Político</h5>
+                    <p class="text-gray-400 text-sm">República Federativa com forte autonomia estadual. O Presidente é eleito por voto direto, assim como os governadores. O sistema permite coligações amplas e não há limite de candidatos.</p>
+                  </div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <h5 class="font-semibold text-white mb-2">Comarcas Eleitorais</h5>
+                    <p class="text-gray-400 text-sm">Os estados são divididos em comarcas para fins eleitorais, cada uma com suas características demográficas e políticas que influenciam os resultados das urnas.</p>
+                  </div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <h5 class="font-semibold text-white mb-2">Religião e Sociedade</h5>
+                    <p class="text-gray-400 text-sm">O Brasil Alternativo possui doutrinas religiosas próprias que exercem influência na política. Os candidatos podem declarar sua filiação para impacto em determinados grupos de NPCs.</p>
+                  </div>
+                  <div class="bg-neutral-800 rounded-lg p-4">
+                    <h5 class="font-semibold text-white mb-2">NPCs e Jogadores</h5>
+                    <p class="text-gray-400 text-sm">O eleitorado é composto por NPCs controlados pela narrativa e personagens de jogadores. Eventos de campanha e posicionamentos afetam ambos os grupos de formas diferentes.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Cadastro -->
+      <div id="tab-cadastro" class="tab-content hidden">
+        <div class="max-w-xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Cadastro</h2>
+            <p class="text-gray-400">Registre-se no sistema eleitoral do BRRPG</p>
+          </div>
+          
+          <div class="bg-neutral-900 rounded-2xl border border-neutral-800 p-6">
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-6">
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Nome Completo *</label>
+                <input type="text" id="reg-fullname" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Digite seu nome completo" dir="ltr">
+              </div>
+              
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Nome de Usuário *</label>
+                <input type="text" id="reg-username" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Escolha um nome de usuário" dir="ltr">
+              </div>
+              
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Senha *</label>
+                <input type="password" id="reg-password" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Digite sua senha" minlength="6" dir="ltr">
+              </div>
+              
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Comarca (Estado) *</label>
+                <select id="reg-comarca" required class="form-input w-full px-4 py-3 rounded-lg">
+                  <option value="">Selecione sua comarca</option>
+                  <option value="ES">Espírito Santo</option>
+                  <option value="MS">Mato Grosso do Sul</option>
+                  <option value="SP">São Paulo</option>
+                  <option value="MG">Minas Gerais</option>
+                  <option value="PE">Pernambuco</option>
+                  <option value="PR">Paraná</option>
+                </select>
+              </div>
+              
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Seção Eleitoral *</label>
+                <input type="number" id="reg-secao" required class="form-input w-full px-4 py-3 rounded-lg" placeholder="Ex: 1, 2, 3..." min="1" dir="ltr">
+                <p class="text-xs text-gray-500 mt-1">A seção é o número sequencial da urna no seu estado (1ª seção, 2ª seção, etc.)</p>
+              </div>
+              
+              <div class="bg-neutral-800 rounded-lg p-4">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" id="reg-is-candidate" onchange="toggleCandidateFields()" class="w-5 h-5 rounded bg-neutral-700 border-neutral-600 text-amber-600 focus:ring-amber-500">
+                  <span class="text-gray-300 font-medium">Sou candidato</span>
+                </label>
+              </div>
+              
+              <div id="candidate-fields" class="hidden space-y-4 border-t border-neutral-700 pt-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Cargo Pretendido *</label>
+                  <select id="reg-office" class="form-input w-full px-4 py-3 rounded-lg">
+                    <option value="">Selecione o cargo</option>
+                    <option value="presidente">Presidente da República</option>
+                    <option value="governador">Governador de Estado</option>
+                  </select>
+                </div>
+                
+                <div id="state-field" class="hidden">
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Estado *</label>
+                  <select id="reg-state" class="form-input w-full px-4 py-3 rounded-lg">
+                    <option value="">Selecione o estado</option>
+                    <option value="ES">Espírito Santo</option>
+                    <option value="MS">Mato Grosso do Sul</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="MG">Minas Gerais</option>
+                    <option value="PE">Pernambuco</option>
+                    <option value="PR">Paraná</option>
+                  </select>
+                </div>
+              </div>
+              
+              <button type="submit" id="register-btn" class="w-full py-3 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                <span>Criar Cadastro</span>
+              </button>
+            </form>
+            
+            <div id="register-success" class="hidden text-center py-8">
+              <div class="text-5xl mb-4">✅</div>
+              <h3 class="text-xl font-bold text-green-400 mb-2">Cadastro Realizado!</h3>
+              <p class="text-gray-400 mb-4">Você já pode acessar o sistema.</p>
+              <button onclick="showTab('inicio')" class="px-6 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg transition-colors">
+                Ir para Início
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Formulários -->
+      <div id="tab-formularios" class="tab-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Formulários Eleitorais</h2>
+            <p class="text-gray-400">Registro de Candidatura — Eleições 1982</p>
+          </div>
+          
+          <div id="form-access-denied" class="bg-neutral-900 rounded-2xl border border-red-900 p-8 text-center">
+            <div class="text-5xl mb-4">🔒</div>
+            <h3 class="text-xl font-bold text-red-400 mb-2">Acesso Restrito</h3>
+            <p class="text-gray-400 mb-4">Você precisa estar cadastrado como candidato para acessar os formulários.</p>
+            <button onclick="showTab('cadastro')" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-semibold transition-colors">
+              Fazer Cadastro
+            </button>
+          </div>
+          
+          <div id="candidate-form-container" class="hidden">
+            <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden">
+              <div class="bg-gradient-to-r from-amber-900/30 to-neutral-900 p-6 border-b border-neutral-800">
+                <h3 class="font-display text-xl font-bold text-white">📋 Formulário de Candidatura</h3>
+                <p id="form-office-display" class="text-amber-400"></p>
+              </div>
+              
+              <form id="candidacy-form" onsubmit="handleCandidacySubmit(event)" class="p-6 space-y-6">
+                <!-- Dados Básicos -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">📌 Dados do Candidato</h4>
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">Nome de Urna</label>
+                      <input type="text" id="form-ballot-name" required class="form-input w-full px-3 py-2 rounded" placeholder="Como aparecerá na urna">
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">URL da Foto</label>
+                      <input type="url" id="form-photo" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">Partido</label>
+                      <select id="form-party" class="form-input w-full px-3 py-2 rounded">
+                        <option value="">Selecione um partido</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">Coligação</label>
+                      <input type="text" id="form-coalition" class="form-input w-full px-3 py-2 rounded" placeholder="Nome da coligação">
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Vice/Suplente -->
+                <div id="vice-section" class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">👥 Vice-Candidato</h4>
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">Nome do Vice</label>
+                      <input type="text" id="form-vice-name" class="form-input w-full px-3 py-2 rounded" placeholder="Nome completo do vice">
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">URL da Foto do Vice</label>
+                      <input type="url" id="form-vice-photo" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Campanha -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">📢 Campanha</h4>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Slogan de Campanha</label>
+                    <input type="text" id="form-slogan" required class="form-input w-full px-3 py-2 rounded" placeholder="Seu slogan principal">
+                  </div>
+                  <div class="mt-4">
+                    <label class="block text-sm text-gray-400 mb-1">Links de Viagens de Campanha (URLs separadas por vírgula)</label>
+                    <textarea id="form-travels" class="form-input w-full px-3 py-2 rounded h-20" placeholder="https://link1.com, https://link2.com"></textarea>
+                  </div>
+                </div>
+                
+                <!-- Públicos-alvo -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">🎯 Públicos-Alvo (máx. 5)</h4>
+                  <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700">
+                      <input type="checkbox" class="target-audience" value="trabalhadores"> <span class="text-sm">Trabalhadores</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700">
+                      <input type="checkbox" class="target-audience" value="empresarios"> <span class="text-sm">Empresários</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700">
+                      <input type="checkbox" class="target-audience" value="rurais"> <span class="text-sm">Rurais</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700">
+                      <input type="checkbox" class="target-audience" value="jovens"> <span class="text-sm">Jovens</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700">
+                      <input type="checkbox" class="target-audience" value="religiosos"> <span class="text-sm">Religiosos</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-neutral-800 p-2 rounded cursor-pointer hover:bg-neutral-700">
+                      <input type="checkbox" class="target-audience" value="militares"> <span class="text-sm">Militares</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Questionário Político -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">🏛️ Questionário Político</h4>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">1. Qual sua posição sobre a autonomia dos estados?</label>
+                      <textarea id="q-political-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">2. Como pretende lidar com a oposição política?</label>
+                      <textarea id="q-political-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">3. Qual sua visão sobre reforma eleitoral?</label>
+                      <textarea id="q-political-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Questionário Econômico -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">��� Questionário Econômico</h4>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">1. Quais suas propostas para combater a inflação?</label>
+                      <textarea id="q-economic-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">2. Qual sua posição sobre privatizações?</label>
+                      <textarea id="q-economic-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">3. Como pretende gerar empregos?</label>
+                      <textarea id="q-economic-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Questionário Social -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">👥 Questionário Social</h4>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">1. Quais suas propostas para educação?</label>
+                      <textarea id="q-social-1" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">2. Como pretende melhorar a saúde pública?</label>
+                      <textarea id="q-social-2" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm text-gray-400 mb-1">3. Qual sua posição sobre reforma agrária?</label>
+                      <textarea id="q-social-3" class="form-input w-full px-3 py-2 rounded h-20" maxlength="500" placeholder="Máx. 500 caracteres"></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Perguntas Estaduais -->
+                <div id="state-questions" class="hidden border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">🗺️ Perguntas Específicas do Estado</h4>
+                  <div id="state-questions-content" class="space-y-4"></div>
+                </div>
+                
+                <!-- Religião -->
+                <div class="border-b border-neutral-700 pb-6">
+                  <h4 class="font-semibold text-white mb-4">⛪ Religião e Doutrina (Opcional)</h4>
+                  <p class="text-xs text-gray-500 mb-3">Influencia NPCs religiosos no universo do jogo</p>
+                  <select id="form-religion" class="form-input w-full px-3 py-2 rounded">
+                    <option value="">Prefiro não declarar</option>
+                    <option value="catolicismo-tradicional">Catolicismo Tradicional</option>
+                    <option value="catolicismo-progressista">Catolicismo Progressista</option>
+                    <option value="protestantismo-historico">Protestantismo Histórico</option>
+                    <option value="pentecostalismo">Pentecostalismo</option>
+                    <option value="espiritismo-kardecista">Espiritismo Kardecista</option>
+                    <option value="religioes-afro">Religiões de Matriz Africana</option>
+                    <option value="judaismo">Judaísmo</option>
+                    <option value="agnosticismo">Agnosticismo</option>
+                    <option value="ateismo">Ateísmo</option>
+                  </select>
+                </div>
+                
+                <!-- Contador de caracteres -->
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-400">Total de caracteres:</span>
+                    <span id="char-counter" class="font-mono text-amber-400">0 / 7000</span>
+                  </div>
+                  <div class="w-full bg-neutral-700 rounded-full h-2 mt-2">
+                    <div id="char-bar" class="bg-amber-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+                  </div>
+                </div>
+                
+                <button type="submit" id="submit-candidacy-btn" class="w-full py-3 bg-green-600 hover:bg-green-500 rounded-lg font-semibold transition-colors">
+                  ✅ Registrar Candidatura
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Campanhas -->
+      <div id="tab-campanhas" class="tab-content hidden">
+        <div class="max-w-5xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Campanhas Eleitorais</h2>
+            <p class="text-gray-400">Eventos e atividades de campanha dos candidatos</p>
+          </div>
+          
+          <!-- Criar Evento -->
+          <div id="create-event-section" class="hidden mb-8">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-semibold text-white mb-4">📢 Criar Evento de Campanha</h3>
+              <form id="event-form" onsubmit="handleEventSubmit(event)" class="space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Título do Evento</label>
+                    <input type="text" id="event-title" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: Comício em São Paulo">
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Município/Região</label>
+                    <input type="text" id="event-location" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: São Paulo - Centro">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Descrição do Evento</label>
+                  <textarea id="event-description" required class="form-input w-full px-3 py-2 rounded h-24" placeholder="Descreva o evento..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">URL de Anexo (opcional)</label>
+                  <input type="url" id="event-attachment" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+                </div>
+                <button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors">
+                  Publicar Evento
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Lista de Eventos -->
+          <div id="events-list" class="space-y-4">
+            <div class="text-center py-12 text-gray-500">
+              <div class="text-4xl mb-2">📭</div>
+              <p>Nenhum evento de campanha registrado ainda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Urna Eletrônica -->
+      <div id="tab-urna" class="tab-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Urna Eletrônica</h2>
+            <p class="text-gray-400">Simulação de Votação — Eleições 1982</p>
+            <div class="inline-block mt-2 px-3 py-1 bg-amber-900/30 rounded-full text-amber-400 text-sm">
+              🎭 Simulação Narrativa
+            </div>
+          </div>
+          
+          <!-- Urna Container -->
+          <div class="urna-container rounded-2xl p-6 md:p-8 max-w-2xl mx-auto">
+            <!-- Tela da Urna -->
+            <div class="bg-neutral-950 rounded-lg border-4 border-neutral-700 p-4 md:p-6 mb-6">
+              <!-- Cabeçalho -->
+              <div class="flex justify-between items-center mb-4 text-xs text-gray-500">
+                <span>JUSTIÇA ELEITORAL (RPG)</span>
+                <span id="urna-date">15/11/1982</span>
+              </div>
+              
+              <!-- Cargo sendo votado -->
+              <div id="urna-cargo" class="text-center mb-4">
+                <div class="text-lg font-bold text-green-400">PRESIDENTE</div>
+                <div class="text-sm text-gray-400">Digite o número do candidato</div>
+              </div>
+              
+              <!-- Display do número -->
+              <div class="flex justify-center gap-2 mb-6">
+                <div class="urna-digit w-16 h-20 md:w-20 md:h-24 bg-neutral-900 border-2 border-neutral-700 rounded flex items-center justify-center text-4xl md:text-5xl font-mono text-green-400" id="digit-1">_</div>
+                <div class="urna-digit w-16 h-20 md:w-20 md:h-24 bg-neutral-900 border-2 border-neutral-700 rounded flex items-center justify-center text-4xl md:text-5xl font-mono text-green-400" id="digit-2">_</div>
+              </div>
+              
+              <!-- Área do candidato -->
+              <div id="urna-candidate-display" class="hidden">
+                <div class="flex gap-4 bg-neutral-900 rounded-lg p-4">
+                  <div id="urna-photo" class="w-24 h-32 md:w-32 md:h-40 bg-neutral-800 rounded flex items-center justify-center text-4xl">
+                    👤
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-xs text-gray-500 mb-1">Nome</div>
+                    <div id="urna-name" class="text-xl font-bold text-white mb-2">---</div>
+                    <div class="text-xs text-gray-500 mb-1">Partido</div>
+                    <div id="urna-party" class="text-amber-400 mb-2">---</div>
+                    <div id="urna-vice-section" class="hidden">
+                      <div class="text-xs text-gray-500 mb-1">Vice</div>
+                      <div id="urna-vice" class="text-gray-300">---</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Mensagem de voto -->
+              <div id="urna-message" class="text-center text-xl font-bold text-green-400 hidden py-8">
+                VOTO CONFIRMADO
+              </div>
+            </div>
+            
+            <!-- Teclado da Urna -->
+            <div class="grid grid-cols-3 gap-2 md:gap-3 max-w-xs mx-auto mb-4">
+              <button onclick="urnaDigit(1)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">1</button>
+              <button onclick="urnaDigit(2)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">2</button>
+              <button onclick="urnaDigit(3)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">3</button>
+              <button onclick="urnaDigit(4)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">4</button>
+              <button onclick="urnaDigit(5)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white"><span class="tactile-dot"></span>5</button>
+              <button onclick="urnaDigit(6)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">6</button>
+              <button onclick="urnaDigit(7)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">7</button>
+              <button onclick="urnaDigit(8)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">8</button>
+              <button onclick="urnaDigit(9)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">9</button>
+              <div></div>
+              <button onclick="urnaDigit(0)" class="urna-key relative h-14 md:h-16 rounded-lg text-xl font-bold text-white">0</button>
+              <div></div>
+            </div>
+            
+            <!-- Botões de ação -->
+            <div class="flex justify-center gap-3">
+              <button onclick="urnaBranco()" class="urna-key urna-key-branco px-4 md:px-6 py-3 rounded-lg font-bold text-sm">BRANCO</button>
+              <button onclick="urnaCorrige()" class="urna-key urna-key-corrige px-4 md:px-6 py-3 rounded-lg font-bold text-sm text-white">CORRIGE</button>
+              <button onclick="urnaConfirma()" class="urna-key urna-key-confirma px-4 md:px-6 py-3 rounded-lg font-bold text-sm text-white">CONFIRMA</button>
+            </div>
+          </div>
+          
+          <!-- Seletor de Comarca -->
+          <div class="mt-8 bg-neutral-900 rounded-xl border border-neutral-800 p-6 max-w-2xl mx-auto">
+            <h3 class="font-semibold text-white mb-4">🗺️ Selecionar Comarca (para cargos estaduais)</h3>
+            <select id="comarca-selector" onchange="updateComarca()" class="form-input w-full px-4 py-3 rounded-lg">
+              <option value="">Nacional (para Presidente)</option>
+              <option value="ES">Espírito Santo</option>
+              <option value="MS">Mato Grosso do Sul</option>
+              <option value="SP">São Paulo</option>
+              <option value="MG">Minas Gerais</option>
+              <option value="PE">Pernambuco</option>
+              <option value="PR">Paraná</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Apuração -->
+      <div id="tab-apuracao" class="tab-content hidden">
+        <div class="max-w-6xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Apuração</h2>
+            <p class="text-gray-400">Resultados das Eleições 1982 (Narrativo)</p>
+          </div>
+          
+          <!-- Tabs de Apuração -->
+          <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="showApuracaoTab('federal')" class="apuracao-tab px-4 py-2 bg-amber-600 rounded-lg font-semibold" data-tab="federal">Executivo Nacional</button>
+            <button onclick="showApuracaoTab('estadual')" class="apuracao-tab px-4 py-2 bg-neutral-700 rounded-lg font-semibold" data-tab="estadual">Executivo Estadual</button>
+            <button onclick="showApuracaoTab('legislativo')" class="apuracao-tab px-4 py-2 bg-neutral-700 rounded-lg font-semibold" data-tab="legislativo">Legislativo Nacional</button>
+          </div>
+          
+          <!-- Conteúdo Federal -->
+          <div id="apuracao-federal" class="apuracao-content">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-display text-xl font-bold text-white mb-6">🏛️ Presidente da República</h3>
+              
+              <div id="federal-results" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                  <div class="text-4xl mb-2">📊</div>
+                  <p>Aguardando início da apuração...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Conteúdo Estadual -->
+          <div id="apuracao-estadual" class="apuracao-content hidden">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-display text-xl font-bold text-white mb-4">🗺️ Governadores</h3>
+              
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="state-results">
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="font-semibold text-amber-400 mb-2">🌴 Espírito Santo</div>
+                  <div class="text-gray-500 text-sm">Aguardando apura����ão...</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="font-semibold text-amber-400 mb-2">🦜 Mato Grosso do Sul</div>
+                  <div class="text-gray-500 text-sm">Aguardando apuração...</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="font-semibold text-amber-400 mb-2">🏙️ São Paulo</div>
+                  <div class="text-gray-500 text-sm">Aguardando apuração...</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="font-semibold text-amber-400 mb-2">⛰️ Minas Gerais</div>
+                  <div class="text-gray-500 text-sm">Aguardando apuração...</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="font-semibold text-amber-400 mb-2">���� Pernambuco</div>
+                  <div class="text-gray-500 text-sm">Aguardando apuração...</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="font-semibold text-amber-400 mb-2">🌲 Paraná</div>
+                  <div class="text-gray-500 text-sm">Aguardando apuração...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Conteúdo Legislativo -->
+          <div id="apuracao-legislativo" class="apuracao-content hidden">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-display text-xl font-bold text-white mb-4">🏛️ Legislativo Nacional</h3>
+              <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">��️</div>
+                <p>Sistema legislativo em desenvolvimento...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Endossos -->
+      <div id="tab-endossos" class="tab-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Endossos</h2>
+            <p class="text-gray-400">Declarações de apoio entre candidatos e eleitos</p>
+          </div>
+          
+          <!-- Formulário de Endosso -->
+          <div id="endorsement-form-container" class="hidden mb-8">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-semibold text-white mb-4">🤝 Declarar Apoio</h3>
+              <form id="endorsement-form" onsubmit="handleEndorsement(event)" class="space-y-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Candidato a apoiar</label>
+                  <select id="endorse-candidate" class="form-input w-full px-3 py-2 rounded">
+                    <option value="">Selecione um candidato</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Mensagem de apoio</label>
+                  <textarea id="endorse-message" class="form-input w-full px-3 py-2 rounded h-24" placeholder="Por que você apoia este candidato?"></textarea>
+                </div>
+                <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-500 rounded font-semibold transition-colors">
+                  Publicar Endosso
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Lista de Endossos -->
+          <div id="endorsements-list" class="space-y-4">
+            <div class="text-center py-12 text-gray-500">
+              <div class="text-4xl mb-2">🤝</div>
+              <p>Nenhum endosso registrado ainda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Partidos -->
+      <div id="tab-partidos" class="tab-content hidden">
+        <div class="max-w-5xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Partidos Políticos</h2>
+            <p class="text-gray-400">Agremiações do Universo BRRPG</p>
+          </div>
+          
+          <!-- Criar Partido (Admin) -->
+          <div id="create-party-section" class="hidden mb-8">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-semibold text-white mb-4">🎌 Registrar Novo Partido</h3>
+              <form id="party-form" onsubmit="handlePartySubmit(event)" class="space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Nome do Partido</label>
+                    <input type="text" id="party-name" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: Partido Social Democrático">
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Sigla</label>
+                    <input type="text" id="party-acronym" required class="form-input w-full px-3 py-2 rounded" placeholder="Ex: PSD" maxlength="10">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Cor do Partido (hex)</label>
+                  <div class="flex gap-2">
+                    <input type="color" id="party-color" value="#d4af37" class="h-10 w-20 rounded cursor-pointer">
+                    <input type="text" id="party-color-text" class="form-input flex-1 px-3 py-2 rounded" value="#d4af37">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Descrição</label>
+                  <textarea id="party-description" class="form-input w-full px-3 py-2 rounded h-24" placeholder="Ideologia e posicionamento do partido..."></textarea>
+                </div>
+                <button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors">
+                  Registrar Partido
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Lista de Partidos -->
+          <div id="parties-list" class="grid md:grid-cols-2 gap-4">
+            <div class="text-center py-12 text-gray-500 col-span-2">
+              <div class="text-4xl mb-2">🎌</div>
+              <p>Nenhum partido registrado ainda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Notícias -->
+      <div id="tab-noticias" class="tab-content hidden">
+        <div class="max-w-5xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Notícias</h2>
+            <p class="text-gray-400">Portal de Notícias do Universo BRRPG</p>
+          </div>
+          
+          <!-- Criar Notícia -->
+          <div id="create-news-section" class="hidden mb-8">
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h3 class="font-semibold text-white mb-4">📰 Publicar Notícia</h3>
+              <form id="news-form" onsubmit="handleNewsSubmit(event)" class="space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Manchete</label>
+                    <input type="text" id="news-title" required class="form-input w-full px-3 py-2 rounded" placeholder="Título da notícia">
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Canal</label>
+                    <select id="news-channel" class="form-input w-full px-3 py-2 rounded">
+                      <option value="Gazeta Nacional">Gazeta Nacional</option>
+                      <option value="Diário do Povo">Diário do Povo</option>
+                      <option value="Correio Republicano">Correio Republicano</option>
+                      <option value="Voz do Interior">Voz do Interior</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Conteúdo (máx. 4000 caracteres)</label>
+                  <textarea id="news-content" required class="form-input w-full px-3 py-2 rounded h-40" maxlength="4000" placeholder="Corpo da notícia..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">URL da Imagem (opcional)</label>
+                  <input type="url" id="news-image" class="form-input w-full px-3 py-2 rounded" placeholder="https://...">
+                </div>
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded font-semibold transition-colors">
+                  Publicar Notícia
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Lista de Notícias -->
+          <div id="news-list" class="space-y-6">
+            <div class="text-center py-12 text-gray-500">
+              <div class="text-4xl mb-2">📰</div>
+              <p>Nenhuma notícia publicada ainda.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab: Admin -->
+      <div id="tab-admin" class="tab-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+          <div class="mb-8 text-center">
+            <h2 class="font-display text-3xl font-bold text-amber-400 mb-2">Administração</h2>
+            <p class="text-gray-400">Painel de Controle do Sistema Eleitoral</p>
+          </div>
+          
+          <!-- Login Admin -->
+          <div id="admin-login" class="bg-neutral-900 rounded-xl border border-neutral-800 p-8 max-w-md mx-auto">
+            <div class="text-center mb-6">
+              <div class="text-4xl mb-2">🔐</div>
+              <h3 class="font-semibold text-white">Acesso Restrito</h3>
+              <p class="text-sm text-gray-500">Área exclusiva para administradores</p>
+            </div>
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-1">Usuário</label>
+                <input type="text" id="admin-user" class="form-input w-full px-3 py-2 rounded" placeholder="admin">
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-1">Senha</label>
+                <input type="password" id="admin-pass" class="form-input w-full px-3 py-2 rounded" placeholder="••••••••">
+              </div>
+              <button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors">
+                Entrar
+              </button>
+              <p class="text-xs text-gray-500 text-center">Demo: admin / admin123</p>
+            </form>
+          </div>
+          
+          <!-- Painel Admin -->
+          <div id="admin-panel" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+              <h3 class="font-display text-xl font-bold text-white">⚙️ Painel de Controle</h3>
+              <button onclick="logoutAdmin()" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded text-sm font-semibold transition-colors">
+                Sair
+              </button>
+            </div>
+            
+            <!-- Configurações de Campanha -->
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h4 class="font-semibold text-amber-400 mb-4">📅 Períodos Eleitorais</h4>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Início das Campanhas</label>
+                  <input type="date" id="campaign-start" class="form-input w-full px-3 py-2 rounded">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Dia da Votação</label>
+                  <input type="date" id="election-day" class="form-input w-full px-3 py-2 rounded">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Segundo Turno (se houver)</label>
+                  <input type="date" id="runoff-day" class="form-input w-full px-3 py-2 rounded">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-1">Encerramento</label>
+                  <input type="date" id="election-end" class="form-input w-full px-3 py-2 rounded">
+                </div>
+              </div>
+              <button onclick="saveElectionDates()" class="mt-4 px-4 py-2 bg-green-600 hover:bg-green-500 rounded font-semibold transition-colors">
+                Salvar Datas
+              </button>
+            </div>
+            
+            <!-- Ações Rápidas -->
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h4 class="font-semibold text-amber-400 mb-4">⚡ Ações Rápidas</h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <button onclick="startApuracao()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors">
+                  📊 Iniciar Apuração
+                </button>
+                <button onclick="resetVotes()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors">
+                  🔄 Resetar Votos
+                </button>
+                <button onclick="generateNPCs()" class="p-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-sm transition-colors">
+                  👥 Gerar NPCs
+                </button>
+                <button onclick="newSeason()" class="p-3 bg-red-900 hover:bg-red-800 rounded-lg text-sm transition-colors">
+                  🆕 Nova Temporada
+                </button>
+              </div>
+            </div>
+            
+            <!-- Estatísticas -->
+            <div class="bg-neutral-900 rounded-xl border border-neutral-800 p-6">
+              <h4 class="font-semibold text-amber-400 mb-4">📈 Estatísticas do Sistema</h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="text-2xl font-bold text-white" id="admin-stat-users">0</div>
+                  <div class="text-xs text-gray-400">Usuários</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="text-2xl font-bold text-white" id="admin-stat-candidates">0</div>
+                  <div class="text-xs text-gray-400">Candidatos</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="text-2xl font-bold text-white" id="admin-stat-votes">0</div>
+                  <div class="text-xs text-gray-400">Votos</div>
+                </div>
+                <div class="bg-neutral-800 rounded-lg p-4">
+                  <div class="text-2xl font-bold text-white" id="admin-stat-events">0</div>
+                  <div class="text-xs text-gray-400">Eventos</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-neutral-900 border-t border-neutral-800 py-4 px-4">
+      <div class="max-w-7xl mx-auto text-center text-xs text-gray-500">
+        <p class="mb-1">🎭 <strong>BRRPG - Comissão Eleitoral / TSE (RPG)</strong> — Simulação Narrativa de RPG</p>
+        <p>Este é um ambiente 100% fictício para fins de entretenimento. Não possui qualquer vínculo com eleições reais, órgãos governamentais ou pessoas reais.</p>
+        <p class="mt-1 text-gray-600">Brasil Alternativo • Anno Domini 1982</p>
+      </div>
+    </footer>
+    
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-neutral-900 rounded-2xl border border-neutral-700 p-6 max-w-sm w-full">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-display text-xl font-bold text-amber-400">Entrar</h3>
+          <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Nome de Usuário</label>
+            <input type="text" id="login-username" required class="form-input w-full px-3 py-2 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Senha</label>
+            <input type="password" id="login-password" required class="form-input w-full px-3 py-2 rounded">
+          </div>
+          <button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold transition-colors">
+            Entrar
+          </button>
+        </form>
+        <p class="text-xs text-gray-500 text-center mt-4">Não tem cadastro? <button onclick="closeLoginModal(); showTab('cadastro');" class="text-amber-400 hover:underline">Registre-se</button></p>
+      </div>
     </div>
-   </div><!-- Toast Container -->
-   <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+    
   </div>
+
   <script>
     // ============================================
     // BRRPG Electoral System - Main Application
@@ -1166,6 +1478,22 @@
       const office = isCandidate ? document.getElementById('reg-office').value : '';
       const state = isCandidate && office === 'governador' ? document.getElementById('reg-state').value : '';
       
+      // Validações básicas
+      if (!fullName || !username || !password || !comarca || !secao) {
+        showToast('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+      
+      if (isCandidate && !office) {
+        showToast('Selecione o cargo pretendido', 'error');
+        return;
+      }
+      
+      if (isCandidate && office === 'governador' && !state) {
+        showToast('Selecione o estado', 'error');
+        return;
+      }
+      
       // Check if username exists
       if (allData.some(d => d.username === username)) {
         showToast('Nome de usuário já existe', 'error');
@@ -1174,9 +1502,10 @@
       
       const btn = document.getElementById('register-btn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="animate-spin">⏳</span> Registrando...';
+      btn.innerHTML = '<span>⏳ Registrando...</span>';
       
       try {
+        // Dados simplificados - apenas strings
         const userData = {
           type: 'user',
           fullName: fullName,
@@ -1184,52 +1513,37 @@
           password: password,
           comarca: comarca,
           secao: secao,
-          isCandidate: isCandidate ? 'true' : 'false',
+          isCandidate: isCandidate ? 'sim' : 'nao',
           office: office,
           state: state,
           createdAt: new Date().toISOString()
         };
         
-        console.log('Attempting to create user:', userData);
+        console.log('Criando usuário:', userData);
         
         const result = await window.dataSdk.create(userData);
         
-        btn.disabled = false;
-        btn.innerHTML = '<span>Criar Cadastro</span>';
-        
         if (result.isOk) {
+          console.log('Usuário criado com sucesso!');
           showToast('Cadastro realizado com sucesso!', 'success');
           document.getElementById('register-form').classList.add('hidden');
           document.getElementById('register-success').classList.remove('hidden');
           
           // Auto-login após registro
-          setTimeout(() => {
-            currentUser = {
-              type: 'user',
-              fullName: fullName,
-              username: username,
-              password: password,
-              comarca: comarca,
-              secao: secao,
-              isCandidate: isCandidate,
-              office: office,
-              state: state,
-              votes: 0,
-              votedAt: ''
-            };
-            localStorage.setItem('brrpg_user', username);
-            updateUserDisplay();
-          }, 500);
+          currentUser = userData;
+          localStorage.setItem('brrpg_user', username);
+          updateUserDisplay();
         } else {
-          const errorMsg = result.error?.message || 'Erro desconhecido';
-          console.error('Create failed:', result.error);
-          showToast('Erro: ' + errorMsg, 'error');
+          const errorMsg = result.error?.message || 'Erro ao criar cadastro';
+          console.error('Erro ao criar:', result.error);
+          showToast(errorMsg, 'error');
         }
       } catch (error) {
+        console.error('Erro no registro:', error);
+        showToast('Erro inesperado: ' + error.message, 'error');
+      } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>Criar Cadastro</span>';
-        console.error('Registration error:', error);
-        showToast('Erro: ' + error.message, 'error');
       }
     }
     
@@ -1238,7 +1552,7 @@
       const accessDenied = document.getElementById('form-access-denied');
       const formContainer = document.getElementById('candidate-form-container');
       
-      if (currentUser && currentUser.isCandidate) {
+      if (currentUser && currentUser.isCandidate === 'sim') {
         accessDenied.classList.add('hidden');
         formContainer.classList.remove('hidden');
         setupCandidateForm();
@@ -1359,7 +1673,7 @@
     // Campaign Events
     function checkCampaignAccess() {
       const createSection = document.getElementById('create-event-section');
-      if (currentUser && currentUser.isCandidate) {
+      if (currentUser && currentUser.isCandidate === 'sim') {
         createSection.classList.remove('hidden');
       } else {
         createSection.classList.add('hidden');
@@ -1705,7 +2019,7 @@
     // Endossos
     function checkEndorsementAccess() {
       const formContainer = document.getElementById('endorsement-form-container');
-      if (currentUser && currentUser.isCandidate) {
+      if (currentUser && currentUser.isCandidate === 'sim') {
         formContainer.classList.remove('hidden');
         populateCandidateSelector();
       } else {
@@ -1715,7 +2029,7 @@
     
     function populateCandidateSelector() {
       const select = document.getElementById('endorse-candidate');
-      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate && d.username !== currentUser?.username);
+      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate === 'sim' && d.username !== currentUser?.username);
       
       select.innerHTML = '<option value="">Selecione um candidato</option>' +
         candidates.map(c => `<option value="${c.username}">${c.fullName} (${c.party || 'Ind.'})</option>`).join('');
@@ -1883,7 +2197,7 @@
     // Notícias
     function checkNewsAccess() {
       const createSection = document.getElementById('create-news-section');
-      if (isAdmin || (currentUser && currentUser.isCandidate)) {
+      if (isAdmin || (currentUser && currentUser.isCandidate === 'sim')) {
         createSection.classList.remove('hidden');
       } else {
         createSection.classList.add('hidden');
@@ -1988,12 +2302,12 @@
     
     function updateAdminStats() {
       const users = allData.filter(d => d.type === 'user');
-      const candidates = users.filter(u => u.isCandidate);
+      const candidates = users.filter(u => u.isCandidate === 'sim');
       const events = allData.filter(d => d.type === 'event');
       
       document.getElementById('admin-stat-users').textContent = users.length;
       document.getElementById('admin-stat-candidates').textContent = candidates.length;
-      document.getElementById('admin-stat-votes').textContent = users.reduce((sum, u) => sum + (u.votes || 0), 0);
+      document.getElementById('admin-stat-votes').textContent = '0';
       document.getElementById('admin-stat-events').textContent = events.length;
     }
     
@@ -2019,7 +2333,7 @@
     
     // Stats
     function updateStats() {
-      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate);
+      const candidates = allData.filter(d => d.type === 'user' && d.isCandidate === 'sim');
       const parties = allData.filter(d => d.type === 'party');
       const news = allData.filter(d => d.type === 'news');
       
@@ -2059,5 +2373,5 @@
     // Initialize
     initApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8bb4c0f3b0a16a',t:'MTc3MDIyNDIzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
